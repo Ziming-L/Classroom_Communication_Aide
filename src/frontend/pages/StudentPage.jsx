@@ -20,7 +20,7 @@ export default function StudentPage() {
     };
 
     const addButton = () => {
-        if (buttons == 8) return;
+        if (buttons.length == 8) return;
         const newButtonId = buttons.length + 1;
         const newButton = {
             id: newButtonId,
@@ -53,15 +53,14 @@ export default function StudentPage() {
     );
 
     return (
-        <div> 
-            <div className="flex flex-col p-8 w-full p-[15px] font-sans relative"> 
-                {/* Header */}
+        <div className="flex flex-col p-8 w-full p-[15px] font-sans relative"> 
+            {/* Header */}
             <header className="mb-6 flex justify-between items-center"> 
-                    {/* Student Greeting */}
+                {/* Student Greeting */}
                 <h1 className="text-3xl font-bold mb-2">Hola Carlos!</h1>
-                    {/* Class and Profile */}
-                <div class="flex items-center gap-2.5">
-                    <button class="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
+                {/* Class and Profile */}
+                <div className="flex items-center gap-2.5">
+                    <button className="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
                         {currentClass}
                     </button>
                     <div className="text-[26px] cursor-pointer">
@@ -69,10 +68,10 @@ export default function StudentPage() {
                     </div>
                 </div> 
             </header>
-                <p>
-                    {currentActivity}
-                </p>
-                <p>
+            <p>
+                {currentActivity}
+            </p>
+            <p>
                 I want to tell my teacher that...
             </p>
             {/* Edit Button */}
@@ -87,9 +86,9 @@ export default function StudentPage() {
             </div>
             <br></br>
             <div>
-                    {createButtonGrid(buttons)}
-                </div>
+                {createButtonGrid(buttons)}
             </div>
+       
             <div>
                 <button
                     onClick={handleGoToTranslator}
