@@ -4,6 +4,7 @@ import SwapButton from "../components/SwapButton";
 import { translateText } from "../utils/translateText.js";
 import Tooltip from "../components/Tooltip.jsx";
 import { TOP_BUTTONS_MAP, TRANSLATOR_HELP_TEXT } from "../utils/constants.js";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /**
  * TranslatorPage Component
@@ -17,15 +18,16 @@ import { TOP_BUTTONS_MAP, TRANSLATOR_HELP_TEXT } from "../utils/constants.js";
  * @returns JSX.Element - the translator page
  */
 export default function TranslatorPage() {
-    const [leftLang, setLeftLang] = useState("es");
-    const [rightLang, setRightLang] = useState("en");
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const { userLang = "es", teacherLang = "en" } = location.state || {};
+    const [leftLang, setLeftLang] = useState(userLang);
+    const [rightLang, setRightLang] = useState(teacherLang);
     const [leftText, setLeftText] = useState("");
     const [rightText, setRightText] = useState("");
     const [activeInput, setActiveInput] = useState("left");
     const [showHelp, setShowHelp] = useState(false);
-
-    // user language
-    const userLang = "es";
 
     const backBtnRef = useRef(null);
     const helpBtnRef = useRef(null);
@@ -37,49 +39,51 @@ export default function TranslatorPage() {
 
     const [positions, setPositions] = useState({});
 
+    const [isLargeScreen, setIsLargeScreen] = useState(() => 
+        typeof window !== "undefined" ? window.innerWidth >= 768 : false
+    );
+
+    useEffect(() => {
+        const onResize = () => setIsLargeScreen(window.innerWidth >= 768);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const getRects = () => ({
+        back: backBtnRef.current?.getBoundingClientRect(),
+        help: helpBtnRef.current?.getBoundingClientRect(),
+        mic: micRef.current?.getBoundingClientRect(),
+        x: xRef.current?.getBoundingClientRect(),
+        speak: speakRef.current?.getBoundingClientRect(),
+        swap: swapRef.current?.getBoundingClientRect(),
+        input: inputRef.current?.getBoundingClientRect(),
+    });
+
     useLayoutEffect(() => {
-        if (showHelp) {
-            const newPositions = {
-                back: backBtnRef.current?.getBoundingClientRect(),
-                help: helpBtnRef.current?.getBoundingClientRect(),
-                mic: micRef.current?.getBoundingClientRect(),
-                x: xRef.current?.getBoundingClientRect(),
-                speak: speakRef.current?.getBoundingClientRect(),
-                swap: swapRef.current?.getBoundingClientRect(),
-                input: inputRef.current?.getBoundingClientRect(),
-            };
-            setPositions(newPositions);
-        }
+        if (!showHelp) return;
+
+        setPositions(getRects());
     }, [showHelp]);
 
     useEffect(() => {
-        if (showHelp) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "auto";
+        if (!showHelp) return;
+
+        const updatePositions = () => {
+            setPositions(getRects());
         }
+
+        updatePositions();
+
+        window.addEventListener("scroll", updatePositions, { passive: true });
+        window.addEventListener("resize", updatePositions);
+        window.addEventListener("orientationchange", updatePositions);
+
         return () => {
-            document.body.style.overflow = "auto";
+            window.removeEventListener("scroll", updatePositions);
+            window.removeEventListener("resize", updatePositions);
+            window.removeEventListener("orientationchange", updatePositions);
         };
-    }, [showHelp]);
 
-    useEffect(() => {
-        const handleResize = () => {
-            if (showHelp) {
-                const newPositions = {
-                    back: backBtnRef.current?.getBoundingClientRect(),
-                    help: helpBtnRef.current?.getBoundingClientRect(),
-                    mic: micRef.current?.getBoundingClientRect(),
-                    x: xRef.current?.getBoundingClientRect(),
-                    speak: speakRef.current?.getBoundingClientRect(),
-                    swap: swapRef.current?.getBoundingClientRect(),
-                    input: inputRef.current?.getBoundingClientRect(),
-                };
-                setPositions(newPositions);
-            }
-        };
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
     }, [showHelp]);
 
     const handleTranslate = async (text) => {
@@ -119,8 +123,6 @@ export default function TranslatorPage() {
         setRightText("");
     }
 
-    const isLargeScreen = window.innerWidth >= 768;
-
     return (
         <div className="flex flex-col min-h-screen p-6 bg-gray-50">
 
@@ -128,13 +130,32 @@ export default function TranslatorPage() {
             <div className="flex justify-between items-center w-full px-8">
                 <button 
                     ref={backBtnRef}
-                    className="bg-purple-600 text-white px-5 py-2 rounded-full shadow-md hover:bg-purple-700">
+                    onClick={() => {
+                        if (window.history.state && window.history.state.idx > 0) {
+                            navigate(-1);
+                        } else {
+                            navigate("/");
+                        }
+                    }}
+                    className="
+                        bg-purple-600 text-white 
+                        text-sm sm:text-base
+                        px-3 py-1.5 sm:px-5 sm:py-2 
+                        rounded-full 
+                        shadow-md 
+                        hover:bg-purple-700">
                     {TOP_BUTTONS_MAP[userLang]?.goBack}
                 </button>
                 <button 
                     ref={helpBtnRef}
                     onClick={() => setShowHelp(true)}
-                    className="bg-black text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800">
+                    className="
+                        bg-black text-white 
+                        text-sm sm:text-base
+                        px-3 py-1.5 sm:px-4 sm:py-2 
+                        rounded-lg 
+                        shadow-md 
+                        hover:bg-gray-800">
                     {TOP_BUTTONS_MAP[userLang]?.help}
                 </button>
             </div>
@@ -195,7 +216,16 @@ export default function TranslatorPage() {
                     {/* Close button */}
                     <button
                         onClick={() => setShowHelp(false)}
-                        className="absolute top-7 right-15 bg-white/70 text-black px-3 py-1 rounded-md shadow-md hover:bg-white"
+                        className="
+                            fixed top-6 right-6
+                            bg-gradient-to-r from-purple-600 to-indigo-600 
+                            text-white font-medium
+                            px-3 py-1
+                            rounded-md shadow-lg
+                            hover:from-purple-700 hover:to-indigo-700
+                            transition-all duration-200
+                            z-[99999]
+                        "
                     >
                         {TRANSLATOR_HELP_TEXT[userLang].close}
                     </button>
@@ -224,7 +254,7 @@ export default function TranslatorPage() {
                         position={positions.input} 
                         text={TRANSLATOR_HELP_TEXT[userLang].input} 
                         maxWidth={260} 
-                        offsetTBottom={-250}
+                        offsetTBottom={-200}
                         center={true} 
                     />
 

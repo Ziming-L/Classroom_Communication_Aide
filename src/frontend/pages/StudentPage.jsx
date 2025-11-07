@@ -1,12 +1,23 @@
 import React, { useState} from "react";
 import { studentButtons } from "../utils/studentButtons";
+import { useNavigate } from "react-router-dom";
 import MessageBar from "../components/MessageBox";
 
 export default function StudentPage() {
 
+    const navigate = useNavigate();
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
     const [buttons, setButtons] = useState(studentButtons);
+
+    const handleGoToTranslator = () => {
+        navigate("/translator", {
+            state: {
+                userLang: "es", 
+                teacherLang: "en", 
+            },
+        });
+    };
 
     const addButton = () => {
         if (buttons == 8) return;
@@ -42,12 +53,13 @@ export default function StudentPage() {
     );
 
     return (
-        <div className="flex flex-col p-8 w-full p-[15px] font-sans relative"> 
-            {/* Header */}
+        <div> 
+            <div className="flex flex-col p-8 w-full p-[15px] font-sans relative"> 
+                {/* Header */}
             <header className="mb-6 flex justify-between items-center"> 
-                {/* Student Greeting */}
+                    {/* Student Greeting */}
                 <h1 className="text-3xl font-bold mb-2">Hola Carlos!</h1>
-                {/* Class and Profile */}
+                    {/* Class and Profile */}
                 <div class="flex items-center gap-2.5">
                     <button class="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
                         {currentClass}
@@ -57,10 +69,10 @@ export default function StudentPage() {
                     </div>
                 </div> 
             </header>
-            <p>
-                {currentActivity}
-            </p>
-            <p>
+                <p>
+                    {currentActivity}
+                </p>
+                <p>
                 I want to tell my teacher that...
             </p>
             {/* Edit Button */}
@@ -75,7 +87,30 @@ export default function StudentPage() {
             </div>
             <br></br>
             <div>
-                {createButtonGrid(buttons)}
+                    {createButtonGrid(buttons)}
+                </div>
+            </div>
+            <div>
+                <button
+                    onClick={handleGoToTranslator}
+                    className="
+                        fixed bottom-6 right-6
+                        flex items-center gap-2
+                        px-4 py-2 
+                        bg-blue-600 
+                        text-white 
+                        rounded-full shadow 
+                        hover:bg-blue-700
+                        transition-all duration-200
+                    "
+                >
+                    <img
+                        src="/images/button_icon/translate_icon.png"
+                        alt="Translate Icon"
+                        className="w-5 h-5"
+                    />
+                    Translator
+                </button>
             </div>
             <MessageBar />
         </div>
