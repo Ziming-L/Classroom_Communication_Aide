@@ -31,7 +31,14 @@ export default function Tooltip({position, text, maxWidth = 200, offsetTBottom =
 
     return (
         <div
-            className="absolute bg-white/80 text-black px-3 py-2 rounded-lg shadow-lg text-sm backdrop-blur-sm text-center"
+            className="
+                absolute 
+                bg-white/80 text-black 
+                px-2 py-1.5 sm:px-3 sm:py-2 
+                rounded-lg sm:rounded-lg 
+                rounded-md sm:shadow-lg 
+                text-sm sm:text-sm 
+                backdrop-blur-sm text-center"
             style={style}
         >
             {text}

@@ -98,13 +98,13 @@ export default function TranslatorBox({ language, color, text, onChange, onClear
     }, [text, isListening, stopListening]);
 
     return (
-        <div className={`flex flex-col flex-1 p-6 rounded-2xl border-2 shadow-md ${colorMap[color]} || bg-gray-100 h-[75vh] max-h-[80vh] w-full md:flex-1`}>
+        <div className={`flex flex-col flex-1 p-6 rounded-2xl border-2 shadow-md ${colorMap[color]} bg-gray-100 h-auto md:h-[75vh] max-h-[80vh] w-full overflow-y-auto`}>
             <h2 className="text-center text-xl font-semibold mb-3">{displayName}</h2>
             <textarea 
                 ref={inputRef}
                 value={text}
                 onChange={(e) => onChange(e.target.value)}
-                className="flex-grow w-full p-4 rounded-md border border-gray-300 bg-transparent focus:outline-none resize-none text-lg leading-relaxed min-h-[300px]"
+                className="flex-grow w-full p-4 rounded-md border border-gray-300 bg-transparent focus:outline-none resize-none text-lg leading-relaxed min-h-[200px] sm:min-h-[300px]"
                 placeholder={placeholder} 
                 />
             <div className="flex justify-between items-center mt-6">
