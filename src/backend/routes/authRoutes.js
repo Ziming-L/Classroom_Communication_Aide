@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
     const { username, password, role, provider, providerId } = req.body;
-    const result = await registerUser(username, password, role, provider, providerId);
+    const result = await registerUser({username, password, role, provider, providerId});
     if (!result.success) return res.status(400).json({ error: result.error });
     res.status(201).json({ message: 'User registered', user: result.user });
 });

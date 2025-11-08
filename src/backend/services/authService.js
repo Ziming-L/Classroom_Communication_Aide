@@ -14,14 +14,15 @@ function generateToken(user) {
 
 /**
  * Register a new user to database
- * @param {string} username 
- * @param {string} password 
- * @param {'teacher' | 'student'} role
- * @param {string} provider 
- * @param {int} providerId 
+ * @param {Object} props
+ * @param {string} props.username 
+ * @param {string} props.password 
+ * @param {'teacher' | 'student'} props.role
+ * @param {string} props.provider 
+ * @param {int} props.providerId 
  * @returns {Promise<{success: boolean, data?: any, error?: string}>}
  */
-export async function registerUser(username, password, role, provider, providerId) {
+export async function registerUser({username, password, role, provider, providerId}) {
     try {
         // no password for student
         if (role === 'student' && !password) {
@@ -74,10 +75,11 @@ export async function registerUser(username, password, role, provider, providerI
 
 /**
  * Check for user login
- * @param {string} username 
- * @param {string} password 
- * @param {string} provider 
- * @param {int} providerId 
+ * @param {Object} props
+ * @param {string} props.username 
+ * @param {string} props.password 
+ * @param {string} props.provider 
+ * @param {int} props.providerId 
  * @returns {Promise<{success: boolean, data?: any, error?: string}>}
  */
 export async function loginUser({ username, password, provider, providerId }) {
