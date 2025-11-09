@@ -2,6 +2,7 @@ import React, { useState} from "react";
 import { studentButtons } from "../utils/studentButtons";
 import { useNavigate } from "react-router-dom";
 import MessageBar from "../components/MessageBox";
+import StarBox from "../components/StarBox"
 
 export default function StudentPage() {
 
@@ -9,6 +10,7 @@ export default function StudentPage() {
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
     const [buttons, setButtons] = useState(studentButtons);
+    const [starCount, setStarCount] = useState(7)
 
     const handleGoToTranslator = () => {
         navigate("/translator", {
@@ -112,6 +114,7 @@ export default function StudentPage() {
                 </button>
             </div>
             <MessageBar />
+            <StarBox starCount={starCount} />
         </div>
     );
 }
