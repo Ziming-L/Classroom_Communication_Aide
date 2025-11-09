@@ -1,7 +1,7 @@
 import React, { useState} from "react";
 import { studentButtons } from "../utils/studentButtons";
 import { useNavigate } from "react-router-dom";
-import MessageBar from "../components/MessageBox";
+import MessageBox from "../components/MessageBox";
 import StarBox from "../components/StarBox"
 
 export default function StudentPage() {
@@ -55,7 +55,7 @@ export default function StudentPage() {
     );
 
     return (
-        <div className="flex flex-col p-8 w-full p-[15px] font-sans relative"> 
+        <div className="flex flex-col p-8 w-full font-sans relative"> 
             {/* Header */}
             <header className="mb-6 flex justify-between items-center"> 
                 {/* Student Greeting */}
@@ -70,7 +70,7 @@ export default function StudentPage() {
                     </div>
                 </div> 
             </header>
-            <p>
+            <p className="text-xl mb-2">
                 {currentActivity}
             </p>
             <p>
@@ -78,7 +78,13 @@ export default function StudentPage() {
             </p>
             {/* Edit Button */}
             <div className="flex justify-end">
-                <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-[8px] px-3 py-1.5 cursor-pointer">
+                <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow px-3 py-1.5 cursor-pointer">
+                    <img 
+                        src="/images/button_icon/edit_icon.png"
+                        alt="Edit Icon"
+                        className="w-5 h-5"
+
+                    />
                     edit
                 </button>
             </div>
@@ -113,7 +119,7 @@ export default function StudentPage() {
                     Translator
                 </button>
             </div>
-            <MessageBar />
+            <MessageBox />
             <StarBox starCount={starCount} />
         </div>
     );
