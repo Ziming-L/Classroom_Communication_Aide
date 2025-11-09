@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-// import studentRoutes from './routes/studentRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
 // import teacherRoutes from './routes/teacherRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import translateRoutes from "./routes/translateRoutes.js";
@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-// app.use('/api/students', studentRoutes);
+app.use('/api/students', studentRoutes);
 // app.use('/api/teachers', teacherRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/translate", translateRoutes);
