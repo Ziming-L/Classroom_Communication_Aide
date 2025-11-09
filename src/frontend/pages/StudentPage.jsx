@@ -60,16 +60,34 @@ export default function StudentPage() {
             <header className="mb-6 flex justify-between items-center"> 
                 {/* Student Greeting */}
                 <h1 className="text-3xl font-bold mb-2">Hola Carlos!</h1>
-                {/* Class and Profile */}
+        
                 <div className="flex items-center gap-2.5">
+
+                    {/* Help Button */}
+                    <button className=" 
+                        bg-black text-white 
+                        text-sm sm:text-base
+                        px-3 py-1 sm:px-4 sm:py-1.5 
+                        rounded-lg 
+                        shadow-md 
+                        hover:bg-gray-800"
+                    >
+                        Help
+                    </button>
+
+                    {/* Current Class */}
                     <button className="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
                         {currentClass}
                     </button>
+
+                    {/* Profile */}
                     <div className="text-[26px] cursor-pointer">
                         <span role="img" aria-label="profile">👤</span>
                     </div>
                 </div> 
             </header>
+
+            {/* Current Activity */}
             <p className="text-xl mb-2">
                 {currentActivity}
             </p>
@@ -97,6 +115,7 @@ export default function StudentPage() {
                 {createButtonGrid(buttons)}
             </div>
        
+            {/* Translator */}
             <div>
                 <button
                     onClick={handleGoToTranslator}
