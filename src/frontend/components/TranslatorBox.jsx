@@ -4,6 +4,7 @@ import VolumeIcon from "../images/translate_screen/sound.png"
 import XIcon from "../images/translate_screen/x.png"
 import StopIcon from "../images/translate_screen/stop.png"
 import useSpeechToText from "../hooks/useSpeechToText.js";
+import { speak, stopSpeaking, isSpeechSupported } from "../utils/speechSynthesis.js";
 import { LANGUAGE_NAMES, TRANSLATOR_LANGUAGE_PLACEHOLDERS, LANGUAGE_SPEECH_CODE } from "../utils/constants.js";
 
 import { useState, useEffect } from "react";
@@ -64,6 +65,7 @@ export default function TranslatorBox({ language, color, text, onChange, onClear
     // stop when change to another language during mic recording
     useEffect(() => {
         stopListening();
+        stopSpeaking();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [language]);
 
@@ -77,16 +79,25 @@ export default function TranslatorBox({ language, color, text, onChange, onClear
     };
 
     const handleSpeakClick = () => {
-        if (isSpeaking) {
-            window.speechSynthesis.cancel();
-            setIsSpeaking(false);
-        } else {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = speechCode;
-            utterance.onend = () => setIsSpeaking(false);
-            setIsSpeaking(true);
-            window.speechSynthesis.speak(utterance);
+        if (!isSpeechSupported()) {
+            console.warn("Speech not supported");
+            return;
         }
+        
+        if (isSpeaking) {
+            stopSpeaking();
+            setIsSpeaking(false);
+            return;
+        }
+
+        if (!text.trim()) {
+            return;
+        }
+
+        speak(text, speechCode, {
+            onSpeak: () => setIsSpeaking(true),
+            onStop: () => setIsSpeaking(false),
+        });
     };
     
     const prevTextRef = useRef(text);
