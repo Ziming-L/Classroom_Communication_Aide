@@ -131,7 +131,7 @@ export async function loginUser({ username, password, provider, providerId }) {
     }
 }
 
-export function authMiddleware(req, res, next) {
+export function verifyToken(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ error: 'Missing verification token' });
 
@@ -148,3 +148,26 @@ export function authMiddleware(req, res, next) {
         return res.status(403).json({ error: 'Invalid token' });
     }
 }
+
+/**
+ * Check if current user have matched role
+ * 
+ * @param {'student' | 'teacher'} role - The required role to continue
+ * 
+ * @returns {Function} Express middleware that validates the user's role.
+ */
+export function authRequireRole(role) {
+    return (req, res, next) => {
+        const user = req.user;
+        if (!user || !user.user_id) {
+            return res.status(401).json({ error: "Unauthorized access" });
+        }
+        if (user.role !== role) {
+            return res.status(403).json({ error: `Only allow ${role} is allow to perform this action.` });
+        }
+        next();
+    };
+}
+
+export const authRequireStudent = authRequireRole("student");
+export const authRequireTeacher = authRequireRole("teacher");

@@ -1,11 +1,12 @@
 import express from "express";
 import { supabase } from "../services/supabaseClient.js";
 import { getDefaultCommands } from "../utils/defaultCommands.js";
-import { authMiddleware } from "../services/authService.js";
+import { verifyToken, authRequireStudent } from "../services/authService.js";
+import { translateText } from "../services/translateService.js";
 
 const router = express.Router();
 
-router.post("/join-class", authMiddleware, async (req, res) => {
+router.post("/join-class", verifyToken, authRequireStudent, async (req, res) => {
     const cleanup = {
         commandIds: [],
         translationIds: [],
@@ -17,15 +18,9 @@ router.post("/join-class", authMiddleware, async (req, res) => {
     let class_id = null;
 
     try {
-        const authUser = req.user;
-        if (!authUser || !authUser.user_id) {
-            return res.status(401).json({ error: "Unauthorized access" });
-        }
-        if (authUser.role !== "student") {
-            return res.status(403).json({ error: "Only allow students to join class" });
-        }
-
+        const { user_id } = req.user;
         const { class_code } = req.body;
+
         if (!class_code || typeof class_code !== "string" || class_code.length > 20) {
             return res.status(400).json({ error: "Invalid class code" });
         }
@@ -33,7 +28,7 @@ router.post("/join-class", authMiddleware, async (req, res) => {
         const { data: student, error: studentErr } = await supabase
             .from("Students")
             .select("student_id, language_code, user_id")
-            .eq("user_id", authUser.user_id)
+            .eq("user_id", user_id)
             .maybeSingle();
         
         if (studentErr) {
@@ -213,7 +208,136 @@ router.post("/join-class", authMiddleware, async (req, res) => {
         });
     }
 
-})
+});
 
+router.post("/add", verifyToken, authRequireStudent, async (req, res) => {
+    const cleanup = {
+        commandId: null, 
+        translationId: null, 
+        studentCommandLinked: false
+    };
+
+    let student_id = null;
+
+    try {
+        const { user_id } = req.user;
+        const { command_text, translated_text, target_language_code, command_color, command_image, priority_number } = req.body;
+
+        // validate input
+        if (!command_text || typeof command_text !== "string") {
+            return res.status(400).json({ error: "Invalid command_text"});
+        }
+        if (!translated_text || typeof translated_text !== "string") {
+            return res.status(400).json({ error: "Invalid translated_text"});
+        }
+        if (!target_language_code || typeof target_language_code !== "string" || target_language_code.length > 3) {
+            return res.status(400).json({ error: "Invalid target_language_code"});
+        }
+        if (!command_color || typeof command_color !== "string") {
+            return res.status(400).json({ error: "Invalid command_color"});
+        }
+        if (!command_image || typeof command_image !== "string") {
+            return res.status(400).json({ error: "Invalid command_image"});
+        }
+        if (!priority_number || typeof priority_number !== "number") {
+            return res.status(400).json({ error: "Invalid priority_number"});
+        }
+
+        const { data: student, error: studentErr } = await supabase
+            .from("Student")
+            .select('student_id')
+            .eq("user_id", user_id)
+            .maybeSingle();
+
+        if (studentErr) {
+            throw studentErr;
+        }
+        if (!student) {
+            return res.status(404).json({ error: "Student profile not found" });
+        }
+
+        student = student.student_id;
+
+        const { data: insertedCmd, error: insertCmdErr } = await supabase
+            .from("Command")
+            .insert([{
+                command_text, 
+                command_color, 
+                command_image,
+                priority_number,
+            }])
+            .select("command_id")
+            .single();
+        
+        if (insertCmdErr) {
+            throw insertCmdErr;
+        }
+        cleanup.commandId = insertedCmd.command_id;
+
+        const { data: insertedTranslation, error: translationErr } = await supabase
+            .from("Command_Translation")
+            .insert([{
+                command_id: insertedCmd.command_id,
+                translateText, 
+                target_language_code, 
+            }])
+            .select("translation_id")
+            .single();
+        
+        if (translationErr) {
+            throw translationErr;
+        }
+        cleanup.translationId = insertedTranslation.translation_id;
+
+        const { error: linkedErr } = await supabase
+            .from("Student_Commands")
+            .insert([{
+                student_id,
+                command_id: insertedCmd.command_id,
+            }]);
+        
+        if (linkedErr) {
+            throw linkedErr;
+        }
+        cleanup.studentCommandLinked = true;
+
+        return res.status(201).json({
+            success: true,
+            message: "Command added and linked to student table",
+        });
+    } catch (err) {
+        console.error("Add command error:", err.message);
+        
+        try {
+            if (cleanup.studentCommandLinked && cleanup.commandId) {
+                await supabase
+                    .from("Student_Commands")
+                    .delete()
+                    .eq("student_id", student_id)
+                    .eq("command_id", cleanup.commandId);
+            }
+            if (cleanup.translationId) {
+                await supabase
+                    .from("Command_Translation")
+                    .delete()
+                    .eq("translation_id", cleanup.translationId);
+            }
+            if (cleanup.commandId) {
+                await supabase
+                    .from("Commands")
+                    .delete()
+                    .eq("command_id", cleanup.commandId);
+            }
+
+        } catch (cleanupErr) {
+            console.error("Add command cleanup failed:", cleanupErr.message);
+        }
+        
+        return res.status(500).json({
+            error: "Failed to add the command",
+            detail: err.message,
+        });
+    }
+});
 
 export default router;
