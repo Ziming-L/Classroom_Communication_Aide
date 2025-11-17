@@ -2,6 +2,7 @@ import express from "express";
 import { supabase } from "../services/supabaseClient.js";
 import { getDefaultCommands } from "../utils/defaultCommands.js";
 import { verifyToken, authRequireStudent } from "../services/authService.js";
+import { updateProfileHelper } from "../utils/updateProfile.js";
 
 const router = express.Router();
 
@@ -228,5 +229,27 @@ router.delete("/delete-command/:command_id", verifyToken, authRequireStudent, as
     }
 });
 
+router.put("/update-profile", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { student_name, student_icon, student_icon_bg_color } = req.body;
+
+        const result = await updateProfileHelper(user_id, {
+            name: student_name, 
+            icon: student_icon,
+            icon_bg_color: student_icon_bg_color
+        });
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+        
+        return res.status(200).json(result);
+    } catch (err) {
+        return res.status(500).json({
+            success: false, 
+            message: "Internal server error: " + err.message
+        });
+    }
+});
 
 export default router;
