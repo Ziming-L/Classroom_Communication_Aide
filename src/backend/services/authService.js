@@ -1,156 +1,157 @@
 import { supabase } from "./supabaseClient.js";
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET;
-
-function generateToken(user) {
-    return jwt.sign(
-        { user_id: user.user_id, role: user.role, username: user.username }, 
-        JWT_SECRET,
-        { expiresIn: '7d'}
-    )
-}
 
 /**
  * Register a new user to database
  * @param {Object} props
- * @param {string} props.username 
- * @param {string} props.password 
- * @param {'teacher' | 'student'} props.role
- * @param {string} props.provider 
- * @param {int} props.providerId 
- * @returns {Promise<{success: boolean, data?: any, error?: string}>}
+ * @param {string} props.email - User email (only for local)
+ * @param {string} props.password - User password (only for local)
+ * @param {string} props.username - Username
+ * @param {'teacher' | 'student'} props.role - User role
+ * @param {string} props.provided_auth_uid - Only needed when provider is google
+ * @param {'google' | 'local'} props.provider - Provider type 
+ * 
+* @returns {Promise<{success: boolean, user?: any, error?: string}>}
  */
-export async function registerUser({username, password, role, provider, providerId}) {
+export async function registerUser({email, password, username, role, provided_auth_uid, provider = "local"}) {
     try {
-        // no password for student
-        if (role === 'student' && !password) {
-            const { data, error} = await supabase
-                .from('Login_Information')
-                .insert([{username, password: null, role, auth_provider: provider || 'local', provider_id: providerId || null}])
-                .select()
-                .single();
-            if (error) throw error;
-            return { success: true, user: data}
-        }
-
-        if (provider && providerId) {
-            const { data: existing, error: findError} = await supabase
-                .from('Login_Information')
-                .select('*')
-                .eq('provider_id', providerId)
-                .eq('auth_provider', provider)
-                .maybeSingle();
-
-            if (findError) throw findError;
-
-            if (existing) {
-                return {success: true, user: existing}
+        let authUser;
+        if (provider === "local") {
+            const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+                email,
+                password,
+                email_confirm: true
+            });
+            if (authError) {
+                throw authError;
             }
 
-            const { data, error } = await supabase
-                .from('Login_Information')
-                .insert([{ username, password: null, role, auth_provider: provider, provider_id: providerId }])
-                .select()
-                .single();
-            if (error) throw error;
-            return { success: true, user: data}
+            authUser = authData.user;
+            if (!authUser) {
+                throw new Error("Failed to create auth user");
+            }
         }
-        // local register for the teacher
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const { data, error } = await supabase
-            .from('Login_Information')
-            .insert([{ username, password: hashedPassword, role, auth_provider: 'local', provider_id: null }])
-            .select()
-            .single();
 
-        if (error) throw error;
-        return { success: true, user: data };
+        const auth_uid = provider === "local" ? authUser.id : provided_auth_uid;
+        const { data: userData, error: userErr } = await supabase.rpc("insert_user", {
+            p_auth_uid: auth_uid,
+            p_role: role,
+            p_username: username
+        });
+        if (userErr) {
+            throw userErr;
+        }
+
+        return userData;
     } catch (err) {
-        console.error('Unexpected error in registerUser:', err);
         return { success: false, error: err.message};
     }
 }
 
 /**
- * Check for user login
+ * Check for user login for local signup approach
  * @param {Object} props
- * @param {string} props.username 
- * @param {string} props.password 
- * @param {string} props.provider 
- * @param {int} props.providerId 
- * @returns {Promise<{success: boolean, data?: any, error?: string}>}
+ * @param {string} props.email - User email
+ * @param {string} props.password - User password
+ * 
+ * @returns {Promise<{success: boolean, access_token?: any, user?: any, error?: string}>}
  */
-export async function loginUser({ username, password, provider, providerId }) {
-  try {
-    // OAuth login
-    if (provider && providerId) {
-        const { data: user, error } = await supabase
-            .from('Login_Information')
-            .select('*')
-            .eq('provider_id', providerId)
-            .eq('auth_provider', provider)
-            .single()
-
-        if (error || !user) throw new Error('OAuth user not found')
-        const token = generateToken(user)
-        return { success: true, token, user }
-    }
-
-    // Student login (no password)
-    const { data: student, error: studentError } = await supabase
-        .from('Login_Information')
-        .select('*')
-        .eq('username', username)
-        .eq('role', 'student')
-        .maybeSingle()
-
-    if (student && !student.password) {
-        const token = generateToken(student)
-        return { success: true, token, user: student }
-    }
-
-    // Teacher login
-    const { data: user, error } = await supabase
-        .from('Login_Information')
-        .select('*')
-        .eq('username', username)
-        .single()
-
-    if (error || !user) throw new Error('User not found')
-
-    const validPassword = await bcrypt.compare(password, user.password || '')
-    if (!validPassword) throw new Error('Invalid credentials')
-
-    const token = generateToken(user)
-    return { success: true, token, user }
-    } catch (err) {
-        console.error('loginUser error:', err)
-        return { success: false, error: err.message }
-    }
-}
-
-export function verifyToken(req, res, next) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: 'Missing verification token' });
-
-    const token = authHeader.split(' ')[1]
-
+export async function loginUser({ email, password }) {
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ error: 'Token expired. Please log in again.' });
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+        if (error) {
+            throw error;
         }
-        return res.status(403).json({ error: 'Invalid token' });
+
+        const access_token = data.session?.access_token;
+        const auth_uid = data.user.id;
+
+        const { data: userData, error: userErr } = await supabase.rpc("get_user_by_auth_id", {
+            p_auth_uid: auth_uid
+        });
+        if (userErr) {
+            throw userErr;
+        }
+
+        return { 
+            success: userData.success, 
+            access_token, 
+            user: userData.user || null,
+            message: userData.message || null
+        }
+    } catch (err) {
+        return {
+            success: false,
+            message: err.message,
+            user: null
+        };
     }
 }
 
 /**
- * Check if current user have matched role
+ * Express middleware that verifies the JWT access token from the Authorization header.
+ * 
+ * - Expects header: `Authorization: Bearer <token>`
+ * - If valid: attaches decoded payload to `req.user` and calls `next()`
+ * - If missing or invalid: returns 401/403 response
+ *
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+ * @param {function} next - Express next middleware function
+ * 
+ * @returns {void} Sends a 401/403 response or calls next()
+ */
+export async function verifyToken(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ 
+            success: false,
+            message: 'Missing verification token' 
+        })
+    };
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ 
+            success: false, 
+            message: "Invalid authorization header" 
+        });
+    }
+
+    try {
+        const { data: { user }, error } = await supabase.auth.getUser(token);
+        if (error || !user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: "Invalid or expired token" 
+            });
+        }
+
+        const { data: userData, error: userErr } = await supabase.rpc("get_user_by_auth_id", {
+            p_auth_uid: user.id
+        });
+        if (userErr) {
+            throw userErr;
+        }
+        if (!userData.success) {
+            return res.status(403).json(userData);
+        }
+
+        req.user = userData.user; 
+
+        next();
+    } catch (err) {
+        return res.status(401).json({ 
+            success: false, 
+            message: err.message 
+        });
+    }
+}
+
+/**
+ * Express middleware that check if current user have matched role
  * 
  * @param {'student' | 'teacher'} role - The required role to continue
  * 
@@ -160,10 +161,16 @@ export function authRequireRole(role) {
     return (req, res, next) => {
         const user = req.user;
         if (!user || !user.user_id) {
-            return res.status(401).json({ error: "Unauthorized access" });
+            return res.status(401).json({ 
+                success: false, 
+                message: "Unauthorized access" 
+            });
         }
         if (user.role !== role) {
-            return res.status(403).json({ error: `Only allow ${role} is allow to perform this action.` });
+            return res.status(403).json({ 
+                success: false, 
+                message: `Only allow ${role} is allowed to perform this action.` 
+            });
         }
         next();
     };

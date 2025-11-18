@@ -1,11 +1,12 @@
 import express from 'express';
 import { loginUser, registerUser } from '../services/authService.js';
+import { supabase } from '../services/supabaseClient.js';
 
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-    const { username, password, role, provider, providerId } = req.body;
-    const result = await registerUser({username, password, role, provider, providerId});
+    const { email, username, password, role, auth_uid, provider } = req.body;
+    const result = await registerUser({email, password, username, role, auth_uid, provider});
     
     if (!result.success) {
         return res.status(400).json({ 
@@ -22,8 +23,8 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const { username, password, provider, providerId } = req.body;
-    const result = await loginUser({ username, password, provider, providerId });
+    const { email, password } = req.body;
+    const result = await loginUser({ email, password });
     
     if (!result.success) {
         return res.status(401).json({ 
@@ -38,6 +39,28 @@ router.post('/login', async (req, res) => {
         token: result.token, 
         user: result.user 
     });
+});
+
+router.get("/schools", async (req, res) => {
+    try {
+        const { data, error } = await supabase.rpc("get_all_school_names");
+        if (error) {
+            return res.status(500).json({
+                success: false, 
+                message: error.message
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            schools: data
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false, 
+            message: "Internal server error: " + err.message
+        });
+    }
 });
 
 export default router
