@@ -1,8 +1,10 @@
 import React, { useState} from "react";
 import { studentButtons } from "../utils/studentButtons";
+import { COMMAND_POP_UP_TEXT } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import MessageBox from "../components/MessageBox";
 import StarBox from "../components/StarBox"
+import CommandPopUp from "../components/CommandPopUp";
 
 export default function StudentPage() {
 
@@ -10,7 +12,10 @@ export default function StudentPage() {
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
     const [buttons, setButtons] = useState(studentButtons);
-    const [starCount, setStarCount] = useState(7)
+    const [starCount, setStarCount] = useState(7);
+    const [selectedCommand, setSelectedCommand] = useState(null);
+    const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
+    const userLang = "en";
 
     const handleGoToTranslator = () => {
         navigate("/translator", {
@@ -19,6 +24,11 @@ export default function StudentPage() {
                 teacherLang: "en", 
             },
         });
+    };
+
+    const handleButtonClick = (btn) => { 
+        setSelectedCommand(btn); 
+        setcommandPopUpVisible(true); 
     };
 
     const addButton = () => {
@@ -41,6 +51,10 @@ export default function StudentPage() {
             <button
                 key={btn.id}
                 className={`${btn.color} text-white font-semibold rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40`}
+                onClick={() => handleButtonClick({ 
+                    text: btn.userLangText, 
+                    img: btn.img,
+                })}
             >
                 <span className="text-sm">{btn.userLangText}</span>
                     <img
@@ -140,6 +154,13 @@ export default function StudentPage() {
             </div>
             <MessageBox />
             <StarBox starCount={starCount} />
+            <CommandPopUp 
+                visible={commandPopUpVisible}
+                onClose={() => setcommandPopUpVisible(false)}
+                command={selectedCommand}
+                mode={"normal"} // will add either "star" or "normal" mode for the component!
+                textTranslations={COMMAND_POP_UP_TEXT[userLang]}
+            />
         </div>
     );
 }

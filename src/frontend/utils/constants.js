@@ -51,3 +51,25 @@ export const TRANSLATOR_HELP_TEXT = {
         dashboard: "👈 Volver al panel de control.",
     },
 };
+
+// Map the language code to help text for translator screen tooltips
+export const COMMAND_POP_UP_TEXT = {
+    en: {
+        tryOnOwn: "⭐ Try on your own", 
+        sendToTeacher: "Send To Teacher", 
+        playOutLoud: "Play Out Loud", 
+        starHeader: "⭐ Try on your own to get a star!", 
+        yesTry: "😎 Ok, I will try", 
+        noTry: "😰 No, thank you", 
+        goBack: "Go back",
+    },
+    es: {
+        tryOnOwn: "⭐ Intentar por mi cuenta", 
+        sendToTeacher: "Enviar a la maestra", 
+        playOutLoud: "Reproducir", 
+        starHeader: "⭐ Intenta por tu cuenta para ganar una estrella!", 
+        yesTry: "😎 Está bien, lo intentaré", 
+        noTry: "😰 No gracias", 
+        goBack: "Regresar",
+    },
+};
