@@ -2,7 +2,7 @@ import express from "express";
 import { supabase } from "../services/supabaseClient.js";
 import { getDefaultCommands } from "../utils/defaultCommands.js";
 import { verifyToken, authRequireStudent } from "../services/authService.js";
-import { updateProfileHelper } from "../utils/updateProfile.js";
+import { createProfile, updateProfile} from "../services/profileService.js";
 
 const router = express.Router();
 
@@ -234,7 +234,7 @@ router.put("/update-profile", verifyToken, authRequireStudent, async (req, res) 
         const { user_id } = req.user;
         const { student_name, student_icon, student_icon_bg_color } = req.body;
 
-        const result = await updateProfileHelper(user_id, {
+        const result = await updateProfile(user_id, {
             name: student_name, 
             icon: student_icon,
             icon_bg_color: student_icon_bg_color
@@ -247,6 +247,37 @@ router.put("/update-profile", verifyToken, authRequireStudent, async (req, res) 
     } catch (err) {
         return res.status(500).json({
             success: false, 
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.post("/create-profile", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { name, language_code, icon, icon_bg_color } = req.body;
+
+        if (!name || !language_code) {
+            return res.status(400).json({
+                success: false,
+                message: "REQUIRED: name and language_code."
+            });
+        }
+
+        const result = await createProfile(user_id, "student", {
+            name,
+            language_code,
+            icon,
+            icon_bg_color
+        });
+        if (!result.success) {
+            return res.status(400).json(result);
+        }
+        
+        return res.status(200).json(result);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
             message: "Internal server error: " + err.message
         });
     }
