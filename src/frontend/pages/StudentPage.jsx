@@ -52,7 +52,8 @@ export default function StudentPage() {
                 key={btn.id}
                 className={`${btn.color} text-white font-semibold rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40`}
                 onClick={() => handleButtonClick({ 
-                    text: btn.userLangText, 
+                    userLangText: btn.userLangText,
+                    targetLangText: btn.targetLangText, 
                     img: btn.img,
                 })}
             >
@@ -158,7 +159,7 @@ export default function StudentPage() {
                 visible={commandPopUpVisible}
                 onClose={() => setcommandPopUpVisible(false)}
                 command={selectedCommand}
-                mode={"normal"} // will add either "star" or "normal" mode for the component!
+                mode={"normal"} // can choose either "normal" or "star" mode
                 textTranslations={COMMAND_POP_UP_TEXT[userLang]}
             />
         </div>
