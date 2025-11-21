@@ -1,75 +1,74 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import MessageQueue from "../components/MessageQueue";
-
+import MessageQueue from "../components/TeacherPage/MessageQueue";
+import Profile from "../components/Profile";
+import styles from "../components/TeacherPage/styles.module.css";
 
 export default function TeacherPage() {
-
+    const navigate = useNavigate();
     const [currentActivity, setCurrentActivity] = useState("");
     const [currentClass, setCurrentClass] = useState("Math");
 
-    const clickPlaceholder = () => {
-        alert("opening new page");
-    };
+    const goToRequestLog = () => navigate("/teacher/requestlogs");
+    const goToAllStudent = () => navigate("/teacher/allstudents");
+    const goToProfile = () => navigate("/teacher/profile");
+
 
     const handleSend = () => {
         alert("sending message");
         setCurrentActivity("")
     };
 
-    const handleGoToAllStudent = () => {
-        navigate("/AllStudent", {
-        });
-    };
-
     return (
-        <div className="flex flex-col p-8 w-full font-sans relative">
-            {/* Header */}
-            <header className="mb-6 flex justify-between items-center">
-                {/* Teacher View */}
-                <h1 className="text-3xl font-bold mb-2">Teacher View</h1>
+        <div style={local.page}>
+            {/* Page Header */}
+            <header className={styles.header}>
+                {/* Teacher */}
+                <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>Classroom Communication Aide</h1>
 
-                <div className="flex items-center gap-2.5">
-
+                <div className={styles.headerButtons}>
+                    <label style={local.subjectButton}>
+                        Subject:
+                        <select name="subject" default="default"
+                            style={{ borderRadius: "5px", fontWeight: "bold", backgroundColor: "#EEEEEE" }}>
+                            <option value="Math">Math</option>
+                            <option value="Literature">Literature</option>
+                            <option value="Science">Science</option>
+                        </select>
+                    </label>
                     {/* Request Logs Button */}
-                    <button onClick={() => clickPlaceholder()}
-                        style={styles.button}
-                    >
+                    <button onClick={() => goToRequestLog()} className={styles.button}>
                         Request Logs
                     </button>
 
                     {/* All Student Info Button */}
-                    <button onClick={() => clickPlaceholder()}
-                        style={styles.button}
-                    >
+                    <button onClick={() => goToAllStudent()} className={styles.button}>
                         All Student
                     </button>
 
                     {/* Profile */}
-                    <button onClick={() => clickPlaceholder()}
-                        style={styles.button}
-                    >
-                        Profile
+                    <button onClick={() => goToProfile()} >
+                        <Profile />
                     </button>
                 </div>
             </header>
 
             {/* Change Current Activity */}
             <p>
-                <div style={styles.ActivityContainer}>
-                    <h2 style={{ fontSize: '18px', color: 'black' }}> <b>Set Activity: </b></h2>
+                <div style={local.ActivityContainer}>
+                    <h2 style={{ fontSize: '20px', color: 'black', whiteSpace: 'nowrap' }}> <b>Set Activity: </b></h2>
                     <textarea
                         placeholder={currentActivity}
                         value={currentActivity}
                         onChange={(e) => setCurrentActivity(e.target.value)}
-                        style={styles.input}
+                        style={local.inputBox}
                     />
-                    <button onClick={handleSend} style={styles.button}>Send</button>
+                    <button onClick={handleSend} className={styles.button}>Send</button>
                 </div>
             </p>
             {/* Message Queue */}
             <div>
-                <h1 style={{ marginTop: "20px", fontSize: '18px', color: 'blue' }}><b>Message Queue</b></h1>
+                <h1 style={{ marginTop: "20px", fontSize: '18px' }}></h1>
                 {MessageQueue()}
             </div>
             <br></br>
@@ -77,8 +76,21 @@ export default function TeacherPage() {
     );
 }
 
-const styles = {
-    ActivityContainer: { borderRadius: '50px', display: "flex", flexDirection: "row", marginTop: "50px", alignItems: "center", marginTop: "2rem" },
-    input: { width: "1000px", height: "50px", padding: "10px", fontSize: "16px", background: "#D3D3D3" },
-    button: { borderRadius: '10px', marginTop: "10px", padding: "8px 16px", fontSize: "16px", background: "#ADD8E6" },
+const local = {
+    page: {
+        display: "flex", flexDirection: "column", padding: "2rem",
+        width: "full", position: "relative"
+    },
+    ActivityContainer: {
+        display: "flex", flexDirection: "row",
+        marginTop: "20px", alignItems: "center", gap: "20px"
+    },
+    inputBox: {
+        borderRadius: '10px', width: "1000px", height: "50px",
+        padding: "10px", fontSize: "18px", background: "#D3D3D3"
+    },
+    subjectButton: {
+        borderRadius: '10px', marginTop: "10px", padding: "8px 16px",
+        fontSize: "18px", background: "#FFC067", gap: "10px"
+    },
 };

@@ -1,0 +1,55 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    width: 100%;
+    position: relative;
+}
+
+.ActivityContainer {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    align-items: center;
+    gap: 20px;
+}
+
+.inputBox {
+    border-radius: 10px;
+    width: 1000px;
+    height: 50px;
+    padding: 10px;
+    font-size: 18px;
+    background: #D3D3D3;
+}
+
+.button {
+    border-radius: 20px;
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 18px;
+    background: #ADD8E6;
+}
+
+.subjectButton {
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 18px;
+    background: #FFC067;
+    gap: 10px;
+    /* only works with flex/grid! */
+}
+
+.header {
+    display: flex;
+    margin-bottom: 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerButtons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

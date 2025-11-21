@@ -1,6 +1,4 @@
 # Classroom_Communication_Aide
-This is a project for Technology for Social Good class
-
 1. You need to be in the folder that have all our project code. 
 
 2. You need to download the dependencies by cd to backend and frontend, and type `npm install`
