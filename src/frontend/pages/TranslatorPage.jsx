@@ -26,7 +26,6 @@ export default function TranslatorPage() {
     const [rightLang, setRightLang] = useState(teacherLang);
     const [leftText, setLeftText] = useState("");
     const [rightText, setRightText] = useState("");
-    const [activeInput, setActiveInput] = useState("left");
     const [showHelp, setShowHelp] = useState(false);
 
     const backBtnRef = useRef(null);
@@ -86,9 +85,9 @@ export default function TranslatorPage() {
 
     }, [showHelp]);
 
-    const handleTranslate = async (text) => {
+    const handleTranslate = async (text, source) => {
         if (!text.trim()) {
-            if (activeInput === "left") {
+            if (source === "left") {
                 setRightText("");
             } else {
                 setLeftText("");
@@ -96,12 +95,12 @@ export default function TranslatorPage() {
             return;
         }
 
-        const from = activeInput === "left" ? leftLang : rightLang;
-        const to = activeInput === "left" ? rightLang : leftLang;
+        const from = source === "left" ? leftLang : rightLang;
+        const to = source === "left" ? rightLang : leftLang;
 
         try {
             const result = await translateText(text, from, to);
-            if (activeInput === "left") {
+            if (source === "left") {
                 setRightText(result);
             } else {
                 setLeftText(result);
@@ -180,11 +179,9 @@ export default function TranslatorPage() {
                     color="yellow"
                     text={leftText}
                     onChange={(val) => {
-                        setActiveInput("left");
                         setLeftText(val);
-                        handleTranslate(val);
+                        handleTranslate(val, "left");
                     }}
-                    onActivate={() => setActiveInput("left")}
                     onClear={handleClearBoth}
                 />
 
@@ -201,11 +198,9 @@ export default function TranslatorPage() {
                     color="blue"
                     text={rightText}
                     onChange={(val) => {
-                        setActiveInput("right");
                         setRightText(val);
-                        handleTranslate(val);
+                        handleTranslate(val, "right");
                     }}
-                    onActivate={() => setActiveInput("right")}
                     onClear={handleClearBoth}
                 />
             </div>

@@ -24,7 +24,6 @@ import { useRef } from "react";
  * @param {string} props.text - Current text in the translator box
  * @param {function} props.onChange - Callback when text changes
  * @param {function} props.onClear - Callback to clear the text
- * @param {function} props.onActivate - Callback when the input is activated (focused)
  * @param {React.Ref} props.inputRef - Ref for the textarea element
  * @param {React.Ref} props.micRef - Ref for the microphone button
  * @param {React.Ref} props.xRef - Ref for the clear button
@@ -32,7 +31,7 @@ import { useRef } from "react";
  *
  * @returns {JSX.Element} A translator box with text area and controls
  */
-export default function TranslatorBox({ language, color, text, onChange, onClear, onActivate, inputRef, micRef, xRef, speakRef}) {
+export default function TranslatorBox({ language, color, text, onChange, onClear, inputRef, micRef, xRef, speakRef}) {
     const colorMap = {
         yellow: "bg-yellow-100 border-yellow-300", 
         blue: "bg-blue-100 border-blue-300",
@@ -52,12 +51,10 @@ export default function TranslatorBox({ language, color, text, onChange, onClear
         (speechText) => {
             const current = textRef.current || "";
             const newText = (current.trim() ? current + " " : current) + speechText;
-            onActivate?.();
             onChange(newText);
         },
         speechCode,
         () => {
-            onActivate?.();
             onChange(textRef.current || "");
         }
     );
@@ -70,7 +67,6 @@ export default function TranslatorBox({ language, color, text, onChange, onClear
     }, [language]);
 
     const handleMicClick = () => {
-        onActivate?.();
         if (isListening) {
             stopListening();
         } else {
