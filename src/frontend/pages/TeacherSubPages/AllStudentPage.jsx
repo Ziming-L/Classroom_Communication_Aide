@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Profile from "../../components/Profile"
-
+import StudentEntryList from "../../components/TeacherPage/StudentEntryList";
+import StudentEntry from "../../components/TeacherPage/StudentEntry";
 
 export default function AllStudentPage() {
     const navigate = useNavigate();
@@ -27,6 +28,13 @@ export default function AllStudentPage() {
                     </button>
                 </div>
             </header>
+            <div className="mx-20">
+                <div className="items-center p-5 flex flex-row justify-center bg-white">
+                    <h2 className="m-3 p-3 text-5xl font-light text-center">Student List For: </h2>
+                    <h2 className="w-min m-3 p-3 text-5xl font-light text-center bg-gray-200 rounded-xl">v4KL0e</h2>
+                </div>
+                <StudentEntryList />
+            </div>
         </div>
     )
 }

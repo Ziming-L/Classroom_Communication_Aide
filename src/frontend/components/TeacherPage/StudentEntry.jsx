@@ -1,0 +1,125 @@
+import React, { useState } from 'react';
+
+export default function StudentEntry({ student }) {
+
+    // State variables to manage dynamic display
+    const [studentInfoDisplay, setStudentInfoDisplay] = useState(false);
+    const [studentTryOnOwnDisplay, setStudentTryOnOwnDisplay] = useState(false);
+
+    // Used to trigger student details
+    const displayStudent = (e) => {
+        e.stopPropagation();
+        setStudentInfoDisplay(!studentInfoDisplay);
+    }
+
+    // Used to trigger the Try On Own response buttons
+    const displayStudentTryOnOwn = (e) => {
+        e.stopPropagation();
+        setStudentTryOnOwnDisplay(!studentTryOnOwnDisplay);
+    }
+    
+    // Set background color based on usage
+    const getUsageColor = (usage) => {
+        switch (usage.trim().toLowerCase()) {
+            case "high":
+                return "bg-red-400";
+            case "medium":
+                return "bg-orange-300";
+            case "low":
+                return "bg-green-300";
+            default:
+                return "bg-gray-500";
+        }
+    }
+
+    // Return the full language name given language code
+    const getLanguageName = (code) => {
+        try {
+            const displayNames = new Intl.DisplayNames(['en'], { type: 'language' });
+            return displayNames.of(code);
+        } catch (error) {
+            return code;
+        }
+    }
+
+    return (
+        <>
+            <div className='text-lg border-2 border-gray-700 w-full p-2 m-2 rounded-lg
+                transition-all duration-200 hover:border-blue-300 hover:translate-y-[-2px] cursor-pointer shadow-lg'
+                onClick={displayStudent}>
+                <div className='flex items-center m-2 gap-4'>
+                    <div className='flex flex-row gap-2 items-center flex-1'>
+                        <img src={student.icon} alt={`${student.name}'s icon`} className='max-h-20 max-w-20 p-3 bg-gray-200 rounded-full'/>
+                        <h2 className='ml-2 font-bold text-2xl'>{student.name}</h2>
+                    </div>
+                    <div className='flex items-center justify-center flex-1'>
+                        <p className='text-center'>Username: {student.username}</p>
+                    </div>
+                    
+                    <div className='flex flex-row gap-5 items-center justify-end flex-1'>
+                        <div className={`${getUsageColor(student.usage)} p-3 rounded-xl w-32 text-center flex items-center justify-center`}>
+                            {student.usage}
+
+                        </div>
+                        <button
+                            className='bg-blue-200 p-3 rounded-xl shadow-lg hover:bg-blue-300 transition-all duration-200 cursor-pointer w-32 text-center'
+                            onClick={displayStudentTryOnOwn}
+                        >
+                            Try On Own
+                        </button>
+                        <div
+                            className={`overflow-hidden transition-all duration-200 ease-in-out ${
+                                studentTryOnOwnDisplay ? 'max-h-96 max-w-50 opacity-100' : 'max-h-0 max-w-0 opacity-0'
+                            }`}>
+                            <div className='mx-2 flex flex-row gap-5'>
+                                <button
+                                    className='py-2 px-4 bg-green-200 rounded-xl shadow-lg hover:bg-green-300 transition-all duration-200 cursor-pointer text-center'
+                                    onClick={(e) => {e.stopPropagation();}}
+                                    >
+                                    ✓
+                                </button>
+                                <button
+                                    className='py-2 px-4 bg-red-200 rounded-xl shadow-lg hover:bg-red-300 transition-all duration-200 cursor-pointer text-center'
+                                    onClick={(e) => {e.stopPropagation();}}
+                                    >
+                                    ✗
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div 
+                    className={`overflow-hidden transition-all duration-200 ease-in-out ${
+                        studentInfoDisplay ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}>
+                    <div className='py-10 px-4 flex flex-row gap-5 items-start justify-between border-t border-t-gray-400 border-t-1.5 text-gray-700'>
+                        <div className='flex flex-col items-center flex-1'>
+                            <h2 className='font-bold text-2xl mb-4 text-center'>Student Requests</h2>
+                            <div className='border border-gray-700 rounded-lg overflow-hidden shadow-lg'>
+                                <table className='w-full'>
+                                    {student.command_history.map((entry, index) => (
+                                        <tr key={index} className='border-b border-gray-700 last:border-b-0'>
+                                            <td className='p-2 text-center'>{entry.command}</td>
+                                            <td className='p-2 text-3xl text-center'>{entry.count}</td>
+                                        </tr>
+                                    ))}
+                                </table>
+                            </div>
+                        </div>
+                        <div className='flex flex-col items-center flex-1'>
+                            <h2 className='font-bold text-xl mb-4 text-center'>Number of Times They Tried By Themselves</h2>
+                            <p className='text-center text-5xl flex flex-row items-center justify-center gap-2'>
+                                {student.stars} 
+                                <img src="/images/commands_icon/star.png" alt="Students Stars" className='max-h-20'/> 
+                            </p> 
+                        </div>
+                        <div className='flex flex-col items-center flex-1'>
+                            <h2 className='font-bold text-xl mb-4 text-center'>Language</h2>
+                            <p className='text-center text-4xl'>{getLanguageName(student.lang)}</p>
+                        </div>            
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
