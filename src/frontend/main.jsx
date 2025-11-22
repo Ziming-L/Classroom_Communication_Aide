@@ -17,11 +17,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 {/* If you want to test other pages, modify the routes for pages. */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/student" element={<StudentPage />} />
+                <Route path="student/translator" element={<TranslatorPage />} />
                 <Route path="/teacher" element={<TeacherPage />} />
                 <Route path="/teacher/allstudents" element={<AllStudentPage />} />
                 <Route path="/teacher/requestlogs" element={<RequestLogPage />} />
                 <Route path="/teacher/profile" element={<TeacherProfile />} />
-                <Route path="/translator" element={<TranslatorPage />} />
             </Routes>
         </BrowserRouter>
     </React.StrictMode>

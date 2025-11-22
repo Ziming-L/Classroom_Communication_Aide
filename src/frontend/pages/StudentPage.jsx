@@ -18,7 +18,7 @@ export default function StudentPage() {
     const userLang = "en";
 
     const handleGoToTranslator = () => {
-        navigate("/translator", {
+        navigate("/student/translator", {
             state: {
                 userLang: "es", 
                 teacherLang: "en", 
