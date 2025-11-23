@@ -26,6 +26,14 @@ export default function StudentPage() {
         });
     };
 
+    const handleGoToProfile = () => {
+        navigate("/student/profile");
+    };
+
+    const handleGoToEdit = () => {
+        navigate("/student/edit");
+    };
+
     const handleButtonClick = (btn) => { 
         setSelectedCommand(btn); 
         setcommandPopUpVisible(true); 
@@ -91,13 +99,20 @@ export default function StudentPage() {
                     </button>
 
                     {/* Current Class */}
-                    <button className="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
-                        {currentClass}
-                    </button>
+                    <label >
+                        <select name="subject" default="default"
+                            className="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
+                            <option value="Math">Math</option>
+                            <option value="Literature">Literature</option>
+                            <option value="Science">Science</option>
+                        </select>
+                    </label>
 
                     {/* Profile */}
                     <div className="text-[26px] cursor-pointer">
-                        <span role="img" aria-label="profile">👤</span>
+                        <button onClick={handleGoToProfile}>
+                            <span role="img" aria-label="profile">👤</span>
+                        </button>
                     </div>
                 </div> 
             </header>
@@ -111,12 +126,12 @@ export default function StudentPage() {
             </p>
             {/* Edit Button */}
             <div className="flex justify-end">
-                <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow px-3 py-1.5 cursor-pointer">
+                <button onClick={handleGoToEdit}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow px-3 py-1.5 cursor-pointer">
                     <img 
                         src="/images/button_icon/edit_icon.png"
                         alt="Edit Icon"
                         className="w-5 h-5"
-
                     />
                     edit
                 </button>

@@ -9,6 +9,8 @@ import TeacherPage from "./pages/TeacherPage.jsx";
 import AllStudentPage from "./pages/TeacherSubPages/AllStudentPage.jsx";
 import RequestLogPage from "./pages/TeacherSubPages/RequestLogPage.jsx";
 import TeacherProfile from "./pages/TeacherSubPages/TeacherProfile.jsx";
+import StudentProfile from "./pages/StudentSubPages/StudentProfile.jsx";
+import CommandEditPage from "./pages/StudentSubPages/CommandEditPage.jsx"
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
@@ -18,6 +20,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/student" element={<StudentPage />} />
                 <Route path="student/translator" element={<TranslatorPage />} />
+                <Route path="student/profile" element={<StudentProfile />} />
+                <Route path="student/edit" element={<CommandEditPage />} />
                 <Route path="/teacher" element={<TeacherPage />} />
                 <Route path="/teacher/allstudents" element={<AllStudentPage />} />
                 <Route path="/teacher/requestlogs" element={<RequestLogPage />} />
