@@ -1,53 +1,6 @@
 import { supabase } from "./supabaseClient.js";
 
 /**
- * Register a new user to database
- * @param {Object} props
- * @param {string} props.email - User email (only for local)
- * @param {string} props.password - User password (only for local)
- * @param {string} props.username - Username
- * @param {'teacher' | 'student'} props.role - User role
- * @param {string} props.provided_auth_uid - Only needed when provider is google
- * @param {'google' | 'local'} props.provider - Provider type 
- * 
-* @returns {Promise<{success: boolean, user?: any, error?: string}>}
- */
-export async function registerUser({email, password, username, role, provided_auth_uid, provider = "local"}) {
-    try {
-        let authUser;
-        if (provider === "local") {
-            const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-                email,
-                password,
-                email_confirm: true
-            });
-            if (authError) {
-                throw authError;
-            }
-
-            authUser = authData.user;
-            if (!authUser) {
-                throw new Error("Failed to create auth user");
-            }
-        }
-
-        const auth_uid = provider === "local" ? authUser.id : provided_auth_uid;
-        const { data: userData, error: userErr } = await supabase.rpc("insert_user", {
-            p_auth_uid: auth_uid,
-            p_role: role,
-            p_username: username
-        });
-        if (userErr) {
-            throw userErr;
-        }
-
-        return userData;
-    } catch (err) {
-        return { success: false, error: err.message};
-    }
-}
-
-/**
  * Check for user login for local signup approach
  * @param {Object} props
  * @param {string} props.email - User email
@@ -77,9 +30,9 @@ export async function loginUser({ email, password }) {
 
         return { 
             success: userData.success, 
-            access_token, 
-            user: userData.user || null,
-            message: userData.message || null
+            token: access_token, 
+            user: userData.user,
+            message: userData.message
         }
     } catch (err) {
         return {

@@ -51,7 +51,77 @@ router.post("/create-profile", verifyToken, authRequireTeacher, async (req, res)
             return res.status(400).json(result);
         }
         
-        return res.status(200).json(result);
+        return res.status(201).json(result);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.get("/current-requests/:class_id", verifyToken, authRequireTeacher, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { class_id } = req.params;
+
+        if (!class_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing class_id in parameter call"
+            });
+        }
+
+        const { data, error } = await supabase.rpc("get_pending_requests_for_teacher", {
+            p_user_id: user_id,
+            p_class_id: Number(class_id)
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.get("/all-students-info/:class_id", verifyToken, authRequireTeacher, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { class_id } = req.params;
+
+        if (!class_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing class_id in parameter call"
+            });
+        }
+
+        const { data, error } = await supabase.rpc("get_class_students_and_requests", {
+            p_user_id: user_id,
+            p_class_id: Number(class_id)
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
     } catch (err) {
         return res.status(500).json({
             success: false,

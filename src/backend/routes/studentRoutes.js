@@ -274,7 +274,118 @@ router.post("/create-profile", verifyToken, authRequireStudent, async (req, res)
             return res.status(400).json(result);
         }
         
-        return res.status(200).json(result);
+        return res.status(201).json(result);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.post("/create-request", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { command_id, class_id } = req.body;
+
+        if (!command_id || !class_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing command_id or class_id"
+            });
+        } 
+
+        const { data, error } = await supabase.rpc("create_request", {
+            p_user_id: user_id,
+            p_command_id: Number(command_id),
+            p_class_id: Number(class_id)
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(201).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.get("/student-info", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+
+        const { data, error } = await supabase.rpc("get_student_home_info", {
+            p_user_id: user_id,
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.post("/add-command-translation", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { command_id, translated_text, target_language_code } = req.body;
+
+        if (!command_id || typeof command_id !== "number") {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Invalid command_id"
+            });
+        }
+        if (!translated_text || typeof translated_text !== "string") {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Invalid translated_text"
+            });
+        }
+        if (!target_language_code || typeof target_language_code !== "string" || target_language_code.length > 3) {
+            return res.status(400).json({ 
+                success: false,
+                message: "Invalid target_language_code"
+            });
+        }
+
+        const { data, error } = await supabase.rpc("add_command_translation", {
+            p_user_id: user_id,
+            p_command_id: command_id,
+            p_translated_text: translated_text,
+            p_target_language_code: target_language_code
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
     } catch (err) {
         return res.status(500).json({
             success: false,
