@@ -12,6 +12,7 @@ export default function StudentPage() {
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
     const [buttons, setButtons] = useState(studentButtons);
+    const [editableButtonsState, setEditableButtons] = useState(editableButtons);
     const [starCount, setStarCount] = useState(7);
     const [selectedCommand, setSelectedCommand] = useState(null);
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
@@ -33,7 +34,7 @@ export default function StudentPage() {
     };
 
     const handleGoToEdit = () => {
-        navigate("/student/edit");
+        navigate("/student/edit", { state: { editableButtonsState } });
     };
 
     const handleButtonClick = (btn) => { 
@@ -148,7 +149,7 @@ export default function StudentPage() {
             </div>
             <br></br>
             <div>
-                {createButtonGrid(editableButtons)}
+                {createButtonGrid(editableButtonsState)}
             </div>
        
             {/* Translator */}
