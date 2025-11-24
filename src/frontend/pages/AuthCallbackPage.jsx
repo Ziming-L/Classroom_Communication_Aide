@@ -214,8 +214,8 @@ export default function AuthCallbackPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <p className="text-2xl mb-4">Authenticating...</p>
+    <div className=" bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200 flex flex-col items-center justify-center h-screen">
+      <p className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text text-transparent mb-6 leading-tight px-4">Authenticating...</p>
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
           <p className="font-bold">Error</p>
