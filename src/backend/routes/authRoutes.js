@@ -73,8 +73,8 @@ router.post('/create-user', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    const result = await loginUser({ email, password });
+    const { email, password, role } = req.body;
+    const result = await loginUser({ email, password, role });
 
     if (!result.success) {
         console.log("Login failed with message:", result.message);
