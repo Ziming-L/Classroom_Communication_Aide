@@ -4,9 +4,17 @@ import { supabase } from '../services/supabaseClient.js';
 
 const router = express.Router();
 
-// call this one first to create an account
+// call this one to create an account for local, it will delete account when there is username issue
 router.post("/register-local", async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, username, role } = req.body;
+
+    if (!email || !password || !username || !role) {
+        return res.status(400).json({
+            success: false,
+            message: "REQUIRED: email, password, username, and role"
+        });
+    }
+
     try {
         const { data, error } = await supabase.auth.admin.createUser({
             email,
@@ -20,9 +28,27 @@ router.post("/register-local", async (req, res) => {
             });
         }
 
+        const auth_uid = data.user.id;
+
+        const { data: profileData, error: profileErr } = await supabase.rpc("insert_user", {
+            p_auth_uid: auth_uid,
+            p_role: role,
+            p_username: username
+        });
+        if (profileErr || !profileData.success) {
+            // delete auth user account for rollback, since error occurs for username
+            await supabase.auth.admin.deleteUser(auth_uid);
+
+            return res.status(400).json({
+                success: false,
+                message: profileErr?.message || "Failed to create profile. Auth user deleted."
+            });
+        }
+
         return res.status(201).json({ 
             success: true,
-            auth_uid: data.user.id 
+            message: 'User registered and created', 
+            user: profileData.user 
         });
     } catch (err) {
         return res.status(500).json({ 
