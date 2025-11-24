@@ -19,6 +19,7 @@ export default function StudentEntry({ student }) {
     }
 
     // Student Stars are incremented, star changes are not stored persistently.
+    // TODO: Use /try-yourself/:student_id API
     const tryOnOwnSuccess = (e) => {
         e.stopPropagation();
         setStudentTryOnOwnDisplay(false);
@@ -26,6 +27,7 @@ export default function StudentEntry({ student }) {
     }
 
     // This handler will preform actions if a student does not complete a request on their own.
+    // TODO: Use /try-yourself/:student_id API
     const tryOnOwnCancel = (e) => {
         e.stopPropagation();
         setStudentTryOnOwnDisplay(false);
