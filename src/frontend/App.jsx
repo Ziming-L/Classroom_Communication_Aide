@@ -47,6 +47,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LandingPage onLogin={handleLogin} />} />
       <Route path="/login" element={<LoginPage onLogin={handleLogin} onBack={() => navigate('/')} />} />
+      <Route path="/callback" element={<AuthCallbackPage />} />
+      <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route path="/student" element={user && user.role === 'student' ? <StudentPage user={user} onLogout={handleLogout} /> : <LoginPage userType="student" onLogin={handleLogin} onBack={() => navigate('/')} />} />
       <Route path="/student/translator" element={<TranslatorPage />} />
       <Route path="/student/profile" element={<StudentProfile />} />
@@ -55,7 +57,6 @@ export default function App() {
       <Route path="/teacher/allstudents" element={<AllStudentPage />} />
       <Route path="/teacher/requestlogs" element={<RequestLogPage />} />
       <Route path="/teacher/profile" element={<TeacherProfile />} />
-      <Route path="/auth/callback" element={<AuthCallbackPage />} />
     </Routes>
   );
 }
