@@ -13,14 +13,13 @@ export default function TeacherPage() {
     const goToAllStudent = () => navigate("/teacher/allstudents");
     const goToProfile = () => navigate("/teacher/profile");
 
-
-    const handleSend = () => {
-        alert("sending message");
+    const setActivity = () => {
+        /* TODO: send activity to students */
         setCurrentActivity("")
     };
 
     return (
-        <div style={local.page}>
+        <div className={styles.page}>
             {/* Page Header */}
             <header className={styles.header}>
                 {/* Teacher */}
@@ -47,7 +46,7 @@ export default function TeacherPage() {
                     </button>
 
                     {/* Profile */}
-                    <button onClick={() => goToProfile()} >
+                    <button className={styles.profileButton} onClick={() => goToProfile()} >
                         <Profile />
                     </button>
                 </div>
@@ -56,20 +55,20 @@ export default function TeacherPage() {
             {/* Change Current Activity */}
             <p>
                 <div style={local.ActivityContainer}>
-                    <h2 style={{ fontSize: '20px', color: 'black', whiteSpace: 'nowrap' }}> <b>Set Activity: </b></h2>
+                    <h2 style={local.ActivityText}><b>Set Activity: </b></h2>
                     <textarea
                         placeholder={currentActivity}
                         value={currentActivity}
                         onChange={(e) => setCurrentActivity(e.target.value)}
                         style={local.inputBox}
                     />
-                    <button onClick={handleSend} className={styles.button}>Send</button>
+                    <button onClick={setActivity} className={styles.button}>Send</button>
                 </div>
             </p>
             {/* Message Queue */}
             <div>
-                <h1 style={{ marginTop: "20px", fontSize: '18px' }}></h1>
-                {MessageQueue()}
+                <h1 style={{ marginTop: "20px", fontSize: '18px' }}>Incoming Student Messages:</h1>
+                <MessageQueue />
             </div>
             <br></br>
         </div>
@@ -77,14 +76,11 @@ export default function TeacherPage() {
 }
 
 const local = {
-    page: {
-        display: "flex", flexDirection: "column", padding: "2rem",
-        width: "full", position: "relative"
-    },
     ActivityContainer: {
         display: "flex", flexDirection: "row",
         marginTop: "20px", alignItems: "center", gap: "20px"
     },
+    ActivityText: { fontSize: '20px', color: 'black', whiteSpace: 'nowrap' },
     inputBox: {
         borderRadius: '10px', width: "1000px", height: "50px",
         padding: "10px", fontSize: "18px", background: "#D3D3D3"

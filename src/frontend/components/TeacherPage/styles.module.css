@@ -31,6 +31,10 @@
     background: #ADD8E6;
 }
 
+.button:hover {
+    background-color: #89eaef;
+}
+
 .subjectButton {
     border-radius: 10px;
     margin-top: 10px;
@@ -38,7 +42,12 @@
     font-size: 18px;
     background: #FFC067;
     gap: 10px;
-    /* only works with flex/grid! */
+}
+
+.profileButton {
+    border-radius: 50%;
+    margin-top: 10px;
+    background: #D3D3D3;
 }
 
 .header {

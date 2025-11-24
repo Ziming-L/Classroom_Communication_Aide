@@ -3,27 +3,23 @@ import { useNavigate } from "react-router-dom";
 import Profile from "../../components/Profile"
 import StudentEntryList from "../../components/TeacherPage/StudentEntryList";
 import StudentEntry from "../../components/TeacherPage/StudentEntry";
+import styles from "../../components/TeacherPage/styles.module.css"
 
 export default function AllStudentPage() {
     const navigate = useNavigate();
 
     const returnToTeacher = () => navigate("/teacher");
     const goToProfile = () => navigate("/teacher/profile");
-    const goToRequestLog = () => navigate("/teacher/requestlogs");
 
     return (
-        <div style={styles.page}>
-            <header style={styles.headerContainer}>
-                <button onClick={() => returnToTeacher()} style={styles.button}>
+        <div className={styles.page}>
+            <header className={styles.header}>
+                <button onClick={() => returnToTeacher()} className={styles.button}>
                     Back to Main
                 </button>
-                <h1> All Student View </h1>
-                <div>
-                    <button onClick={() => goToRequestLog()} style={styles.button}>
-                        Request Logs
-                    </button>
-
-                    <button onClick={() => goToProfile()}>
+                <h1 className="text-2xl"> All Student View </h1>
+                <div className={styles.headerButtons}>
+                    <button onClick={() => goToProfile()} className={styles.profileButton}>
                         <Profile />
                     </button>
                 </div>
@@ -39,7 +35,7 @@ export default function AllStudentPage() {
     )
 }
 
-const styles = {
+const local = {
     page: { display: "flex", flexDirection: "column", padding: "2rem", width: "full", position: "relative" },
     ActivityContainer: { display: "flex", flexDirection: "row", marginTop: "20px", alignItems: "center", gap: "20px" },
     inputBox: { borderRadius: '10px', width: "1000px", height: "40px", padding: "10px", fontSize: "16px", background: "#D3D3D3" },
