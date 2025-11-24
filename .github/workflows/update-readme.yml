@@ -1,0 +1,39 @@
+name: Update README with Folder Structure
+
+on:
+  push:
+    branches:
+      - main
+    # prevent infinite loop by ignoring README-only commits
+    paths-ignore:
+      - README.md
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run folder structure script
+        run: |
+          python scripts/update_readme.py
+
+      - name: Check for changes
+        run: |
+          if ! git diff --quiet; then
+            echo "Changes detected, committing..."
+            git config --global user.name 'github-actions'
+            git config --global user.email 'github-actions@github.com'
+            git add README.md
+            git commit -m "Update folder structure in README"
+            git push
+          else
+            echo "No changes to commit"
+          fi
