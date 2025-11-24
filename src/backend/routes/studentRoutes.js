@@ -11,7 +11,7 @@ router.post("/join-class", verifyToken, authRequireStudent, async (req, res) => 
         const { user_id } = req.user;
         const { class_code } = req.body;
 
-        if (!class_code || typeof class_code !== "string" || class_code.length > 20) {
+        if (!class_code || typeof class_code !== "string" || class_code.length > 10) {
             return res.status(400).json({ 
                 success: false, 
                 message: "Invalid class code" 
