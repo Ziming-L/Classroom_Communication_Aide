@@ -1,5 +1,5 @@
 import React, { useState} from "react";
-import { studentButtons } from "../utils/studentButtons";
+import { studentButtons, editableButtons } from "../utils/studentButtons";
 import { COMMAND_POP_UP_TEXT } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import MessageBox from "../components/MessageBox";
@@ -15,7 +15,9 @@ export default function StudentPage() {
     const [starCount, setStarCount] = useState(7);
     const [selectedCommand, setSelectedCommand] = useState(null);
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
+    const [tryMode, setTryMode] = useState("normal");
     const userLang = "en";
+    
 
     const handleGoToTranslator = () => {
         navigate("/student/translator", {
@@ -39,6 +41,10 @@ export default function StudentPage() {
         setcommandPopUpVisible(true); 
     };
 
+    const toggleTryMode = () => {
+        setTryMode(tryMode === "normal" ? "star" : "normal");
+    }
+
     const addButton = () => {
         if (buttons.length == 8) return;
         const newButtonId = buttons.length + 1;
@@ -58,7 +64,7 @@ export default function StudentPage() {
             {buttons.map((btn) => (
             <button
                 key={btn.id}
-                className={`${btn.color} text-white font-semibold rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40`}
+                className={`${btn.color} cursor-pointer text-black rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40 border`}
                 onClick={() => handleButtonClick({ 
                     userLangText: btn.userLangText,
                     targetLangText: btn.targetLangText, 
@@ -142,7 +148,7 @@ export default function StudentPage() {
             </div>
             <br></br>
             <div>
-                {createButtonGrid(buttons)}
+                {createButtonGrid(editableButtons)}
             </div>
        
             {/* Translator */}
@@ -167,6 +173,9 @@ export default function StudentPage() {
                     />
                     Translator
                 </button>
+                <button onClick={toggleTryMode} className={`border hover:bg-blue-400 mt-3 ${tryMode === "normal" ? "bg-blue-200" : "bg-yellow-200"}`}>
+                    Toggle star vs normal mode (testing)
+                </button>
             </div>
             <MessageBox />
             <StarBox starCount={starCount} />
@@ -174,7 +183,7 @@ export default function StudentPage() {
                 visible={commandPopUpVisible}
                 onClose={() => setcommandPopUpVisible(false)}
                 command={selectedCommand}
-                mode={"normal"} // can choose either "normal" or "star" mode
+                mode={tryMode} // can choose either "normal" or "star" mode
                 textTranslations={COMMAND_POP_UP_TEXT[userLang]}
             />
         </div>

@@ -20,9 +20,9 @@ export default function CommandPopUp({
                     {textTranslations.goBack} 
                 </button>
 
-                {mode === "star" && ( <h2 className="text-xl font-semibold">{textTranslations.starHeader}</h2> )}
+                {mode === "star" && ( <h2 className="text-xl font-semibold mt-3">{textTranslations.starHeader}</h2> )}
                 <div className="flex flex-row justify-between items-start gap-6 mt-4">
-                    <div className="text-black rounded border-2 border-blue-500 flex flex-col items-center justify-center w-40 h-40">
+                    <div className="text-black rounded border-2 border-blue-500 flex flex-col items-center justify-center text-center w-40 h-40">
                         <span className="text-sm">{command.userLangText}</span>
                             <img
                                 src={command.img}
@@ -34,15 +34,15 @@ export default function CommandPopUp({
 
                     <div className="flex flex-col items-end space-y-4">
                         {mode === "normal" ? ( <> 
-                            <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg w-full">{textTranslations.tryOnOwn}</button> 
-                            <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg w-full">{textTranslations.sendToTeacher}</button> 
-                            <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg w-full">{textTranslations.playOutLoud}</button> 
+                            <button className="bg-[#ffe57f] hover:bg-yellow-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.tryOnOwn}</button> 
+                            <button className="bg-[#afa4f3] hover:bg-purple-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.sendToTeacher}</button> 
+                            <button className="bg-[#c7c6c6] hover:bg-gray-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.playOutLoud}</button> 
                             </> ) 
                             : 
                             ( <> 
-                            <button className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg w-full">{textTranslations.yesTry}</button> 
-                            <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg w-full">{textTranslations.noTry}</button> 
-                            <button className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg w-full">{textTranslations.playOutLoud}</button> 
+                            <button className="bg-[#c3f3d8] hover:bg-green-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.yesTry}</button> 
+                            <button className="bg-[#ff9493] hover:bg-red-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.noTry}</button> 
+                            <button className="bg-[#c7c6c6] hover:bg-gray-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.playOutLoud}</button> 
                             </> )
                         }
                     </div>

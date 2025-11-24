@@ -1,7 +1,7 @@
 const COMMANDS_TEXT_MAP = {
     es : {
         wantWater: "Quiero beber agua",
-        needBathroom: "quiero ir al baño",
+        needBathroom: "Quiero ir al baño",
         sick: "Me siento enfermo",
         needHelp: "Necesito ayuda",
     }, 
