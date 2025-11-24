@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser } from '../services/authService.js';
+import { loginUser, handleOAuthUser } from '../services/authService.js';
 import { supabase } from '../services/supabaseClient.js';
 
 const router = express.Router();
@@ -7,7 +7,6 @@ const router = express.Router();
 // call this one first to create an account
 router.post("/register-local", async (req, res) => {
     const { email, password } = req.body;
-    console.log("Registering user with email:", email, password);
     try {
         const { data, error } = await supabase.auth.admin.createUser({
             email,
@@ -91,6 +90,54 @@ router.post('/login', async (req, res) => {
         token: result.token,
         user: result.user
     });
+});
+
+// Handle OAuth callback
+router.post('/oauth', async (req, res) => {
+    const { email, providerId } = req.body;
+
+    if (!email || !providerId) {
+        return res.status(400).json({
+            success: false,
+            message: 'Email and providerId are required'
+        });
+    }
+
+    try {
+        const result = await handleOAuthUser({
+            email,
+            auth_uid: providerId
+        });
+
+        if (!result.success) {
+            return res.status(500).json({
+                success: false,
+                message: result.message
+            });
+        }
+
+        // User does not exist, need to complete registration
+        if (result.needsRegistration) {
+            return res.status(200).json({
+                success: true,
+                needsRegistration: true,
+                auth_uid: result.auth_uid,
+                email: result.email
+            });
+        }
+
+        // User exists, return their info
+        return res.status(200).json({
+            success: true,
+            token: result.token,
+            user: result.user
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error: ' + err.message
+        });
+    }
 });
 
 router.get("/schools", async (req, res) => {

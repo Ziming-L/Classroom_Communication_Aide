@@ -131,3 +131,55 @@ export function authRequireRole(role) {
 
 export const authRequireStudent = authRequireRole("student");
 export const authRequireTeacher = authRequireRole("teacher");
+
+/**
+ * Handle OAuth login, check if user exists, if not they need to complete registration
+ * @param {string} email - User email from OAuth provider
+ * @param {string} auth_uid - Supabase auth user ID
+ *
+ * @returns {Promise<{success: boolean, token?: string, user?: any, needsRegistration?: boolean}>}
+ */
+export async function handleOAuthUser({ email, auth_uid }) {
+    try {
+        // Check if user exists in our database
+        const { data: userData, error: userErr } = await supabase.rpc("get_user_by_auth_id", {
+            p_auth_uid: auth_uid
+        });
+
+        if (userErr) {
+            throw userErr;
+        }
+
+        // User exists
+        if (userData.success) {
+            // Generate a session token for this user
+            const { data: sessionData, error: sessionError } = await supabase.auth.admin.generateLink({
+                type: 'magiclink',
+                email: email
+            });
+
+            if (sessionError) {
+                throw sessionError;
+            }
+
+            return {
+                success: true,
+                token: sessionData.properties.hashed_token || auth_uid,
+                user: userData.user
+            };
+        }
+
+        // User does not exist, need to complete registration
+        return {
+            success: true,
+            needsRegistration: true,
+            auth_uid: auth_uid,
+            email: email
+        };
+    } catch (err) {
+        return {
+            success: false,
+            message: err.message
+        };
+    }
+}
