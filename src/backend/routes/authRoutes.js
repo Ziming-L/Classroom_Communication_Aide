@@ -41,7 +41,7 @@ router.post("/register-local", async (req, res) => {
 
             return res.status(400).json({
                 success: false,
-                message: profileErr?.message || "Failed to create profile. Auth user deleted."
+                message: profileData?.message || "Username is not unique"
             });
         }
 

@@ -33,7 +33,7 @@ export async function loginUser({ email, password, role }) {
         if (!userData.user || userData.user.role !== role) {
             return {
                 success: false,
-                message: "Role does not match. Please select the correct role.",
+                message: `Role does not match. Please login as ${userData.user.role}`,
                 user: null,
                 token: null
             };
