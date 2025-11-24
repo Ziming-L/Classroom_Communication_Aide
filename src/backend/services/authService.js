@@ -5,10 +5,11 @@ import { supabase } from "./supabaseClient.js";
  * @param {Object} props
  * @param {string} props.email - User email
  * @param {string} props.password - User password
+ * @param {string} props.role - User role
  * 
  * @returns {Promise<{success: boolean, access_token?: any, user?: any, error?: string}>}
  */
-export async function loginUser({ email, password }) {
+export async function loginUser({ email, password, role }) {
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
@@ -26,6 +27,16 @@ export async function loginUser({ email, password }) {
         });
         if (userErr) {
             throw userErr;
+        }
+        
+        // check role
+        if (!userData.user || userData.user.role !== role) {
+            return {
+                success: false,
+                message: "Role does not match. Please select the correct role.",
+                user: null,
+                token: null
+            };
         }
 
         return { 
