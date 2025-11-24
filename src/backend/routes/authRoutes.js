@@ -7,7 +7,7 @@ const router = express.Router();
 // call this one first to create an account
 router.post("/register-local", async (req, res) => {
     const { email, password } = req.body;
-
+    console.log("Registering user with email:", email, password);
     try {
         const { data, error } = await supabase.auth.admin.createUser({
             email,
@@ -76,19 +76,20 @@ router.post('/create-user', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const result = await loginUser({ email, password });
-    
+
     if (!result.success) {
-        return res.status(401).json({ 
-            success: false, 
-            message: result.error 
+        console.log("Login failed with message:", result.message);
+        return res.status(401).json({
+            success: false,
+            message: result.message
         });
     }
 
-    return res.status(200).json({ 
+    return res.status(200).json({
         success: true,
-        message: 'Login successful', 
-        token: result.token, 
-        user: result.user 
+        message: 'Login successful',
+        token: result.token,
+        user: result.user
     });
 });
 
