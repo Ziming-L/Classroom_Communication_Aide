@@ -1,96 +1,75 @@
 import React, { useState } from "react";
+import AddClassModal from "./AddClassModal";
 
 export default function ClassQueue() {
-    const [classes, setClasses] = useState([]);
-    const [input, setInput] = useState("");
+    const [classes, setClasses] = useState([
+        { id: 1, name: "Math 101", startTime: "9:00 AM", endTime: "10:50 AM" },
+        { id: 2, name: "Science 201", startTime: "11:00 AM", endTime: "11:50 AM" },
+    ]);
 
-    const addMessage = () => {
-        if (!input.trim()) return;
+    const [showModal, setShowModal] = useState(false);
 
-        const newClass = {
-            id: Date.now(),        // unique per message
-            text: input.trim()
-        };
-
-        setClasses((prev) => [...prev, newClass]); // enqueue
-        setInput("");
+    const handleAddClass = (newClass) => {
+        setClasses([...classes, newClass]);
+        setShowModal(false);
     };
 
-    const deleteMessage = (id) => {
-        setClasses((prev) => prev.filter((className) => className.id !== id));
+    const handleDeleteClass = (id) => {
+        //TODO: are you sure pop up window?
+        setClasses(classes.filter((c) => c.id !== id));
     };
 
     return (
-        <div style={styles.container}>
-            <h2>Class Queue</h2>
-            {/* Queue List */}
-            <ul style={styles.list}>
-                {classes.map((className) => (
-                    <li key={className.id} style={styles.listItem}>
-                        <span>{className.text}</span>
-                        <button style={styles.deleteBtn} onClick={() => deleteMessage(className.id)}>
+        <div style={{ padding: 20 }}>
+            <h2><strong>Current Classes:</strong></h2>
+
+            <ul style={local.classBox}>
+                {classes.map((c, i) => (
+                    <li style={local.classEntry} key={i}>
+                        <h2><strong>{c.name}</strong> | {c.startTime} - {c.endTime}</h2>
+                        <button
+                            onClick={() => handleDeleteClass(c.id)}
+                            style={local.deleteButton}
+                        >
                             Delete
                         </button>
                     </li>
                 ))}
             </ul>
-            {/* Input + Add Button */}
-            <div style={styles.inputRow}>
-                <input
-                    style={styles.input}
-                    value={input}
-                    placeholder="Enter a class"
-                    onChange={(e) => setInput(e.target.value)}
+
+            <button style={local.addClassbutton} onClick={() => setShowModal(true)}>
+                Add Class
+            </button>
+
+            {showModal && (
+                <AddClassModal
+                    onClose={() => setShowModal(false)}
+                    onSubmit={handleAddClass}
                 />
-                <button style={styles.addBtn} onClick={addMessage}>Add</button>
-            </div>
+            )}
         </div>
     );
 }
-
-const styles = {
-    container: {
-        padding: "2rem",
-        fontFamily: "sans-serif",
-        maxWidth: "500px"
+const local = {
+    classBox: {
+        backgroundColor: "white", width: "500px", borderRadius: "10px",
     },
-    inputRow: {
-        display: "flex",
-        gap: "10px",
-        marginBottom: "20px"
+    classEntry: {
+        borderRadius: "5px", backgroundColor: "#D3D3D3", padding: "10px",
+        marginTop: "10px", border: "2px solid #333333", borderRadius: "8px",
+        display: "flex", justifyContent: "space-between"
     },
-    input: {
-        flex: 1,
-        padding: "10px",
-        borderRadius: "8px",
-        border: "1px solid gray"
+    addClassbutton: {
+        borderRadius: "20px", marginTop: "10px", padding: "8px 16px",
+        fontSize: "18px", background: "#88e788"
     },
-    addBtn: {
-        padding: "10px 20px",
-        borderRadius: "8px",
-        background: "#4CAF50",
+    deleteButton: {
+        background: "#ff4d4f",
         color: "white",
         border: "none",
-        cursor: "pointer"
-    },
-    list: {
-        listStyle: "none",
-        padding: 0
-    },
-    listItem: {
-        display: "flex",
-        justifyContent: "space-between",
-        background: "#f3f3f3",
-        padding: "12px",
-        borderRadius: "8px",
-        marginBottom: "10px"
-    },
-    deleteBtn: {
-        background: "#E53935",
-        color: "white",
-        border: "none",
-        padding: "6px 10px",
-        borderRadius: "6px",
-        cursor: "pointer"
+        padding: "4px 8px",
+        borderRadius: 4,
+        cursor: "pointer",
+        fontSize: "0.8rem",
     }
-};
+}
