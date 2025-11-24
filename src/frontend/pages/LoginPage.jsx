@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { loginUser, registerUser } from '../utils/auth';
 import { Routes, Route } from 'react-router-dom';
+import { supabase } from '../utils/supabase';
 
 /**
  * LoginPage Component
@@ -59,6 +60,23 @@ export default function LoginPage({ userType, onBack, onLogin }) {
         } catch (err) {
             setError(err.message);
         } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/callback`,
+                }
+            });
+            if (error) throw error;
+        } catch (err) {
+            setError(err.message);
             setLoading(false);
         }
     };
@@ -158,6 +176,15 @@ export default function LoginPage({ userType, onBack, onLogin }) {
                         <span className="text-2xl text-gray-500 font-semibold">OR</span>
                         <div className="flex-1 h-1 bg-gray-300 rounded"></div>
                     </div>
+
+                    <button
+                        type="button"
+                        className="w-full flex items-center justify-center gap-4 bg-white border-2 border-red-500 text-gray-700 text-xl sm:text-2xl font-semibold py-4 px-6 rounded-2xl shadow-lg hover:bg-red-50"
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                    >
+                        <span>Continue with Google</span>
+                    </button>
 
                     <button
                         type="button"

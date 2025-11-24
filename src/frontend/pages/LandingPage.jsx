@@ -15,7 +15,6 @@ export default function LandingPage({ onLogin }) {
 
     // Render login page if a user type is selected
     if (selectedType) {
-        console.log(selectedType)
         return <LoginPage userType={selectedType} onLogin={onLogin} onBack={() => setSelectedType(null)} />;
     }
 
