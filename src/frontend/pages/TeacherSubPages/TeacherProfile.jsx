@@ -24,11 +24,13 @@ export default function TeacherProfile() {
                     <Profile />
                 </button>
             </header>
-            <ClassQueue />
+            <div style={local.queue}>
+                <ClassQueue />
+            </div>
         </div>
     )
 }
 
 const local = {
-
+    queue: { display: "flex", justifyContent: "center" }
 };

@@ -21,12 +21,12 @@ export default function ClassQueue() {
 
     return (
         <div style={{ padding: 20 }}>
-            <h2><strong>Current Classes:</strong></h2>
+            <h2><strong style={{ fontSize: "32px" }}>Current Classes:</strong></h2>
 
             <ul style={local.classBox}>
                 {classes.map((c, i) => (
                     <li style={local.classEntry} key={i}>
-                        <h2><strong>{c.name}</strong> | {c.startTime} - {c.endTime}</h2>
+                        <div ><strong style={{ margin: "5px" }}>{c.name}</strong>  |  <text style={{ margin: "5px" }} >{c.startTime} - {c.endTime} </text></div>
                         <button
                             onClick={() => handleDeleteClass(c.id)}
                             style={local.deleteButton}
@@ -52,16 +52,16 @@ export default function ClassQueue() {
 }
 const local = {
     classBox: {
-        backgroundColor: "white", width: "500px", borderRadius: "10px",
+        backgroundColor: "white", width: "600px", borderRadius: "10px",
     },
     classEntry: {
         borderRadius: "5px", backgroundColor: "#D3D3D3", padding: "10px",
         marginTop: "10px", border: "2px solid #333333", borderRadius: "8px",
-        display: "flex", justifyContent: "space-between"
+        display: "flex", justifyContent: "space-between", fontSize: "24px"
     },
     addClassbutton: {
         borderRadius: "20px", marginTop: "10px", padding: "8px 16px",
-        fontSize: "18px", background: "#88e788"
+        fontSize: "24px", background: "#88e788"
     },
     deleteButton: {
         background: "#ff4d4f",
@@ -70,6 +70,6 @@ const local = {
         padding: "4px 8px",
         borderRadius: 4,
         cursor: "pointer",
-        fontSize: "0.8rem",
+        fontSize: "18px",
     }
 }

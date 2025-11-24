@@ -17,7 +17,7 @@ export default function AddClassModal({ onClose, onSubmit }) {
                 <h3>Adding New Class...</h3>
 
                 <label>
-                    <strong>Class Name: </strong>
+                    <strong style={{ fontSize: "24px" }}>Class Name: </strong>
                     <input style={local.textBox}
                         type="text"
                         value={name}
@@ -26,7 +26,7 @@ export default function AddClassModal({ onClose, onSubmit }) {
                 </label>
 
                 <label style={{ gap: "20px" }}>
-                    <strong>Start Time: </strong>
+                    <strong style={{ fontSize: "24px" }}>Start Time: </strong>
                     <input style={local.textBox}
                         type="text"
                         value={startTime}
@@ -35,7 +35,7 @@ export default function AddClassModal({ onClose, onSubmit }) {
                 </label>
 
                 <label style={{ gap: "20px" }}>
-                    <strong>End Time: </strong>
+                    <strong style={{ fontSize: "24px" }}>End Time: </strong>
                     <input style={local.textBox}
                         type="text"
                         value={endTime}
@@ -62,8 +62,8 @@ const local = {
         fontSize: "18px", background: "#88e788", width: "100px"
     },
     textBox: {
-        borderRadius: "5px", width: "100%", height: "40px",
-        padding: "10px", fontSize: "18px", background: "#D3D3D3"
+        borderRadius: "5px", width: "100%", height: "50px",
+        padding: "10px", fontSize: "24px", background: "#D3D3D3"
     },
     overlay: {
         position: "fixed",
