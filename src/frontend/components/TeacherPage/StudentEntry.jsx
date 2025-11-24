@@ -17,6 +17,19 @@ export default function StudentEntry({ student }) {
         e.stopPropagation();
         setStudentTryOnOwnDisplay(!studentTryOnOwnDisplay);
     }
+
+    // Student Stars are incremented, star changes are not stored persistently.
+    const tryOnOwnSuccess = (e) => {
+        e.stopPropagation();
+        setStudentTryOnOwnDisplay(false);
+        student.stars += 1;
+    }
+
+    // This handler will preform actions if a student does not complete a request on their own.
+    const tryOnOwnCancel = (e) => {
+        e.stopPropagation();
+        setStudentTryOnOwnDisplay(false);
+    }
     
     // Set background color based on usage
     const getUsageColor = (usage) => {
@@ -74,13 +87,15 @@ export default function StudentEntry({ student }) {
                             <div className='mx-2 flex flex-row gap-5'>
                                 <button
                                     className='py-2 px-4 bg-green-200 rounded-xl shadow-lg hover:bg-green-300 transition-all duration-200 cursor-pointer text-center'
-                                    onClick={(e) => {e.stopPropagation();}}
+                                    onClick={(e) => {tryOnOwnSuccess(e);}}
+                                    title='Success!'
                                     >
                                     ✓
                                 </button>
                                 <button
                                     className='py-2 px-4 bg-red-200 rounded-xl shadow-lg hover:bg-red-300 transition-all duration-200 cursor-pointer text-center'
-                                    onClick={(e) => {e.stopPropagation();}}
+                                    onClick={(e) => {tryOnOwnCancel(e);}}
+                                    title='Cancel'
                                     >
                                     ✗
                                 </button>
