@@ -8,14 +8,15 @@ import LoginPage from './LoginPage.jsx';
  *
  * @returns JSX.Element - the landing page
  */
-export default function LandingPage() {
+export default function LandingPage({ onLogin }) {
 
     // State to track selected user type
     const [selectedType, setSelectedType] = useState(null);
 
     // Render login page if a user type is selected
     if (selectedType) {
-        return <LoginPage userType={selectedType} onBack={() => setSelectedType(null)} />;
+        console.log(selectedType)
+        return <LoginPage userType={selectedType} onLogin={onLogin} onBack={() => setSelectedType(null)} />;
     }
 
     return (
@@ -31,7 +32,8 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 md:gap-12 lg:gap-20 w-full max-w-4xl px-4">
                 <button
-                    className="cursor-pointer flex-1 text-3xl sm:text-4xl md:text-5xl font-semibold bg-white border-2 border-blue-500 text-blue-500 py-8 sm:py-10 md:py-12 px-6 sm:px-8 rounded-3xl shadow-lg"
+                    className="cursor-pointer flex-1 text-3xl sm:text-4xl md:text-5xl font-semibold bg-white border-2 border-blue-500 text-blue-500 py-8 sm:py-10 md:py-12 px-6 sm:px-8 rounded-3xl shadow-lg
+                    transition-all duration-200 hover:translate-y-[-2.5px]"
                     onClick={() => setSelectedType('student')}
                 >
                     <span className="flex flex-col items-center gap-3">
@@ -40,7 +42,8 @@ export default function LandingPage() {
                 </button>
 
                 <button
-                    className="cursor-pointer flex-1 text-3xl sm:text-4xl md:text-5xl font-semibold bg-white border-2 border-pink-500 text-pink-500 py-8 sm:py-10 md:py-12 px-6 sm:px-8 rounded-3xl shadow-lg"
+                    className="cursor-pointer flex-1 text-3xl sm:text-4xl md:text-5xl font-semibold bg-white border-2 border-pink-500 text-pink-500 py-8 sm:py-10 md:py-12 px-6 sm:px-8 rounded-3xl shadow-lg
+                    transition-all duration-200 hover:translate-y-[-2.5px]"
                     onClick={() => setSelectedType('teacher')}
                 >
                     <span className="flex flex-col items-center gap-3">
