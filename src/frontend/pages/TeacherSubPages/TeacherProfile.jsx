@@ -17,7 +17,7 @@ export default function TeacherProfile() {
                 <button onClick={() => returnToTeacher()} className={styles.button}>
                     Back to Main
                 </button>
-                <h1 style={{ fontSize: "18px" }}>
+                <h1 style={{ fontSize: "20px" }}>
                     Profile Page
                 </h1>
                 <button className={styles.profileButton} onClick={() => goToProfile()}>
@@ -30,8 +30,5 @@ export default function TeacherProfile() {
 }
 
 const local = {
-    ActivityContainer: { display: "flex", flexDirection: "row", marginTop: "20px", alignItems: "center", gap: "20px" },
-    inputBox: { borderRadius: '10px', width: "1000px", height: "40px", padding: "10px", fontSize: "16px", background: "#D3D3D3" },
-    headerContainer: { display: "flex", marginbottom: "1.5rem", justifyContent: 'space-between', alignitems: "center" },
-    headerButtons: { display: "flex", alignItems: "Center", gap: "10px" }
+
 };
