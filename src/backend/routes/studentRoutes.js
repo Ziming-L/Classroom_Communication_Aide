@@ -194,7 +194,7 @@ router.put("/update-command/:command_id", verifyToken, authRequireStudent, async
     }
 });
 
-router.delete("/delete-command/:command_id", verifyToken, authRequireStudent, async (req, res) => {
+router.delete("/command/:command_id", verifyToken, authRequireStudent, async (req, res) => {
     try {
         const { user_id } = req.user;
         const { command_id } = req.params;
@@ -393,5 +393,197 @@ router.post("/add-command-translation", verifyToken, authRequireStudent, async (
         });
     }
 });
+
+router.post("/check-class-status", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { class_code } = req.body;
+
+        if (!class_code) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Missing class_code"
+            });
+        }
+
+        const { data, error } = await supabase.rpc("check_student_class_status", {
+            p_user_id: user_id,
+            p_class_code: class_code
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+                status: 'inactive'
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message,
+            status: 'inactive'
+        });
+    }
+});
+
+// call this by teacher or student to set student's `try_yourself` to `value` (true | false)
+router.post("/set-try-yourself", verifyToken, async (req, res) => {
+    try {
+        const { user_id, role } = req.user;
+        const { student_id, value, class_code } = req.body;
+
+        if (!student_id || value === undefined || !class_code) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "REQUIRED: class_code, value, and class_code"
+            });
+        }
+
+        const { data: classData, error: classErr } = await supabase
+            .from("Class_Information")
+            .select("class_id")
+            .eq("class_code", class_code)
+            .single();
+        
+        if (classErr || !classData) {
+            return res.status(403).json({
+                success: false,
+                message: "Student profile not found"
+            });
+        }
+
+        const { class_id } = classData;
+
+        // create arguments for rpc
+        const args = {
+            p_student_id: student_id,
+            p_value: value,
+            p_class_id: class_id
+        }
+        if (role === "student") {
+            args.p_caller_student_user_id = user_id;
+        } else if (role === "teacher") {
+            args.p_caller_teacher_user_id = user_id;
+        }
+
+        const { data, error } = await supabase.rpc("set_student_try_yourself", args);
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message,
+        });
+    }
+});
+
+router.get("/try-yourself/:student_id", verifyToken, async (req, res) => {
+    try {
+        const { student_id } = req.params;
+
+        if (!student_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing student_id in parameter call"
+            });
+        }
+
+        const { data, error } = await supabase.rpc("get_try_yourself_status", {
+            p_student_id: student_id,
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.get("/star-number", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+
+        const { data, error } = await supabase.rpc("get_student_star_number", {
+            p_user_id: user_id,
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
+router.get("/message/:message_id", verifyToken, authRequireStudent, async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { message_id } = req.params;
+
+        if (!message_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing message_id in parameter call"
+            });
+        }
+
+        const { data, error } = await supabase.rpc("get_message_student", {
+            p_user_id: user_id,
+            p_message_id: message_id
+        });
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        if (!data.success) {
+            return res.status(400).json(data);
+        }
+
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error: " + err.message
+        });
+    }
+});
+
 
 export default router;
