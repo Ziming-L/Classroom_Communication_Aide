@@ -1,11 +1,13 @@
-import images from '../images/user_profile_icon/default.png'
+import images from '../images/user_profile_icon/default_user.png'
 
 export default function Profile() {
     return (
         <img
             src={images}
             alt="Profile Picture"
-            style={{ width: "50px", height: "50px" }}
+            style={{
+                width: "50px", height: "50px", padding: "10px"
+            }}
         />
     );
 }
