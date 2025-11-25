@@ -16,19 +16,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
+
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v4
         with:
-          python-version: '3.x'
+          fetch-depth: 0
+
+      - name: Detect added/deleted/renamed files
+        id: detect_changes
+        run: |
+          # Get commits for comparison
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          set +e
+          CHANGED=$(git diff --name-status --diff-filter=ADR "$BEFORE" "$AFTER" 2>/dev/null || true)
+          set -e
+
+          if [ -n "$CHANGED" ]; then
+            echo "Found files changes (A/D/R):"
+            echo "$CHANGED"
+            echo "run=true" >> $GITHUB_OUTPUT
+          else
+            echo "No added/deleted/renamed files"
+            echo "   [Skipping README update]"
+            echo "run=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run folder structure script
+        if: ${{ steps.detect_changes.outputs.run == 'true' }}
         run: |
           python scripts/update_readme.py
 
-      - name: Check for changes
+      - name: Commit & push README
+        if: ${{ steps.detect_changes.outputs.run == 'true' }}
         run: |
           if ! git diff --quiet; then
             echo "Changes detected, committing..."
@@ -40,3 +63,8 @@ jobs:
           else
             echo "No changes to commit"
           fi
+
+      - name: Skip message
+        if: ${{ steps.detect_changes.outputs.run != 'true' }}
+        run: |
+          echo "[Skip]: no add/delete/rename in this push."
