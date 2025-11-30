@@ -167,11 +167,11 @@ router.post("/create-class", verifyToken, authRequireTeacher, async (req, res) =
     }
 });
 
-router.get("/all-classes", verifyToken, authRequireTeacher, async (req, res) => {
+router.get("/teacher-profile-with-all-classes", verifyToken, authRequireTeacher, async (req, res) => {
     try {
         const { user_id } = req.user;
 
-        const { data, error } = await supabase.rpc("get_teacher_classes", {
+        const { data, error } = await supabase.rpc("get_teacher_profile_with_classes", {
             p_user_id: user_id,
         });
         if (error) {
