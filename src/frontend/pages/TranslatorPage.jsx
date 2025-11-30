@@ -4,7 +4,8 @@ import SwapButton from "../components/SwapButton";
 import { translateText } from "../utils/translateText.js";
 import Tooltip from "../components/Tooltip.jsx";
 import { TOP_BUTTONS_MAP, TRANSLATOR_HELP_TEXT } from "../utils/constants.js";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import GoBackButton from "../components/GoBackButton.jsx";
 
 /**
  * TranslatorPage Component
@@ -19,7 +20,7 @@ import { useLocation, useNavigate } from "react-router-dom";
  */
 export default function TranslatorPage() {
     const location = useLocation();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const { userLang = "es", teacherLang = "en" } = location.state || {};
     const [leftLang, setLeftLang] = useState(userLang);
@@ -127,24 +128,10 @@ export default function TranslatorPage() {
 
             {/* top bar */}
             <div className="flex justify-between items-center w-full px-8">
-                <button 
+                <GoBackButton 
+                    label={TOP_BUTTONS_MAP[userLang]?.goBack}
                     ref={backBtnRef}
-                    onClick={() => {
-                        if (window.history.state && window.history.state.idx > 0) {
-                            navigate(-1);
-                        } else {
-                            navigate("/student");
-                        }
-                    }}
-                    className="
-                        bg-purple-600 text-white 
-                        text-sm sm:text-base
-                        px-3 py-1.5 sm:px-5 sm:py-2 
-                        rounded-full 
-                        shadow-md 
-                        hover:bg-purple-700">
-                    {TOP_BUTTONS_MAP[userLang]?.goBack}
-                </button>
+                />
                 <button 
                     ref={helpBtnRef}
                     onClick={() => setShowHelp(true)}
