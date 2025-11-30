@@ -33,3 +33,5 @@ export async function registerUser(userInfo) {
 
     return userResponse;
 }
+
+export default request;
