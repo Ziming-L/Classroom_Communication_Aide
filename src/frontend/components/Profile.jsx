@@ -1,11 +1,11 @@
 import defaultImage from '../images/user_profile_icon/default_user.png';
 
-export default function Profile({image = defaultImage, color = '#add8e6'}) {
+export default function Profile({image = defaultImage, color = '#add8e6', size = 50}) {
     return (
         <div
             style={{
-                width: "50px",
-                height: "50px",
+                width: `${size}px`,
+                height: `${size}px`,
                 backgroundColor: color,
                 borderRadius: "50%",
                 display: "flex",
