@@ -11,6 +11,7 @@ import RequestLogPage from './pages/TeacherSubPages/RequestLogPage';
 import TeacherProfile from './pages/TeacherSubPages/TeacherProfile';
 import StudentProfile from './pages/StudentSubPages/StudentProfile';
 import CommandEditPage from './pages/StudentSubPages/CommandEditPage';
+import CustomMessagePage from './pages/TeacherSubPages/CustomMessagePage';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -57,6 +58,7 @@ export default function App() {
       <Route path="/teacher/allstudents" element={<AllStudentPage />} />
       <Route path="/teacher/requestlogs" element={<RequestLogPage />} />
       <Route path="/teacher/profile" element={<TeacherProfile />} />
+      <Route path="/teacher/custom-message" element={<CustomMessagePage />} />
     </Routes>
   );
 }
