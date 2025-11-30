@@ -37,6 +37,7 @@ Our website about our project is on: [Classroom Communication Aide](https://clas
         ├── components
         │   ├── CommandPopUp.jsx
         │   ├── EditableButton.jsx
+        │   ├── GoBackButton.jsx
         │   ├── MessageBox.jsx
         │   ├── Profile.jsx
         │   ├── StarBox.jsx
@@ -95,6 +96,7 @@ Our website about our project is on: [Classroom Communication Aide](https://clas
         │   ├── TeacherPage.jsx
         │   ├── TeacherSubPages
         │   │   ├── AllStudentPage.jsx
+        │   │   ├── CustomMessagePage.jsx
         │   │   ├── RequestLogPage.jsx
         │   │   └── TeacherProfile.jsx
         │   └── TranslatorPage.jsx
