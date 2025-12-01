@@ -3,7 +3,7 @@ This is a project for Technology for Social Good class
 
 Our website about our project is on: [Classroom Communication Aide](https://classroomcommunicationaide.github.io/)
 
-## Folder Layout:
+## Project Structure:
 <!-- FOLDER_STRUCTURE_START -->
 ```
 ├── .github
