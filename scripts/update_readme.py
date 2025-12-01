@@ -52,8 +52,8 @@ with open('README.md', 'r', encoding='utf-8') as f:
 tree = generate_tree()
 
 # Update README between markers
-start_marker = '<!-- FOLDER_STRUCTURE_START -->'
-end_marker = '<!-- FOLDER_STRUCTURE_END -->'
+start_marker = '<!-- PROJECT_STRUCTURE_START -->'
+end_marker = '<!-- PROJECT_STRUCTURE_END -->'
 
 if start_marker in content and end_marker in content:
     before = content.split(start_marker)[0]
