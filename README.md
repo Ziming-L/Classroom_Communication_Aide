@@ -1,7 +1,14 @@
 # Classroom_Communication_Aide
-This is a project for Technology for Social Good class
+This is a project for **Technology for Social Good**.
 
-Our website about our project is on: [Classroom Communication Aide](https://classroomcommunicationaide.github.io/)
+## Overview:
+Classroom Communication Aide is a web-based tool designed to improve communication between teachers and ELL students in diverse classrooms. It supports features like real-time translation, speech-to-text, and customizable commands to make learning more inclusive. Our website about our project is on: [Classroom Communication Aide](https://classroomcommunicationaide.github.io/)
+
+## Features
+- Real-time translation for multilingual classrooms
+- Speech-to-text for accessibility
+- Teacher dashboard for managing classes and messages
+- Customizable commands for requests
 
 ## Project Structure:
 <!-- PROJECT_STRUCTURE_START -->
@@ -111,8 +118,28 @@ Our website about our project is on: [Classroom Communication Aide](https://clas
 ```
 <!-- PROJECT_STRUCTURE_END -->
 
-## Group Member:
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Ziming-L/Classroom_Communication_Aide.git
+   ```
+2. Navigate to the project folder and install dependencies:
+    ```bash
+    cd src/frontend
+    npm install
+    cd ../backend
+    npm install
+    ```
+
+## Tech Stack
+- Frontend: React + Tailwind CSS
+- Backend: Node.js + Express
+- Database: Supabase
+
+## Team Members:
 - [Ziming Lei Lin](https://github.com/Ziming-L)
 - [Diana Alvarado](https://github.com/alvardia)
 - [Jonah Paulsene](https://github.com/Jonah-Paulsene)
 - [Kyle Downing](https://github.com/kyledowning)
+
