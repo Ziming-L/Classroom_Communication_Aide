@@ -1,16 +1,16 @@
 # Classroom_Communication_Aide
-This is a project for **Technology for Social Good**.
+This project was developed for the **Technology for Social Good** course during **Fall 2025**, taught by **Dr. Shameem Ahmed**.
 
-## Overview:
-Classroom Communication Aide is a web-based tool designed to improve communication between teachers and ELL students in diverse classrooms. It supports features like real-time translation, speech-to-text, and customizable commands to make learning more inclusive. Our website about our project is on: [Classroom Communication Aide](https://classroomcommunicationaide.github.io/)
+## 📖 Overview:
+Classroom Communication Aide is a web-based tool designed to improve communication between teachers and ELL students in diverse classrooms. It supports features like real-time translation, speech-to-text, and customizable commands to make learning more inclusive. Learn more about our project on: [Classroom Communication Aide](https://classroomcommunicationaide.github.io/)
 
-## Features
+## ✨ Features
 - Real-time translation for multilingual classrooms
 - Speech-to-text for accessibility
 - Teacher dashboard for managing classes and messages
 - Customizable commands for requests
 
-## Project Structure:
+## 🗂️ Project Structure:
 <!-- PROJECT_STRUCTURE_START -->
 ```
 ├── .github
@@ -119,12 +119,17 @@ Classroom Communication Aide is a web-based tool designed to improve communicati
 <!-- PROJECT_STRUCTURE_END -->
 
 
-## Installation
-1. Clone the repository:
+
+## 🚀 Getting Started
+1. **Install Node.js**  
+   Download and install [Node.js](https://nodejs.org/en). npm is included with Node.js.
+
+2. **Clone the repository**  
    ```bash
    git clone https://github.com/Ziming-L/Classroom_Communication_Aide.git
    ```
-2. Navigate to the project folder and install dependencies:
+   
+3. **Navigate to the project folder and install dependencies:**
     ```bash
     cd src/frontend
     npm install
@@ -132,14 +137,79 @@ Classroom Communication Aide is a web-based tool designed to improve communicati
     npm install
     ```
 
-## Tech Stack
+## 🔑 Backend Environment Setup
+To run the backend, you need to configure environment variables for API keys and services. Create a `.env` file inside the `src/backend` directory with the following content:
+
+    # Server configuration
+    PORT=YOUR_PORT_NUMBER
+    
+    # Supabase credentials
+    SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+    SUPABASE_SECRET_KEY=YOUR_SUPABASE_SECRET_KEY
+    
+    # Azure Translator API credentials
+    AZURE_TRANSLATE_KEY=YOUR_AZURE_TRANSLATOR_API_KEY
+    AZURE_LOCATION=YOUR_AZURE_TRANSLATOR_LOCATION
+
+### 🗒️ Notes:
+- You will need a [Supabase](https://supabase.com/) account and a [Microsoft Azure](https://azure.microsoft.com/en-us/) account.
+
+## 🔍 Supabase RPC Usage
+We implemented custom RPC functions in Supabase. These functions:
+- Handle complex queries and batch updates.
+- Improve performance by running logic at the database layer.
+- Keep sensitive operations secure and centralized.
+- Handle rollbacks on errors without adding to the database, ensuring transactional integrity.
+
+This approach improves performance and keeps sensitive logic inside the database layer.
+
+
+## ⚠️ Deployment Notes
+This project relies on custom **Supabase RPC functions** and specific **Database tables** that are part of our private Supabase instance.  
+Because these database functions and schema are not included in this repository, the backend cannot be fully deployed without access to our Supabase configuration.
+
+If you want to explore or contribute:
+- You can run the **frontend** locally with mock data for limited functionality.
+- For full functionality, please contact the team for access or replicate the database schema and RPC functions in your own Supabase project.
+
+
+## 🖥️ Frontend Environment Setup
+To run the frontend, you need to configure environment variables for Supabase, Google OAuth, and API integration. Create a `.env` file inside the `src/frontend` directory with the following content:
+
+    # Supabase credentials
+    VITE_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+    VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+    
+    # Google OAuth credential
+    VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+    
+    # Backend API base URL
+    VITE_API_BASE_URL=YOUR_BACKEND_URL
+
+
+## ▶️ Running the Project
+To test the actual website locally, you need to run both the backend and frontend servers:
+
+1. **Start the backend server**  
+- Open a terminal and run:
+   ```bash
+   cd src/backend && node server.js
+   ```
+2. **Start the frontend server**
+- In a separate terminal, run:
+   ```bash
+   cd src/frontend && npm run dev
+   ```
+   
+
+## 🛠️ Tech Stack
 - Frontend: React + Tailwind CSS
 - Backend: Node.js + Express
 - Database: Supabase
 
-## Team Members:
+## 🧑‍🤝‍🧑 Team Members:
 - [Ziming Lei Lin](https://github.com/Ziming-L)
-- [Diana Alvarado](https://github.com/alvardia)
+- [Diana Alvarado](https://github.com/alvardia) 
 - [Jonah Paulsene](https://github.com/Jonah-Paulsene)
 - [Kyle Downing](https://github.com/kyledowning)
 
