@@ -1,23 +1,41 @@
-import React, { useState} from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import { studentButtons, editableButtons } from "../utils/studentButtons";
-import { COMMAND_POP_UP_TEXT } from "../utils/constants";
+import { COMMAND_POP_UP_TEXT, STUDENT_PAGE_HELP_TEXT } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import MessageBox from "../components/MessageBox";
 import StarBox from "../components/StarBox"
 import CommandPopUp from "../components/CommandPopUp";
+import { useEffect } from "react";
+import Tooltip from "../components/Tooltip.jsx";
+import request from "../utils/auth";
 
-export default function StudentPage() {
+export default function StudentPage( ) {
 
     const navigate = useNavigate();
+
+    // get data from parent page
+    //const student_id = 48;
+    const token = localStorage.getItem("token");
+
+    // for help tooltips
+    const helpBtnRef = useRef(null);
+    const editBtnRef = useRef(null);
+    const translatorBtnRef = useRef(null);
+    const [showHelp, setShowHelp] = useState(false);
+    const [positions, setPositions] = useState({})
+
+    
+
+    const [studentName, setStudentName] = useState("");
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
     const [buttons, setButtons] = useState(studentButtons);
     const [editableButtonsState, setEditableButtons] = useState(editableButtons);
-    const [starCount, setStarCount] = useState(7);
+    const [starCount, setStarCount] = useState(0);
     const [selectedCommand, setSelectedCommand] = useState(null);
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
     const [tryMode, setTryMode] = useState("normal");
-    const userLang = "en";
+    const userLang = "es";
     
 
     const handleGoToTranslator = () => {
@@ -84,6 +102,31 @@ export default function StudentPage() {
         </div>
     );
 
+    const getRects = () => ({
+        help: helpBtnRef.current?.getBoundingClientRect(),
+        edit: editBtnRef.current?.getBoundingClientRect(),
+        translator: translatorBtnRef.current?.getBoundingClientRect()
+    });
+
+    useLayoutEffect(() => {
+        if (!showHelp) return;
+        setPositions(getRects());
+    }, [showHelp]);
+
+    useEffect(() => {
+        if (!showHelp) return;
+
+        const updatePositions = () => setPositions(getRects());
+        window.addEventListener("resize", updatePositions);
+        window.addEventListener("scroll", updatePositions);
+
+        return () => {
+            window.removeEventListener("resize", updatePositions);
+            window.removeEventListener("scroll", updatePositions);
+        };
+    }, [showHelp]);
+
+
     return (
         <div className="flex flex-col p-8 w-full font-sans relative"> 
             {/* Header */}
@@ -94,13 +137,14 @@ export default function StudentPage() {
                 <div className="flex items-center gap-2.5">
 
                     {/* Help Button */}
-                    <button className=" 
+                    <button ref={helpBtnRef} className=" 
                         bg-black text-white 
                         text-sm sm:text-base
                         px-3 py-1 sm:px-4 sm:py-1.5 
                         rounded-lg 
                         shadow-md 
                         hover:bg-gray-800"
+                        onClick={() => setShowHelp(true)}
                     >
                         Help
                     </button>
@@ -133,7 +177,8 @@ export default function StudentPage() {
             </p>
             {/* Edit Button */}
             <div className="flex justify-end">
-                <button onClick={handleGoToEdit}
+                <button ref={editBtnRef}
+                onClick={handleGoToEdit}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow px-3 py-1.5 cursor-pointer">
                     <img 
                         src="/images/button_icon/edit_icon.png"
@@ -155,6 +200,7 @@ export default function StudentPage() {
             {/* Translator */}
             <div>
                 <button
+                    ref={translatorBtnRef}
                     onClick={handleGoToTranslator}
                     className="
                         fixed bottom-6 right-6
@@ -175,7 +221,7 @@ export default function StudentPage() {
                     Translator
                 </button>
                 <button onClick={toggleTryMode} className={`border hover:bg-blue-400 mt-3 ${tryMode === "normal" ? "bg-blue-200" : "bg-yellow-200"}`}>
-                    Toggle star vs normal mode (testing)
+                     ⭐ 
                 </button>
             </div>
             <MessageBox />
@@ -187,6 +233,43 @@ export default function StudentPage() {
                 mode={tryMode} // can choose either "normal" or "star" mode
                 textTranslations={COMMAND_POP_UP_TEXT[userLang]}
             />
+
+            {showHelp && (
+                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50">
+                    <button
+                        onClick={() => setShowHelp(false)}
+                        className="fixed top-6 right-6 bg-purple-600 text-white px-3 py-1 rounded"
+                    >
+                        {STUDENT_PAGE_HELP_TEXT[userLang].close}
+                    </button>
+
+                    {/* Tooltip for help button */}
+                    <Tooltip
+                        position={positions.help}
+                        text={STUDENT_PAGE_HELP_TEXT[userLang].help}
+                        maxWidth={150}
+                        center
+                    />
+
+                    {/* Tooltip for edit button */}
+                    <Tooltip
+                        position={positions.edit}
+                        text={STUDENT_PAGE_HELP_TEXT[userLang].edit}
+                        maxWidth={180}
+                        center
+                    />
+
+                    {/* Tooltip for translator */}
+                    <Tooltip
+                        position={positions.translator}
+                        text={STUDENT_PAGE_HELP_TEXT[userLang].translator}
+                        maxWidth={200}
+                        center
+                        offsetTBottom={-150}
+                    />
+                </div>
+            )}
         </div>
+ 
     );
 }

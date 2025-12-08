@@ -52,7 +52,7 @@ export const TRANSLATOR_HELP_TEXT = {
     },
 };
 
-// Map the language code to help text for translator screen tooltips
+// Map the language code to the command pop up texts
 export const COMMAND_POP_UP_TEXT = {
     en: {
         tryOnOwn: "⭐ Try on your own", 
@@ -71,5 +71,29 @@ export const COMMAND_POP_UP_TEXT = {
         yesTry: "😎 Está bien, lo intentaré", 
         noTry: "😰 No gracias", 
         goBack: "Regresar",
+    },
+};
+
+// Map the language code to the student page help tooltips
+export const STUDENT_PAGE_HELP_TEXT = {
+    en: {
+        help: "Tap here to see tips for using this page",
+        edit: "Edit your command buttons",
+        translator: "Open the translator to help you communicate",
+        command: "Tap a button to tell your teacher something",
+        activityText: "This shows what the class is doing right now",
+        profile: "See your profile and settings",
+        class: "Choose your current class or subject",
+        close: "Close help"
+    },
+    es: {
+        help: "Toca aquí para ver consejos sobre cómo usar esta página",
+        edit: "Edita tus botones de comandos",
+        translator: "Abre el traductor para ayudarte a comunicarte",
+        command: "Toca un botón para decirle algo a tu maestro",
+        activityText: "Esto muestra lo que la clase está haciendo ahora",
+        profile: "Mira tu perfil y configuración",
+        class: "Elige tu clase o materia",
+        close: "Cierra ayuda"
     },
 };
