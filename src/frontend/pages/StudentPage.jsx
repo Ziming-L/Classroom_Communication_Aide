@@ -126,6 +126,31 @@ export default function StudentPage( ) {
         };
     }, [showHelp]);
 
+    const fetchStarCount = async () => {
+        try {
+            const res = await request("/api/students/star-number", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setStarCount(data.star_number);
+            } else {
+                console.error("Backend error:", data);
+            }
+        } catch (err) {
+            console.error("Error fetching star count:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchStarCount();
+    }, []);
+
 
     return (
         <div className="flex flex-col p-8 w-full font-sans relative"> 
