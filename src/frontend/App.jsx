@@ -58,7 +58,7 @@ export default function App() {
       <Route path="/teacher/allstudents" element={<AllStudentPage />} />
       <Route path="/teacher/requestlogs" element={<RequestLogPage />} />
       <Route path="/teacher/profile" element={<TeacherProfile />} />
-      <Route path="/teacher/custom-message" element={<CustomMessagePage />} />
+      <Route path="/teacher/custommessage" element={<CustomMessagePage />} />
     </Routes>
   );
 }
