@@ -3,6 +3,7 @@ import GoBackButton from "../../components/GoBackButton";
 import Profile from "../../components/Profile";
 import { useNavigate,useLocation } from "react-router-dom";
 import request from '../../utils/auth';
+import { formatToLocal } from "../../utils/convertTime";
 
 
 export default function CustomMessagePage() {
@@ -19,9 +20,8 @@ export default function CustomMessagePage() {
     const studentIconColor = student_icon_bg_color || "#ffb6c1";
     const studentName = student_name || 'daisy';
     const requestText = translate_text || 'i need help'
-    const timestamp = created_at ? new Date(created_at) : new Date();
-    const displayTime = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const displayDate = timestamp.toLocaleDateString();
+    const timestamp = created_at ? created_at : new Date();
+    const { localDate: displayDate, localTime: displayTime } = formatToLocal(timestamp);
 
     const token = localStorage.getItem('token');
     const [content, setContent] = useState("");
@@ -33,14 +33,19 @@ export default function CustomMessagePage() {
     }
 
     const handleSend = async () => {
-        if (!content.trim()) {
+        const trimmedContent = content.trim();
+
+        if (!trimmedContent) {
             return alert("Message cannot be empty");
+        }
+        if (trimmedContent.length > 500) {
+            return alert("Message too long (max 500 characters)")
         }
 
         setLoading(true);
         // try {
         //     const sent_at = new Date().toISOString();
-        //     const data = await request("/api/teacher/approve-request-message", {
+        //     const data = await request("/api/teachers/approve-request-message", {
         //         method: "POST", 
         //         headers: {
         //             "Content-Type": "application/json",
@@ -73,7 +78,7 @@ export default function CustomMessagePage() {
                 />
                 <Profile />
             </div>
-            <h1 className="text-center text-3xl font-bold mb-6">RESPONSE MESSAGE</h1>
+            <h1 className="text-center text-3xl font-bold mb-6 italic">RESPONSE MESSAGE</h1>
 
             {/* Card Container */}
             <div className="
