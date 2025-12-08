@@ -11,7 +11,16 @@ export default function CustomMessagePage() {
     const location = useLocation();
     
     // get data from parent page
-    const { request_id, created_at, student_name, student_icon, student_icon_bg_color, translate_text } = location.state || {};
+    const { 
+        request_id,  
+        created_at, 
+        student_name, 
+        student_icon, 
+        student_icon_bg_color, 
+        translate_text, 
+        teacher_icon, 
+        teacher_icon_bg_color 
+    } = location.state || {};
     // if (!request_id) {
     //     return <p className="text-center mt-10 text-red-600">No request selected!</p>;
     // }
@@ -22,6 +31,10 @@ export default function CustomMessagePage() {
     const requestText = translate_text || 'i need help'
     const timestamp = created_at ? created_at : new Date();
     const { localDate: displayDate, localTime: displayTime } = formatToLocal(timestamp);
+
+    // teacher profile setting
+    const teacherIcon = teacher_icon || '../images/user_profile_icon/default_user.png';
+    const teacherIconBg = teacher_icon_bg_color || '#add8e6';
 
     const token = localStorage.getItem('token');
     const [content, setContent] = useState("");
@@ -76,7 +89,13 @@ export default function CustomMessagePage() {
                     label="Go Back"
                     fallback="/teacher"
                 />
-                <Profile />
+                {/* Profile */}
+                <button onClick={() => navigate("/teacher/profile")}>
+                    <Profile 
+                        image={teacherIcon}
+                        color={teacherIconBg}
+                    />
+                </button>
             </div>
             <h1 className="text-center text-3xl font-bold mb-6 italic">RESPONSE MESSAGE</h1>
 
@@ -107,12 +126,19 @@ export default function CustomMessagePage() {
                 </div>
 
                 {/* Message Box */}
-                <textarea 
-                    className="flex-1 mt-6 mb-6 bg-orange-100 rounded-xl p-4 border text-lg resize-none w-full"
-                    placeholder="Type your message here..."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                />
+                <div className="relative flex flex-col flex-1 mt-6 mb-6">
+                    <textarea 
+                        className="flex-1 bg-orange-100 rounded-xl p-4 border text-lg resize-none w-full h-full"
+                        placeholder="Type your message here..."
+                        value={content}
+                        maxLength={500}
+                        onChange={(e) => setContent(e.target.value)}
+                    />
+
+                    <span className="absolute bottom-3 right-4 text-gray-600 text-sm">
+                        {content.length}/500
+                    </span>
+                </div>
 
                 {/* Buttons */}
                 <div className="flex justify-center gap-12 mt-6">
