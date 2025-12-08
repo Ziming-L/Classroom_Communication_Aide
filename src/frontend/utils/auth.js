@@ -1,5 +1,7 @@
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 async function request(url, options) {
-    const response = await fetch(url, options);
+    const response = await fetch(`${API_BASE_URL}${url}`, options);
     const data = await response.json();
     if (!response.ok) {
         const errorMsg = data.message || data.error || 'Something went wrong';
