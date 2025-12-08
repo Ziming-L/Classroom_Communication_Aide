@@ -119,7 +119,11 @@ export default function RequestLogPage() {
     const goToProfile = () => navigate("/teacher/profile");
 
     // get data from parent page
-    const class_id = location?.state?.class_id || null;
+    const { class_id, teacher_icon, teacher_icon_bg_color } = location.state || {};
+
+    const teacherIcon = teacher_icon || '../images/user_profile_icon/default_user.png';
+    const teacherIconBg = teacher_icon_bg_color || '#add8e6';
+
     const token = localStorage.getItem('token');
 
     const [requests, setRequests] = useState([]);
@@ -236,7 +240,10 @@ export default function RequestLogPage() {
                 <div className={styles.headerButtons}>
                     {/* Profile */}
                     <button className={styles.profileButton} onClick={() => goToProfile()}>
-                        <Profile />
+                        <Profile 
+                            image={teacherIcon}
+                            color={teacherIconBg}
+                        />
                     </button>
                 </div>
             </header>
