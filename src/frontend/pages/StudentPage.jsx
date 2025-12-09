@@ -8,6 +8,7 @@ import CommandPopUp from "../components/CommandPopUp";
 import { useEffect } from "react";
 import Tooltip from "../components/Tooltip.jsx";
 import request from "../utils/auth";
+import Profile from "../components/Profile";
 
 export default function StudentPage( ) {
 
@@ -15,6 +16,10 @@ export default function StudentPage( ) {
     const location = useLocation();
 
     const token = localStorage.getItem("token");
+
+    // use for waiting for input
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     // for help tooltips
     const helpBtnRef = useRef(null);
@@ -25,7 +30,7 @@ export default function StudentPage( ) {
     const [showHelp, setShowHelp] = useState(false);
     const [positions, setPositions] = useState({})
 
-    
+
 
     const [studentName, setStudentName] = useState("");
     const [studentInfo, setStudentInfo] = useState(null);
@@ -75,6 +80,77 @@ export default function StudentPage( ) {
         }
     }, [location.state]);
 
+    useEffect(() => {
+        if (!showHelp) return;
+
+        const updatePositions = () => setPositions(getRects());
+        window.addEventListener("resize", updatePositions);
+        window.addEventListener("scroll", updatePositions);
+
+        return () => {
+            window.removeEventListener("resize", updatePositions);
+            window.removeEventListener("scroll", updatePositions);
+        };
+    }, [showHelp]);
+
+    const fetchStarCount = async () => {
+        try {
+            const res = await request("/api/students/star-number", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (res.success) {
+                setStarCount(res.star_number);
+            } else {
+                console.error("Backend error:", res);
+                setError("Backend error:" + res);
+            }
+        } catch (err) {
+            console.error("Error fetching star count:", err);
+            setError("Error fetching star count:" + err);
+        }
+    };
+
+    const fetchStudentInfo = async () => {
+        try {
+            const res = await request("/api/students/student-info", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            console.log("API returned:", res);
+            if (res.success) {
+                setStudentInfo(res.student);
+            } else {
+                console.error("Backend error:", res);
+                setError("Backend error:" + res);
+            }
+        } catch (err) {
+            console.error("Error fetching student info:", err);
+            setError("Error fetching student info:" + err);
+        }
+    };
+
+    // get all information from the backend to continue rendering
+    useEffect(() => {
+        const loadData = async () => {
+            await Promise.all([
+                fetchStudentInfo(), 
+                fetchStarCount()
+            ]);
+            setLoading(false);
+        };
+        loadData();
+    }, []);
+
+
     const createButtonGrid = (buttons) => (
         <div className="flex flex-row gap-24 justify-center">
             {buttons.map((btn) => (
@@ -113,69 +189,20 @@ export default function StudentPage( ) {
         setPositions(getRects());
     }, [showHelp]);
 
-    useEffect(() => {
-        if (!showHelp) return;
-
-        const updatePositions = () => setPositions(getRects());
-        window.addEventListener("resize", updatePositions);
-        window.addEventListener("scroll", updatePositions);
-
-        return () => {
-            window.removeEventListener("resize", updatePositions);
-            window.removeEventListener("scroll", updatePositions);
-        };
-    }, [showHelp]);
-
-    const fetchStarCount = async () => {
-        try {
-            const res = await request("/api/students/star-number", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (res.success) {
-                setStarCount(res.star_number);
-            } else {
-                console.error("Backend error:", res);
-            }
-        } catch (err) {
-            console.error("Error fetching star count:", err);
-        }
-    };
-
-    const fetchStudentInfo = async () => {
-        try {
-            const res = await request("/api/students/student-info", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            console.log("API returned:", res);
-            if (res.success) {
-                setStudentInfo(res.student);
-            } else {
-                console.error("Backend error:", res);
-            }
-        } catch (err) {
-            console.error("Error fetching student info:", err);
-        }
-    };
-
-    useEffect(() => {
-        fetchStudentInfo();
-    }, []);
-
-
-    useEffect(() => {
-        fetchStarCount();
-    }, []);
-
+    // wait here until get data back from backend
+    if (loading) {
+        return (
+            <div className=" bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200 flex flex-col items-center justify-center h-screen">
+                <p className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text text-transparent mb-6 leading-tight px-4">Loading Student Page...</p>
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
+                    <p className="font-bold">Error</p>
+                    <p>{error}</p>
+                    </div>
+                )}
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col p-8 w-full font-sans relative"> 
@@ -212,7 +239,10 @@ export default function StudentPage( ) {
                     {/* Profile */}
                     <div className="text-[26px] cursor-pointer">
                         <button onClick={handleGoToProfile}>
-                            <span role="img" aria-label="profile">👤</span>
+                            <Profile 
+                                image={studentInfo.student_icon}
+                                color={studentInfo.student_icon_bg_color}
+                            />
                         </button>
                     </div>
                 </div> 
