@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { TOP_BUTTONS_MAP, STUDENT_PROFILE_TEXT} from "../../utils/constants.js";
+import Profile from "../../components/Profile.jsx";
 
 export default function StudentProfile() {
     const navigate = useNavigate();
@@ -35,11 +36,10 @@ export default function StudentProfile() {
                 >
                     <div className="flex justify-center mb-4">
                         <div className="text-6xl text-center mb-4">
-                            <img 
-                                src={avatar}
-                                alt="Avatar"
-                                className="w-32 h-32 object-contain rounded-full"
-                                style={{ backgroundColor: profileColor }}
+                            <Profile 
+                                image={avatar}
+                                color={profileColor}
+                                size={135}
                             />
                         </div>
                     </div>
