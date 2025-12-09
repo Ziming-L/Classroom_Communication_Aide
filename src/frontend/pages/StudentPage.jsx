@@ -1,7 +1,7 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { studentButtons, editableButtons } from "../utils/studentButtons";
 import { COMMAND_POP_UP_TEXT, STUDENT_PAGE_HELP_TEXT } from "../utils/constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import MessageBox from "../components/MessageBox";
 import StarBox from "../components/StarBox"
 import CommandPopUp from "../components/CommandPopUp";
@@ -12,6 +12,8 @@ import request from "../utils/auth";
 export default function StudentPage( ) {
 
     const navigate = useNavigate();
+    const location = useLocation();
+
     const token = localStorage.getItem("token");
 
     // for help tooltips
@@ -27,8 +29,10 @@ export default function StudentPage( ) {
     const [studentInfo, setStudentInfo] = useState(null);
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
+    
     const [buttons, setButtons] = useState(studentButtons);
     const [editableButtonsState, setEditableButtons] = useState(editableButtons);
+
     const [starCount, setStarCount] = useState(0);
     const [selectedCommand, setSelectedCommand] = useState(null);
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
@@ -76,12 +80,20 @@ export default function StudentPage( ) {
         setButtons([...buttons, newButton]);
     };
 
+    useEffect(() => {
+        if (location.state?.updatedButtons) {
+            setEditableButtons(location.state.updatedButtons);
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location.state]);
+
     const createButtonGrid = (buttons) => (
         <div className="flex flex-row gap-24 justify-center">
             {buttons.map((btn) => (
             <button
                 key={btn.id}
-                className={`${btn.color} cursor-pointer text-black rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40 border`}
+                style={{ backgroundColor: btn.color }}
+                className="cursor-pointer text-black rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40 border"
                 onClick={() => handleButtonClick({ 
                     userLangText: btn.userLangText,
                     targetLangText: btn.targetLangText, 

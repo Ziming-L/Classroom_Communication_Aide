@@ -15,10 +15,10 @@ export default function StudentProfile() {
     );
 
     const colorOptions = ["#c6ddff", "#e7e7e7", "#dfdaff", "#f0fcf6"];
-    const iconOptions = ["../images/commands_icon/glasses.png", 
-        "../images/commands_icon/computer_moving.png",
-        "../images/commands_icon/pencil.png",
-        "../images/commands_icon/raining.png"
+    const iconOptions = ["/images/commands_icon/glasses.png", 
+        "/images/commands_icon/computer_moving.png",
+        "/images/commands_icon/pencil.png",
+        "/images/commands_icon/raining.png"
     ];
 
  
@@ -56,7 +56,8 @@ export default function StudentProfile() {
                     {editedButtons.map(button => (
                         <div 
                             key={button.id}
-                            className={`${button.color} p-4 rounded-lg shadow"`}
+                            className={"p-4 rounded-lg shadow"}
+                            style={{ backgroundColor: button.color }}
                         >
                             <div>
                                 <p>Description:</p>
@@ -82,10 +83,10 @@ export default function StudentProfile() {
                                     <button
                                         key={icon}
                                         onClick={() =>
-                                            updateButton(button.id, { icon })
+                                            updateButton(button.id, { img: icon })
                                         }
                                         className={`p-1 rounded-lg border ${
-                                            button.icon === icon
+                                            button.img === icon
                                                 ? "border-black"
                                                 : "border-transparent"
                                         }`}
