@@ -139,3 +139,23 @@ export const STUDENT_PAGE_TEXT = {
         star: "Estrellas:"
     },
 };
+
+// Map the language code to the student button editor text
+export const BUTTON_EDITOR_TEXT = {
+    en: {
+        back: "Go Back",
+        save: "Save Changes",
+        description: "Description:",
+        translation: "Translation:",
+        icon: "Icon:",
+        color: "Color:",
+    },
+    es: {
+        back: "Regresar",
+        save: "Guardar Cambios",
+        description: "Descripción:",
+        translation: "Traducción:",
+        icon: "Icono:",
+        color: "Color:",
+    },
+};

@@ -44,7 +44,7 @@ export default function StudentPage( ) {
     const [selectedCommand, setSelectedCommand] = useState(null);
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
     const [tryMode, setTryMode] = useState("normal");
-    const userLang = "es";
+    const userLang = studentInfo?.language_code || "en";
     
 
     const handleGoToTranslator = () => {
@@ -61,7 +61,7 @@ export default function StudentPage( ) {
     };
 
     const handleGoToEdit = () => {
-        navigate("/student/edit", { state: { editableButtonsState } });
+        navigate("/student/edit", { state: { editableButtonsState, studentInfo } });
     };
 
     const handleButtonClick = (btn) => { 

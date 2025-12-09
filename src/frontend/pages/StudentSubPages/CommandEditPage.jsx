@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { TOP_BUTTONS_MAP} from "../../utils/constants.js";
+import { TOP_BUTTONS_MAP, BUTTON_EDITOR_TEXT} from "../../utils/constants.js";
 import EditableButton from "../../components/EditableButton.jsx";
 import { translateText } from "../../utils/translateText.js";
 
 export default function StudentProfile() {
     const navigate = useNavigate();
     const returnToDashboard = () => navigate("/student");
-    const userLang = "es";
+    
     const location = useLocation();
+    const studentInfo = location.state?.studentInfo;
+    const userLang = studentInfo?.language_code || "es";
     //const originalButtons = location.state.editableButtonsState;
     const originalButtons = location.state?.editableButtonsState ?? [];
     const [editedButtons, setEditedButtons] = useState(
@@ -66,7 +68,7 @@ export default function StudentProfile() {
                     {TOP_BUTTONS_MAP[userLang]?.goBack}
                 </button>
                 <button className="bg-green-500 text-white px-4 py-2 rounded-full" onClick={saveChanges}> 
-                    Save Changes
+                    {BUTTON_EDITOR_TEXT[userLang]?.save}
                 </button>
             </div>
             
@@ -79,7 +81,7 @@ export default function StudentProfile() {
                             style={{ backgroundColor: button.color }}
                         >
                             <div>
-                                <p>Description:</p>
+                                <p>{BUTTON_EDITOR_TEXT[userLang]?.description}</p>
                                 <input
                                     className="w-full border p-2 rounded mb-2"
                                     value={button.userLangText}
@@ -88,7 +90,7 @@ export default function StudentProfile() {
                             </div>
 
                             <div>
-                                <p>Translation:</p>
+                                <p>{BUTTON_EDITOR_TEXT[userLang]?.translation}</p>
                                 <input
                                     className="w-full border p-2 rounded mb-2"
                                     value={button.targetLangText}
@@ -96,7 +98,7 @@ export default function StudentProfile() {
                                 />
                             </div>
 
-                            <p className="text-sm">Icon:</p>
+                            <p className="text-sm">{BUTTON_EDITOR_TEXT[userLang]?.icon}</p>
                             <div className="flex gap-3 flex-wrap mb-4">
                                 {iconOptions.map((icon) => (
                                     <button
@@ -118,7 +120,7 @@ export default function StudentProfile() {
                                 ))}
                             </div>
 
-                            <p className="text-sm">Color:</p>
+                            <p className="text-sm">{BUTTON_EDITOR_TEXT[userLang]?.color}</p>
                             <div className="flex gap-3 mb-4">
                                 {colorOptions.map((color) => (
                                     <button
