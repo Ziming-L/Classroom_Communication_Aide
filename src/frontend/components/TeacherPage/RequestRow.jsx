@@ -73,7 +73,7 @@ export default function RequestRow({ profilePicture, profileColor, name, request
             >
                 <div className="w-16 h-16 hover:-translate-y-0.5">
                     <Profile 
-                        image={profilePicture}
+                        image={"../" + profilePicture}
                         color={profileColor}
                         size="68"
                     />

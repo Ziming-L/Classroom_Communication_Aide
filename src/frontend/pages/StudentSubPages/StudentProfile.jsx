@@ -16,7 +16,7 @@ export default function StudentProfile() {
     const [profileColor, setProfileColor] = useState(studentInfo?.student_icon_bg_color);
     const [avatar, setAvatar] = useState("../" + studentInfo?.student_icon);
 
-
+    // NOTES; backend expect "../images/ ..." not "../../images ..."
     return (
         <div className="p-8">
             <button onClick={() => returnToDashboard()} className="
@@ -53,8 +53,9 @@ export default function StudentProfile() {
                     </div>
 
                     <AvatarSelector 
-                        avatar={studentInfo?.student_icon}
+                        avatar={avatar}
                         onChange={setAvatar}
+                        pathPrefix="../"
                     />
 
                     <div className="mb-6">

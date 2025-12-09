@@ -20,7 +20,6 @@ import GoBackButton from "../components/GoBackButton.jsx";
  */
 export default function TranslatorPage() {
     const location = useLocation();
-    // const navigate = useNavigate();
 
     const { userLang = "es", teacherLang = "en" } = location.state || {};
     const [leftLang, setLeftLang] = useState(userLang);

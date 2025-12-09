@@ -121,7 +121,7 @@ export default function RequestLogPage() {
     // get data from parent page
     const { class_id, teacher_icon, teacher_icon_bg_color } = location.state || {};
 
-    const teacherIcon = teacher_icon || '../images/user_profile_icon/default_user.png';
+    const teacherIcon = teacher_icon ? "../" + teacher_icon : "../../images/user_profile_icon/default_user.png";
     const teacherIconBg = teacher_icon_bg_color || '#add8e6';
 
     const token = localStorage.getItem('token');

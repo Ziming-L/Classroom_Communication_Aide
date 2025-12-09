@@ -25,16 +25,16 @@ export default function CustomMessagePage() {
     //     return <p className="text-center mt-10 text-red-600">No request selected!</p>;
     // }
 
-    const studentIcon = student_icon || "../images/user_profile_icon/woman_2.png";
+    const studentIcon = student_icon ? "../" + student_icon : "../../images/user_profile_icon/woman_2.png";
     const studentIconColor = student_icon_bg_color || "#ffb6c1";
-    const studentName = student_name || 'daisy';
-    const requestText = translate_text || 'i need help'
+    const studentName = student_name || "daisy";
+    const requestText = translate_text || "i need help";
     const timestamp = created_at ? created_at : new Date();
     const { localDate: displayDate, localTime: displayTime } = formatToLocal(timestamp);
 
     // teacher profile setting
-    const teacherIcon = teacher_icon || '../images/user_profile_icon/default_user.png';
-    const teacherIconBg = teacher_icon_bg_color || '#add8e6';
+    const teacherIcon = teacher_icon ? "../" + teacher_icon : "../../images/user_profile_icon/default_user.png";
+    const teacherIconBg = teacher_icon_bg_color || "#add8e6";
 
     const token = localStorage.getItem('token');
     const [content, setContent] = useState("");
