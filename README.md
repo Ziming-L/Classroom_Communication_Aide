@@ -20,6 +20,7 @@ Classroom Communication Aide is a web-based tool designed to improve communicati
 ├── README.md
 ├── package-lock.json
 ├── scripts
+│   ├── list_images_path.py
 │   └── update_readme.py
 └── src
     ├── backend
@@ -42,6 +43,8 @@ Classroom Communication Aide is a web-based tool designed to improve communicati
         ├── .gitignore
         ├── App.jsx
         ├── components
+        │   ├── AvatarSelector.jsx
+        │   ├── ColorSelector.jsx
         │   ├── CommandPopUp.jsx
         │   ├── EditableButton.jsx
         │   ├── GoBackButton.jsx
