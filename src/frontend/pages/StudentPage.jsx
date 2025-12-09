@@ -1,6 +1,6 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { studentButtons, editableButtons } from "../utils/studentButtons";
-import { COMMAND_POP_UP_TEXT, STUDENT_PAGE_HELP_TEXT } from "../utils/constants";
+import { COMMAND_POP_UP_TEXT, STUDENT_PAGE_HELP_TEXT, STUDENT_PAGE_TEXT } from "../utils/constants";
 import { useNavigate, useLocation } from "react-router-dom";
 import MessageBox from "../components/MessageBox";
 import StarBox from "../components/StarBox"
@@ -20,6 +20,8 @@ export default function StudentPage( ) {
     const helpBtnRef = useRef(null);
     const editBtnRef = useRef(null);
     const translatorBtnRef = useRef(null);
+    const messageBtnRef = useRef(null);
+    const activityBtnRef = useRef(null);
     const [showHelp, setShowHelp] = useState(false);
     const [positions, setPositions] = useState({})
 
@@ -29,7 +31,7 @@ export default function StudentPage( ) {
     const [studentInfo, setStudentInfo] = useState(null);
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
-    
+
     const [buttons, setButtons] = useState(studentButtons);
     const [editableButtonsState, setEditableButtons] = useState(editableButtons);
 
@@ -66,20 +68,6 @@ export default function StudentPage( ) {
         setTryMode(tryMode === "normal" ? "star" : "normal");
     }
 
-    const addButton = () => {
-        if (buttons.length == 8) return;
-        const newButtonId = buttons.length + 1;
-        const newButton = {
-            id: newButtonId,
-            userLangText: "Spanish",
-            img: "/images/commands_icon/chicken_moving.png",
-            targetLangText: "English",
-            color: "bg-blue-500"
-        };
-
-        setButtons([...buttons, newButton]);
-    };
-
     useEffect(() => {
         if (location.state?.updatedButtons) {
             setEditableButtons(location.state.updatedButtons);
@@ -115,7 +103,9 @@ export default function StudentPage( ) {
     const getRects = () => ({
         help: helpBtnRef.current?.getBoundingClientRect(),
         edit: editBtnRef.current?.getBoundingClientRect(),
-        translator: translatorBtnRef.current?.getBoundingClientRect()
+        translator: translatorBtnRef.current?.getBoundingClientRect(),
+        message: messageBtnRef.current?.getBoundingClientRect(),
+        activity: activityBtnRef.current?.getBoundingClientRect()
     });
 
     useLayoutEffect(() => {
@@ -192,7 +182,7 @@ export default function StudentPage( ) {
             {/* Header */}
             <header className="mb-6 flex justify-between items-center"> 
                 {/* Student Greeting */}
-                <h1 className="text-3xl font-bold mb-2">Hola {studentInfo?.student_name}!</h1>
+                <h1 className="text-3xl font-bold mb-2">{STUDENT_PAGE_TEXT[userLang].greeting} {studentInfo?.student_name}!</h1>
         
                 <div className="flex items-center gap-2.5">
 
@@ -206,7 +196,7 @@ export default function StudentPage( ) {
                         hover:bg-gray-800"
                         onClick={() => setShowHelp(true)}
                     >
-                        Help
+                        {STUDENT_PAGE_TEXT[userLang].help}
                     </button>
 
                     {/* Current Class */}
@@ -232,8 +222,8 @@ export default function StudentPage( ) {
             <p className="text-xl mb-2">
                 {currentActivity}
             </p>
-            <p>
-                I want to tell my teacher that...
+            <p ref={activityBtnRef}>
+                {STUDENT_PAGE_TEXT[userLang].buttonPrompt}
             </p>
             {/* Edit Button */}
             <div className="flex justify-end">
@@ -245,7 +235,7 @@ export default function StudentPage( ) {
                         alt="Edit Icon"
                         className="w-5 h-5"
                     />
-                    edit
+                    {STUDENT_PAGE_TEXT[userLang].edit}
                 </button>
             </div>
             {/* Button Grids */}
@@ -278,14 +268,15 @@ export default function StudentPage( ) {
                         alt="Translate Icon"
                         className="w-5 h-5"
                     />
-                    Translator
+                    {STUDENT_PAGE_TEXT[userLang].translator}
                 </button>
                 <button onClick={toggleTryMode} className={`border hover:bg-blue-400 mt-3 ${tryMode === "normal" ? "bg-blue-200" : "bg-yellow-200"}`}>
                      ⭐ 
                 </button>
             </div>
-            <MessageBox />
-            <StarBox starCount={starCount} />
+            <div ref={messageBtnRef} className="h-1 mb-1"></div>
+            <MessageBox placeholderText={STUDENT_PAGE_TEXT[userLang].message}/>
+            <StarBox starCount={starCount} text={STUDENT_PAGE_TEXT[userLang].star}/>
             <CommandPopUp 
                 visible={commandPopUpVisible}
                 onClose={() => setcommandPopUpVisible(false)}
@@ -303,10 +294,29 @@ export default function StudentPage( ) {
                         {STUDENT_PAGE_HELP_TEXT[userLang].close}
                     </button>
 
+                    {/* Tooltip for activity */}
+                    <Tooltip
+                        position={positions.activity}
+                        text={STUDENT_PAGE_HELP_TEXT[userLang].activityText}
+                        maxWidth={150}
+                        center
+                        offsetTBottom={-100}
+
+                    />
+
                     {/* Tooltip for help button */}
                     <Tooltip
                         position={positions.help}
                         text={STUDENT_PAGE_HELP_TEXT[userLang].help}
+                        maxWidth={150}
+                        center
+                    />
+
+
+                    {/* Tooltip for message bar */}
+                    <Tooltip
+                        position={positions.message}
+                        text={STUDENT_PAGE_HELP_TEXT[userLang].message}
                         maxWidth={150}
                         center
                     />

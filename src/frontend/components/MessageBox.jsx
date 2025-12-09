@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function MessageBar() {
+export default function MessageBar( {placeholderText}) {
     const [text, setText] = useState("");
 
     const sendMessage = () => {
@@ -11,7 +11,7 @@ export default function MessageBar() {
         <div className="flex mt-5 gap-2.5">
             <input
                 type="text"
-                placeholder="send message to Mrs. A..."
+                placeholder={placeholderText}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 className="flex-1 p-2.5 rounded-[10px] border border-gray-300"

@@ -84,6 +84,7 @@ export const STUDENT_PAGE_HELP_TEXT = {
         activityText: "This shows what the class is doing right now",
         profile: "See your profile and settings",
         class: "Choose your current class or subject",
+        message: "Send a message to your teacher",
         close: "Close help"
     },
     es: {
@@ -94,10 +95,12 @@ export const STUDENT_PAGE_HELP_TEXT = {
         activityText: "Esto muestra lo que la clase está haciendo ahora",
         profile: "Mira tu perfil y configuración",
         class: "Elige tu clase o materia",
+        message: "Envia un mensaje a tu maestro",
         close: "Cierra ayuda"
     },
 };
 
+// Map the language code to the student profile option text
 export const STUDENT_PROFILE_TEXT = {
     en: {
         profile: "Profile",
@@ -110,5 +113,27 @@ export const STUDENT_PROFILE_TEXT = {
         save: "Guarda",
         name: "Nombre",
         color: "Color",
+    },
+};
+
+// Map the language code to the student page buttons and text
+export const STUDENT_PAGE_TEXT = {
+    en: {
+        edit: "edit",
+        message: "send message to teacher...",
+        translator: "Translator",
+        help: "Help",
+        greeting: "Hello",
+        buttonPrompt: "I want to tell my teacher that...",
+        star: "Star count:"
+    },
+    es: {
+        edit: "edita",
+        message: "manda un mesaje a tu maestro...",
+        translator: "Traducir",
+        help: "Ayuda",
+        greeting: "Hola",
+        buttonPrompt: "Le quiero decir a mi maestro que...",
+        star: "Estrellas:"
     },
 };

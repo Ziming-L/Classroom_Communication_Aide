@@ -36,13 +36,11 @@ export default function CommandPopUp({
                         {mode === "normal" ? ( <> 
                             <button className="bg-[#ffe57f] hover:bg-yellow-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.tryOnOwn}</button> 
                             <button className="bg-[#afa4f3] hover:bg-purple-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.sendToTeacher}</button> 
-                            <button className="bg-[#c7c6c6] hover:bg-gray-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.playOutLoud}</button> 
                             </> ) 
                             : 
                             ( <> 
                             <button className="bg-[#c3f3d8] hover:bg-green-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.yesTry}</button> 
                             <button className="bg-[#ff9493] hover:bg-red-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.noTry}</button> 
-                            <button className="bg-[#c7c6c6] hover:bg-gray-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.playOutLoud}</button> 
                             </> )
                         }
                     </div>
