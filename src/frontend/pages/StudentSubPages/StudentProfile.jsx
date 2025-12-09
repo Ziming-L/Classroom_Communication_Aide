@@ -14,7 +14,37 @@ export default function StudentProfile() {
 
     const [name, setName] = useState(studentInfo?.student_name);
     const [profileColor, setProfileColor] = useState(studentInfo?.student_icon_bg_color);
-    const [avatar, setAvatar] = useState("../" + studentInfo?.student_icon);
+    const [avatar, setAvatar] = useState(studentInfo?.student_icon);
+
+
+    const handleSave = async () => {
+        try {
+            const response = await fetch( "/api/students/update-profile", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({
+                        student_name: name,
+                        student_icon: avatar,
+                        student_icon_bg_color: profileColor,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+            if (!response.ok) {
+                console.error("Profile update failed:", data);
+                alert(data.message || "Error updating profile");
+                return;
+            }
+            navigate("/student");
+        } catch (err) {
+            console.error(err);
+            alert("Failed to update profile");
+        }
+    };
 
     // NOTES; backend expect "../images/ ..." not "../../images ..."
     return (
@@ -55,7 +85,7 @@ export default function StudentProfile() {
                     <AvatarSelector 
                         avatar={avatar}
                         onChange={setAvatar}
-                        pathPrefix="../"
+                        pathPrefix=""
                     />
 
                     <div className="mb-6">
@@ -67,6 +97,7 @@ export default function StudentProfile() {
                     </div>
 
                     <button 
+                        onClick={handleSave}
                         className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
                     >
                         {STUDENT_PROFILE_TEXT[userLang]?.save}
