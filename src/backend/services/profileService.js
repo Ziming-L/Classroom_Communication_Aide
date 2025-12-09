@@ -9,33 +9,103 @@ import { supabase } from "../services/supabaseClient.js";
  * @returns {{success: boolean, message: string}}
  */
 export async function createProfile(user_id, role, data) {
-    const { name, language_code, icon, icon_bg_color, school_name } = data;
+    try {
+        const { name, language_code, icon, icon_bg_color, school_name } = data;
 
-    const params = {
-        p_user_id: user_id,
-        p_role: role,
-        p_name: name,
-        p_language_code: language_code,
-    };
-    if (icon !== undefined) {
-        params.p_icon = icon;
-    }
-    if (icon_bg_color !== undefined) {
-        params.p_icon_bg_color = icon_bg_color;
-    }
-    if (school_name !== undefined) {
-        params.p_school_name = icon;
-    }
+        if (role !== "teacher" || role !== "student") {
+            return { 
+                success: false, 
+                message: "Invalid role" 
+            };
+        }
 
-    const { data: result, error } = await supabase.rpc("create_user_profile", params);
-    if (error) {
+        if (name.trim() === "") {
+            return {
+                success: false,
+                message: "Name cannot be just whitespace"
+            };
+        }
+        if (name.length > 20) {
+            return {
+                success: false,
+                message: "Name too long (> 20 characters)"
+            };
+        }
+
+        if (language_code.trim() === "") {
+            return {
+                success: false,
+                message: "Language code cannot be just whitespace"
+            };
+        }
+        if (language_code.length !== 2 && language_code.length !== 3) {
+            return {
+                success: false,
+                message: "Language code must be 2 or 3 characters (e.g. 'en', 'es')"
+            };
+        }
+
+        if (icon !== undefined) {
+            const iconRegex = /^\.\.\/images\/user_profile_icon\/[a-zA-Z0-9_-]+\.png$/;
+            if (!iconRegex.test(icon)) {
+                return {
+                    success: false,
+                    message: "Icon must match format: ../images/user_profile_icon/<name>.png"
+                };
+            }
+        } 
+
+        if (icon_bg_color !== undefined) {
+            const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+            // validate hex color
+            if (!hexRegex.test(icon_bg_color)) {
+                return {
+                    success: false,
+                    message: "Invalid color format. Use hex like #add8e6"
+                };
+            }
+        }
+
+        if (school_name !== undefined) {
+            if (school_name.trim() === "") {
+                return {
+                    success: false,
+                    message: "School name cannot be just whitespace"
+                };
+            }
+        }
+
+        const params = {
+            p_user_id: user_id,
+            p_role: role,
+            p_name: name,
+            p_language_code: language_code,
+        };
+        if (icon !== undefined) {
+            params.p_icon = icon;
+        }
+        if (icon_bg_color !== undefined) {
+            params.p_icon_bg_color = icon_bg_color;
+        }
+        if (school_name !== undefined) {
+            params.p_school_name = school_name;
+        }
+
+        const { data: result, error } = await supabase.rpc("create_user_profile", params);
+        if (error) {
+            return {
+                success: false,
+                message: error.message
+            };
+        }
+
+        return result;
+    } catch (err) {
         return {
             success: false,
-            message: error.message
+            message: "Unexpected error: " + err.message
         };
     }
-
-    return result;
 }
 
 /**
@@ -50,31 +120,61 @@ export async function createProfile(user_id, role, data) {
  * @returns {json} return the success: true/false and the message
  */
 export async function updateProfile(user_id, { name, icon, icon_bg_color }) {
-    if (name && name.length > 15) {
+    try {
+        if (name !== undefined) {
+            if (name.trim() === "") {
+                return {
+                    success: false,
+                    message: "Name cannot be just whitespace"
+                };
+            }
+            if (name.length > 20) {
+                return {
+                    success: false,
+                    message: "Name too long (> 20 characters)"
+                };
+            }
+        }
+
+        if (icon !== undefined) {
+            const iconRegex = /^\.\.\/images\/user_profile_icon\/[a-zA-Z0-9_-]+\.png$/;
+            if (!iconRegex.test(icon)) {
+                return {
+                    success: false,
+                    message: "Icon must match format: ../images/user_profile_icon/<name>.png"
+                };
+            }
+        } 
+
+        if (icon_bg_color !== undefined) {
+            const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+            // validate hex color
+            if (!hexRegex.test(icon_bg_color)) {
+                return {
+                    success: false,
+                    message: "Invalid color format. Use hex like #add8e6"
+                };
+            }
+        }
+
+        const { data, error } = await supabase.rpc("modify_profile", {
+            p_user_id: user_id, 
+            p_name: name ?? null,
+            p_icon: icon ?? null,
+            p_icon_bg_color: icon_bg_color ?? null
+        });
+        if (error) {
+            return {
+                success: false, 
+                message: error.message
+            };
+        }
+
+        return data;
+    } catch (err) {
         return {
             success: false,
-            message: "Name too long"
+            message: "Unexpected error: " + err.message
         };
     }
-    if (icon_bg_color && !/^#([0-9A-Fa-f]{6})$/.test(icon_bg_color)) {
-        return {
-            success: false, 
-            message: "Invalid icon background color: need to be in hex"
-        };
-    }
-
-    const { data, error } = await supabase.rpc("modify_profile", {
-        p_user_id: user_id, 
-        p_name: name ?? null,
-        p_icon: icon ?? null,
-        p_icon_bg_color: icon_bg_color ?? null
-    });
-    if (error) {
-        return {
-            success: false, 
-            message: error.message
-        };
-    }
-
-    return data;
 }

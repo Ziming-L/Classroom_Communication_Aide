@@ -14,10 +14,10 @@ const COMMANDS_TEXT_MAP = {
 };
 
 const COMMAND_IMG_MAP = {
-    wantWater: "/images/commands_icon/cup.png",
-    needBathroom: "/images/commands_icon/chicken_moving.png",
-    sick: "/images/commands_icon/sick.png",
-    needHelp: "/images/commands_icon/question.png",
+    wantWater: "../images/commands_icon/cup.png",
+    needBathroom: "../images/commands_icon/chicken_moving.png",
+    sick: "../images/commands_icon/sick.png",
+    needHelp: "../images/commands_icon/question.png",
 };
 
 const COMMAND_COLOR_MAP = {

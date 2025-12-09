@@ -11,7 +11,7 @@ router.post("/join-class", verifyToken, authRequireStudent, async (req, res) => 
         const { user_id } = req.user;
         const { class_code } = req.body;
 
-        if (!class_code || typeof class_code !== "string" || class_code.length > 10) {
+        if (!class_code || typeof class_code !== "string" || class_code.length != 10) {
             return res.status(400).json({ 
                 success: false, 
                 message: "Invalid class code" 
@@ -79,7 +79,6 @@ router.post("/join-class", verifyToken, authRequireStudent, async (req, res) => 
     }
 });
 
-
 router.post("/add-command", verifyToken, authRequireStudent, async (req, res) => {
     try {
         const { user_id } = req.user;
@@ -92,31 +91,38 @@ router.post("/add-command", verifyToken, authRequireStudent, async (req, res) =>
                 message: "Invalid command_text"
             });
         }
+
         if (!translated_text || typeof translated_text !== "string") {
             return res.status(400).json({ 
                 success: false, 
                 message: "Invalid translated_text"
             });
         }
-        if (!target_language_code || typeof target_language_code !== "string" || target_language_code.length > 3) {
+
+        if (!target_language_code || typeof target_language_code !== "string" || (target_language_code.length != 2 && target_language_code.length != 3)) {
             return res.status(400).json({ 
                 success: false,
                 message: "Invalid target_language_code"
             });
         }
-        if (!command_color || typeof command_color !== "string") {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Invalid command_color"
+
+        const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+        if (!command_color || typeof command_color !== "string" || !hexRegex.test(command_color)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid color format. Use hex like #ade8e6"
             });
         }
-        if (!command_image || typeof command_image !== "string") {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Invalid command_image"
+
+        const commandPathRegex = /^\.\.\/images\/commands_icon\/[a-zA-Z0-9_-]+\.png$/;
+        if (!command_image || typeof command_image !== "string" || !commandPathRegex.test(command_image)) {
+            return res.status(400).json({
+                success: false,
+                message: "Command image path must match format: ../images/commands_icon/<name>.png"
             });
         }
-        if (!priority_number || typeof priority_number !== "number") {
+
+        if (!priority_number || typeof priority_number !== "number" || priority_number === 1) {
             return res.status(400).json({ 
                 success: false, 
                 message: "Invalid priority_number"
@@ -164,6 +170,42 @@ router.put("/update-command/:command_id", verifyToken, authRequireStudent, async
         }
 
         const { command_text, translated_text, target_language_code, command_color, command_image, priority_number } = req.body;
+        
+        if (target_language_code !== undefined  && (target_language_code.length != 2 && target_language_code.length != 3)) {
+            return res.status(400).json({ 
+                success: false,
+                message: "Invalid target_language_code"
+            });
+        }
+
+        if (command_color !== undefined) {
+            const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+            if (!hexRegex.test(command_color)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid color format. Use hex like #ade8e6"
+                });
+            }
+        }
+
+        if (command_image !== undefined) {
+            const commandPathRegex = /^\.\.\/images\/commands_icon\/[a-zA-Z0-9_-]+\.png$/;
+            if (!commandPathRegex.test(command_image)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Command image path must match format: ../images/commands_icon/<name>.png"
+                });
+            }
+        }
+
+        if (priority_number !== undefined) {
+            if (typeof priority_number !== "number" || priority_number === 1) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "Invalid priority_number"
+                });
+            }
+        }
 
         const { data, error } = await supabase.rpc("modify_command", {
             p_user_id: user_id,
@@ -233,7 +275,8 @@ router.put("/update-profile", verifyToken, authRequireStudent, async (req, res) 
     try {
         const { user_id } = req.user;
         const { student_name, student_icon, student_icon_bg_color } = req.body;
-
+        
+        // check handled inside function
         const result = await updateProfile(user_id, {
             name: student_name, 
             icon: student_icon,
@@ -260,10 +303,11 @@ router.post("/create-profile", verifyToken, authRequireStudent, async (req, res)
         if (!name || !language_code) {
             return res.status(400).json({
                 success: false,
-                message: "REQUIRED: name and language_code."
+                message: "REQUIRED: name and language_code"
             });
         }
 
+        // check handled inside the function
         const result = await createProfile(user_id, "student", {
             name,
             language_code,
@@ -362,7 +406,7 @@ router.post("/add-command-translation", verifyToken, authRequireStudent, async (
                 message: "Invalid translated_text"
             });
         }
-        if (!target_language_code || typeof target_language_code !== "string" || target_language_code.length > 3) {
+        if (!target_language_code || typeof target_language_code !== "string" || (target_language_code.length !== 2 && target_language_code.length !== 3)) {
             return res.status(400).json({ 
                 success: false,
                 message: "Invalid target_language_code"
@@ -440,7 +484,14 @@ router.post("/set-try-yourself", verifyToken, async (req, res) => {
         if (!student_id || value === undefined || !class_code) {
             return res.status(400).json({ 
                 success: false, 
-                message: "REQUIRED: class_code, value, and class_code"
+                message: "REQUIRED: student_id, value, and class_code"
+            });
+        }
+
+        if (class_code.length != 10) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "class_code need to be 10 characters long"
             });
         }
 
@@ -453,7 +504,7 @@ router.post("/set-try-yourself", verifyToken, async (req, res) => {
         if (classErr || !classData) {
             return res.status(403).json({
                 success: false,
-                message: "Student profile not found"
+                message: "Class not found"
             });
         }
 

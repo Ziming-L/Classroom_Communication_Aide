@@ -10,6 +10,7 @@ router.put("/update-profile", verifyToken, authRequireTeacher, async (req, res) 
         const { user_id } = req.user;
         const { teacher_name, teacher_icon, teacher_icon_bg_color } = req.body;
 
+        // check handled inside the function
         const result = await updateProfile(user_id, {
             name: teacher_name, 
             icon: teacher_icon,
@@ -36,10 +37,11 @@ router.post("/create-profile", verifyToken, authRequireTeacher, async (req, res)
         if (!name || !language_code || !school_name) {
             return res.status(400).json({
                 success: false,
-                message: "REQUIRED: name, language_code, and school_name."
+                message: "REQUIRED: name, language_code, and school_name"
             });
         }
 
+        // check handled inside the function
         const result = await createProfile(user_id, "teacher", {
             name,
             language_code,
@@ -142,6 +144,28 @@ router.post("/create-class", verifyToken, authRequireTeacher, async (req, res) =
             });
         }
 
+        if (class_name.trim() === "") {
+            return res.status(400).json({
+                success: false,
+                message: "Class name cannot be just whitespace"
+            });
+        }
+        if (class_name.length > 20) {
+            return res.status(400).json({
+                success: false,
+                message: "Class name cannot be greater than 20 characters"
+            });
+        }
+
+        // check for time in UTC format
+        const utcRegex = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d(\.\d{1,6})?)?(Z|\+00(:00)?)$/;
+        if (!utcRegex.test(class_start) || !utcRegex.test(class_end)) {
+            return res.status(400).json({
+                success: false,
+                message: "Time must be in UTC format, e.g. 02:34:24.655299+00"
+            });
+        }
+
         const { data, error } = await supabase.rpc("create_class_for_teacher", {
             p_user_id: user_id,
             p_class_name: class_name,
@@ -203,6 +227,13 @@ router.delete("/delete-class", verifyToken, authRequireTeacher, async (req, res)
             return res.status(400).json({
                 success: false,
                 message: "REQUIRED: class_id and class_code"
+            });
+        }
+
+        if (class_code.trim().length != 10) {
+            return res.status(400).json({
+                success: false,
+                message: "class_code need to be 10 characters long"
             });
         }
 
@@ -271,7 +302,7 @@ router.post("/add-student", verifyToken, authRequireTeacher, async (req, res) =>
         const { user_id } = req.user;
         const { username, class_id } = req.body;
 
-        if (!username || !class_id) {
+        if (!username || username.trim() === "" || !class_id) {
             return res.status(400).json({
                 success: false,
                 message: "REQUIRED: username and class_id"
@@ -307,7 +338,7 @@ router.post("/approve-request-button", verifyToken, authRequireTeacher, async (r
         const { user_id } = req.user;
         const { request_id } = req.body;
 
-        if (!request_id) {
+        if (request_id === undefined || request_id === null) {
             return res.status(400).json({
                 success: false,
                 message: "Missing request_id"
@@ -342,10 +373,26 @@ router.post("/approve-request-message", verifyToken, authRequireTeacher, async (
         const { user_id } = req.user;
         const { request_id, content, sent_at } = req.body;
 
-        if (!request_id || !content || !sent_at) {
+        if (request_id === undefined || request_id === null || !content || !sent_at) {
             return res.status(400).json({
                 success: false,
                 message: "REQUIRED: request_id, content, and sent_at"
+            });
+        }
+
+        if (content.length > 500) {
+            return res.status(400).json({
+                success: false,
+                message: "Content is greater than 500 characters"
+            });
+        }
+
+        // make sure in ISO UTC format
+        const isoUtcRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+        if (!isoUtcRegex.test(sent_at)) {
+            return res.status(400).json({
+                success: false,
+                message: "sent_at must be ISO format in UTC (e.g. 2025-01-14T12:45:30.123Z)"
             });
         }
 
