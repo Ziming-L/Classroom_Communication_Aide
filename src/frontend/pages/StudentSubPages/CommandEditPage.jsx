@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TOP_BUTTONS_MAP} from "../../utils/constants.js";
-import EditableButton from "../../components/EditableButton.jsx"
+import EditableButton from "../../components/EditableButton.jsx";
+import { translateText } from "../../utils/translateText.js";
 
 export default function StudentProfile() {
     const navigate = useNavigate();
@@ -29,6 +30,24 @@ export default function StudentProfile() {
             )
         );
     };
+
+    // translate text from user lang to "en"
+    // maybe get the teacher language here from parent page and change the "en"
+    const handleUserLangUpdateText = async (id, text) => {
+        updateButton(id, { userLangText: text });
+
+        if (!text.trim()) {
+            updateButton(id, { targetLangText: ""});
+            return;
+        }
+
+        try {
+            const translated = await translateText(text, userLang, "en");
+            updateButton(id, { targetLangText: translated });
+        } catch (err) {
+            console.error("Translation failed in CommandEditPage.jsx: ", err);
+        }
+    }
 
     const saveChanges = () => {
         navigate("/student", { state: { updatedButtons: editedButtons } });
@@ -64,7 +83,7 @@ export default function StudentProfile() {
                                 <input
                                     className="w-full border p-2 rounded mb-2"
                                     value={button.userLangText}
-                                    onChange={(e) => updateButton(button.id, { userLangText: e.target.value })}
+                                    onChange={(e) => handleUserLangUpdateText(button.id, e.target.value)}
                                 />
                             </div>
 
@@ -73,7 +92,7 @@ export default function StudentProfile() {
                                 <input
                                     className="w-full border p-2 rounded mb-2"
                                     value={button.targetLangText}
-                                    onChange={(e) => updateButton(button.id, { targetLangText: e.target.value })}
+                                    readOnly
                                 />
                             </div>
 
