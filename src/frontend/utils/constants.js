@@ -97,3 +97,18 @@ export const STUDENT_PAGE_HELP_TEXT = {
         close: "Cierra ayuda"
     },
 };
+
+export const STUDENT_PROFILE_TEXT = {
+    en: {
+        profile: "Profile",
+        save: "Save",
+        name: "Name",
+        color: "Color",
+    },
+    es: {
+        profile: "Perfil",
+        save: "Guarda",
+        name: "Nombre",
+        color: "Color",
+    },
+};

@@ -1,15 +1,17 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useRef, useLayoutEffect } from "react";
-import { TOP_BUTTONS_MAP} from "../../utils/constants.js";
+import { TOP_BUTTONS_MAP, STUDENT_PROFILE_TEXT} from "../../utils/constants.js";
 
 export default function StudentProfile() {
     const navigate = useNavigate();
     const returnToDashboard = () => navigate("/student");
-    const userLang = "es";
+    const { state } = useLocation();
+    const studentInfo = state?.studentInfo;
+    const userLang = studentInfo?.language_code;
 
-    const [name, setName] = useState("");
-    const [profileColor, setProfileColor] = useState("#8b5cf6");
-    const [avatar, setAvatar] = useState("../../images/user_profile_icon/baby_chick_1.png");
+    const [name, setName] = useState(studentInfo?.student_name);
+    const [profileColor, setProfileColor] = useState(studentInfo?.student_icon_bg_color);
+    const [avatar, setAvatar] = useState("../" + studentInfo?.student_icon);
 
     
     const avatarOptions = ["../../images/user_profile_icon/baby_chick_1.png", "../../images/user_profile_icon/cat_1.png"];
@@ -27,7 +29,7 @@ export default function StudentProfile() {
                 {TOP_BUTTONS_MAP[userLang]?.goBack}
             </button>
             <div className="flex flex-col items-center">
-                <h1 className="text-2xl text-center font-bold">Profile</h1>
+                <h1 className="text-2xl text-center font-bold">{STUDENT_PROFILE_TEXT[userLang]?.profile}</h1>
                 <div 
                     className="p-6 rounded-xl shadow-md w-full max-w-lg"
                 >
@@ -43,7 +45,7 @@ export default function StudentProfile() {
                     </div>
 
                     <div className="mb-4">
-                        <label className="block font-medium mb-1">Name</label>
+                        <label className="block font-medium mb-1">{STUDENT_PROFILE_TEXT[userLang]?.name}</label>
                         <input
                             className="w-full border rounded px-3 py-2"
                             value={name}
@@ -70,7 +72,7 @@ export default function StudentProfile() {
                     </div>
 
                     <div className="mb-6">
-                        <label className="block font-medium mb-2">Color</label>
+                        <label className="block font-medium mb-2">{STUDENT_PROFILE_TEXT[userLang]?.color}</label>
                         <div className="flex gap-3">
                             {colorOptions.map((color) => (
                                 <button
@@ -86,7 +88,7 @@ export default function StudentProfile() {
                     <button 
                         className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50"
                     >
-                        save
+                        {STUDENT_PROFILE_TEXT[userLang]?.save}
                     </button>
                 </div>
             </div>

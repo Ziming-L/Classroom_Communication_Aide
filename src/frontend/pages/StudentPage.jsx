@@ -12,9 +12,6 @@ import request from "../utils/auth";
 export default function StudentPage( ) {
 
     const navigate = useNavigate();
-
-    // get data from parent page
-    //const student_id = 48;
     const token = localStorage.getItem("token");
 
     // for help tooltips
@@ -27,6 +24,7 @@ export default function StudentPage( ) {
     
 
     const [studentName, setStudentName] = useState("");
+    const [studentInfo, setStudentInfo] = useState(null);
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
     const [buttons, setButtons] = useState(studentButtons);
@@ -48,7 +46,7 @@ export default function StudentPage( ) {
     };
 
     const handleGoToProfile = () => {
-        navigate("/student/profile");
+        navigate("/student/profile", { state: { studentInfo } });
     };
 
     const handleGoToEdit = () => {
@@ -131,21 +129,46 @@ export default function StudentPage( ) {
             const res = await request("/api/students/star-number", {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${token}`
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
                 }
             });
 
-            const data = await res.json();
-
-            if (data.success) {
-                setStarCount(data.star_number);
+            if (res.success) {
+                setStarCount(res.star_number);
             } else {
-                console.error("Backend error:", data);
+                console.error("Backend error:", res);
             }
         } catch (err) {
             console.error("Error fetching star count:", err);
         }
     };
+
+    const fetchStudentInfo = async () => {
+        try {
+            const res = await request("/api/students/student-info", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            console.log("API returned:", res);
+            if (res.success) {
+                setStudentInfo(res.student);
+            } else {
+                console.error("Backend error:", res);
+            }
+        } catch (err) {
+            console.error("Error fetching student info:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchStudentInfo();
+    }, []);
+
 
     useEffect(() => {
         fetchStarCount();
@@ -157,7 +180,7 @@ export default function StudentPage( ) {
             {/* Header */}
             <header className="mb-6 flex justify-between items-center"> 
                 {/* Student Greeting */}
-                <h1 className="text-3xl font-bold mb-2">Hola Carlos!</h1>
+                <h1 className="text-3xl font-bold mb-2">Hola {studentInfo?.student_name}!</h1>
         
                 <div className="flex items-center gap-2.5">
 
