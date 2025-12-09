@@ -1,3 +1,6 @@
+import { speak, stopSpeaking } from "../utils/speechSynthesis";
+import { useState } from "react";
+
 export default function CommandPopUp({
     visible,
     onClose,
@@ -5,7 +8,22 @@ export default function CommandPopUp({
     mode,
     textTranslations,
 }) {
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    
     if (!visible) return null;
+
+    const handleSpeak = () => {
+        if (!isSpeaking) {
+            speak(command.targetLangText, "en-US", {
+                onSpeak: () => setIsSpeaking(true),
+                onStop: () => setIsSpeaking(false)
+            });
+        } else {
+            stopSpeaking();
+            setIsSpeaking(false);
+        }
+    };
+
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 scale-150">
@@ -35,7 +53,7 @@ export default function CommandPopUp({
                     <div className="flex flex-col items-end space-y-4">
                         {mode === "normal" ? ( <> 
                             <button className="bg-[#ffe57f] hover:bg-yellow-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.tryOnOwn}</button> 
-                            <button className="bg-[#afa4f3] hover:bg-purple-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.sendToTeacher}</button> 
+                            <button className="bg-[#afa4f3] hover:bg-purple-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.sendToTeacher}</button>
                             </> ) 
                             : 
                             ( <> 
@@ -43,6 +61,9 @@ export default function CommandPopUp({
                             <button className="bg-[#ff9493] hover:bg-red-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.noTry}</button> 
                             </> )
                         }
+                        <button className="bg-[#c7c6c6] hover:bg-gray-400 border text-black py-2 px-4 rounded-lg w-full"onClick={handleSpeak}>
+                            {isSpeaking ? textTranslations.stopPlaying : textTranslations.playOutLoud}
+                        </button> 
                     </div>
 
                 </div>
