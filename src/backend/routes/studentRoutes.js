@@ -106,11 +106,11 @@ router.post("/add-command", verifyToken, authRequireStudent, async (req, res) =>
             });
         }
 
-        const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+        const hexRegex = /^#[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?$/;
         if (!command_color || typeof command_color !== "string" || !hexRegex.test(command_color)) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid color format. Use hex like #ade8e6"
+                message: "Invalid color format. Use hex like #ade8e6 or #14336cff"
             });
         }
 
@@ -179,11 +179,11 @@ router.put("/update-command/:command_id", verifyToken, authRequireStudent, async
         }
 
         if (command_color !== undefined) {
-            const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+            const hexRegex = /^#[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?$/;
             if (!hexRegex.test(command_color)) {
                 return res.status(400).json({
                     success: false,
-                    message: "Invalid color format. Use hex like #ade8e6"
+                    message: "Invalid color format. Use hex like #ade8e6 or #14336cff"
                 });
             }
         }

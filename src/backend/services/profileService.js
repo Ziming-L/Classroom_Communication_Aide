@@ -56,12 +56,12 @@ export async function createProfile(user_id, role, data) {
         } 
 
         if (icon_bg_color !== undefined) {
-            const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+            const hexRegex = /^#[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?$/;
             // validate hex color
             if (!hexRegex.test(icon_bg_color)) {
                 return {
                     success: false,
-                    message: "Invalid color format. Use hex like #add8e6"
+                    message: "Invalid color format. Use hex like #add8e6 or #14336cff"
                 };
             }
         }
@@ -147,12 +147,12 @@ export async function updateProfile(user_id, { name, icon, icon_bg_color }) {
         } 
 
         if (icon_bg_color !== undefined) {
-            const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+            const hexRegex = /^#[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?$/;
             // validate hex color
             if (!hexRegex.test(icon_bg_color)) {
                 return {
                     success: false,
-                    message: "Invalid color format. Use hex like #add8e6"
+                    message: "Invalid color format. Use hex like #add8e6 or #14336cff"
                 };
             }
         }
