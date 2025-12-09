@@ -15,8 +15,6 @@ export default function StudentPage( ) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const token = localStorage.getItem("token");
-
     // use for waiting for input
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -98,7 +96,6 @@ export default function StudentPage( ) {
             const res = await request("/api/students/star-number", {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
@@ -120,7 +117,6 @@ export default function StudentPage( ) {
             const res = await request("/api/students/student-info", {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });

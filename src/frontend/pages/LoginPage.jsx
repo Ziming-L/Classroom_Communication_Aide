@@ -29,7 +29,6 @@ export default function LoginPage({ userType, onBack, onLogin }) {
         setError(null);
         try {
             const { token, user } = await loginUser({ email, password, role: userType });
-            localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
             if (typeof onLogin === 'function') {
                 onLogin(user);
@@ -50,7 +49,6 @@ export default function LoginPage({ userType, onBack, onLogin }) {
         try {
             await registerUser({ email, username, password, role });
             const { token, user } = await loginUser({ email, password, role });
-            localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
             if (typeof onLogin === 'function') {
                 onLogin(user);

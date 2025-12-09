@@ -124,8 +124,6 @@ export default function RequestLogPage() {
     const teacherIcon = teacher_icon ? "../" + teacher_icon : "../../images/user_profile_icon/default_user.png";
     const teacherIconBg = teacher_icon_bg_color || '#add8e6';
 
-    const token = localStorage.getItem('token');
-
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(false);
 

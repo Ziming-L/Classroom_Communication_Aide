@@ -4,6 +4,7 @@ import { TOP_BUTTONS_MAP, STUDENT_PROFILE_TEXT} from "../../utils/constants.js";
 import Profile from "../../components/Profile.jsx";
 import AvatarSelector from "../../components/AvatarSelector.jsx";
 import ColorSelector from "../../components/ColorSelector.jsx";
+import request from "../../utils/auth.js";
 
 export default function StudentProfile() {
     const navigate = useNavigate();
@@ -19,26 +20,17 @@ export default function StudentProfile() {
 
     const handleSave = async () => {
         try {
-            const response = await fetch( "/api/students/update-profile", {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({
-                        student_name: name,
-                        student_icon: avatar,
-                        student_icon_bg_color: profileColor,
-                    }),
-                }
-            );
-
-            const data = await response.json();
-            if (!response.ok) {
-                console.error("Profile update failed:", data);
-                alert(data.message || "Error updating profile");
-                return;
-            }
+            const data = await request("/api/students/update-profile", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    student_name: name,
+                    student_icon: avatar,
+                    student_icon_bg_color: profileColor,
+                }),
+            });
             navigate("/student");
         } catch (err) {
             console.error(err);

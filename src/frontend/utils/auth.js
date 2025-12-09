@@ -1,6 +1,19 @@
+import { supabase } from './supabase';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-async function request(url, options) {
+async function request(url, options = {}) {
+    // Get fresh token from Supabase session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    // If we have a session, inject the fresh access token
+    if (session?.access_token) {
+        options.headers = {
+            ...options.headers,
+            'Authorization': `Bearer ${session.access_token}`
+        };
+    }
+
     const response = await fetch(`${API_BASE_URL}${url}`, options);
     const data = await response.json();
     if (!response.ok) {

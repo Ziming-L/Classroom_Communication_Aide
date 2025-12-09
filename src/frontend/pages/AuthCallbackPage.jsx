@@ -60,9 +60,7 @@ export default function AuthCallbackPage() {
           }
 
           // Existing user - log them in
-          localStorage.setItem('token', result.token);
           localStorage.setItem('user', JSON.stringify(result.user));
-          localStorage.setItem('supabaseSession', JSON.stringify(session));
 
           // Navigate based on user role
           if (result.user.role === 'student') {
@@ -122,12 +120,7 @@ export default function AuthCallbackPage() {
 
       const responseData = await response.json();
 
-      // Get a new token
-      const { data: { session } } = await supabase.auth.getSession();
-
-      localStorage.setItem('token', session.access_token);
       localStorage.setItem('user', JSON.stringify(responseData.user));
-      localStorage.setItem('supabaseSession', JSON.stringify(session));
 
       // Navigate based on role
       if (role === 'student') {
