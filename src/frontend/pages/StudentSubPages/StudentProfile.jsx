@@ -2,6 +2,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { TOP_BUTTONS_MAP, STUDENT_PROFILE_TEXT} from "../../utils/constants.js";
 import Profile from "../../components/Profile.jsx";
+import AvatarSelector from "../../components/AvatarSelector.jsx";
+import ColorSelector from "../../components/ColorSelector.jsx";
 
 export default function StudentProfile() {
     const navigate = useNavigate();
@@ -14,9 +16,6 @@ export default function StudentProfile() {
     const [profileColor, setProfileColor] = useState(studentInfo?.student_icon_bg_color);
     const [avatar, setAvatar] = useState("../" + studentInfo?.student_icon);
 
-    
-    const avatarOptions = ["../../images/user_profile_icon/baby_chick_1.png", "../../images/user_profile_icon/cat_1.png"];
-    const colorOptions = ["#8b5cf6", "#f59e0b", "#10b981"];
 
     return (
         <div className="p-8">
@@ -53,36 +52,17 @@ export default function StudentProfile() {
                         />
                     </div>
 
-                    <div className="flex gap-3 flex-wrap">
-                        {avatarOptions.map((a) => (
-                            <button
-                                key={a}
-                                onClick={() => setAvatar(a)}
-                                className={`p-1 rounded-lg border ${
-                                    avatar === a ? "border-black" : "border-transparent"
-                                }`}
-                            >
-                                <img 
-                                    src={a}
-                                    alt="avatar option"
-                                    className="w-12 h-12 object-contain rounded-full"
-                                />
-                            </button>
-                        ))}
-                    </div>
+                    <AvatarSelector 
+                        avatar={studentInfo?.student_icon}
+                        onChange={setAvatar}
+                    />
 
                     <div className="mb-6">
                         <label className="block font-medium mb-2">{STUDENT_PROFILE_TEXT[userLang]?.color}</label>
-                        <div className="flex gap-3">
-                            {colorOptions.map((color) => (
-                                <button
-                                    key={color}
-                                    className="w-10 h-10 rounded-full border"
-                                    style={{ backgroundColor: color }}
-                                    onClick={() => setProfileColor(color)}
-                                />
-                            ))}
-                        </div>
+                        <ColorSelector 
+                            color={profileColor}
+                            onChange={setProfileColor}
+                        />
                     </div>
 
                     <button 
