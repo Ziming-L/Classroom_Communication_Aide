@@ -106,7 +106,7 @@ export default function TranslatorPage() {
                 setLeftText(result);
             }
         } catch (err) {
-            console.error("Translation failed:", err);
+            console.error("Translation failed: ", err);
         }
     }
 

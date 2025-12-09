@@ -1,3 +1,5 @@
+import request from "./auth";
+
 /**
  * Translates a given text from one language to another using a backend API.
  *
@@ -11,16 +13,15 @@ export async function translateText(text, from, to) {
     if (!text || typeof text !== "string" || !text.trim()) return;
     
     try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/translate`, {
+        const data = await request('/api/translate', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text, from, to }),
         });
 
-        const data = await res.json();
-        return data[0]?.translations[0]?.text || "";
+        return data[0]?.translations[0]?.text ?? "";
     } catch (err) {
-        console.error("Translation failed", err);
+        console.error("Translation failed: ", err);
         return "";
     }
 }
