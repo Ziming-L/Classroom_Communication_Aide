@@ -38,6 +38,7 @@ export default function CustomMessagePage() {
 
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(false);
+    const [messageId, setMessageId] = useState(null);
 
     const handleCancel = () => {
         setContent("");
@@ -55,25 +56,41 @@ export default function CustomMessagePage() {
         }
 
         setLoading(true);
-        // try {
-        //     const sent_at = new Date().toISOString();
-        //     const data = await request("/api/teachers/approve-request-message", {
-        //         method: "POST", 
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             "Authorization": `Bearer ${token}`
-        //         },
-        //         body: JSON.stringify({request_id, content, sent_at}),
-        //     });
+        try {
+            // const sent_at = new Date().toISOString();
+            // const data = await request("/api/teachers/approve-request-message", {
+            //     method: "POST", 
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify({
+            //         request_id, 
+            //         content: trimmedContent, 
+            //         sent_at
+            //     }),
+            // });
 
-        //     console.log("Message to send: ", content);
-        //     navigate("/teacher");
-        // } catch (err) {
-        //     console.error("Failed to send message:", err);
-        //     alert("Error sending message: " + err.message);
-        // } finally {
-        //     setLoading(false);
-        // }
+            // console.log("Backend response: ", data);
+
+            // if (data.success) {
+            //     setMessageId(data.message_id);
+            //     console.log("Stored message id in CustomMessagePage");
+
+            //     // TODO:
+            //     // need to send the message to student
+            //     // can be handle here or pass the message id to the teacher
+            //     // might use messageId to notify the student
+            //     navigate("/teacher");
+            // } else {
+            //     alert(data.message || "Error occurred");
+            // }
+
+        } catch (err) {
+            console.error("Failed to send message:", err);
+            alert("Error sending message: " + err.message);
+        } finally {
+            setLoading(false);
+        }
         
         // for actual, uncomment above and delete below
         console.log("Content: " + content);

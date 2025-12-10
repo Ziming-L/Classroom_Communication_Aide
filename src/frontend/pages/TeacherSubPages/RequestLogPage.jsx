@@ -6,112 +6,8 @@ import RequestRow from "../../components/TeacherPage/RequestRow.jsx";
 import GoBackButton from "../../components/GoBackButton.jsx";
 import request from '../../utils/auth';
 
-
-// TODO: delete before deploy -- just for testing
-const sampleRequests = [
-    {
-        request_id: 1,
-        student_icon: "../images/user_profile_icon/woman_5.png",
-        student_icon_bg_color: "#b8a6d4ff",
-        student_name: "Jackie May",
-        request_text: "I want to drink water",
-        created_at: "2025-12-07 01:41:32.058925+00",
-        status: "pending",
-        responded_at: null,
-        message: null,
-    },
-    {
-        request_id: 2,
-        student_icon: "../images/user_profile_icon/woman_2.png",
-        student_icon_bg_color: "#ffb6c1",
-        student_name: "Jackie Chan",
-        request_text: "I feel sick",
-        created_at: "2025-11-28 00:03:50.03132+00",
-        status: "approved",
-        responded_at: "2025-11-28 02:41:32.058925+00",
-        message: null,
-    },
-    {
-        request_id: 3,
-        student_icon: "../images/user_profile_icon/polar_bear_1.png",
-        student_icon_bg_color: "#b0ecacff",
-        student_name: "Sarah Doe",
-        request_text: "I want to drink water",
-        created_at: "2025-11-24 00:03:50.03132+00",
-        status: "message",
-        responded_at: null,
-        message: {
-            message_id: 12,
-            content:
-            "Please return the signed form by tomorrow. aaas sa an asdm asdnasd sak. sd ak d aks da kd qwk dandedkeja dkfea nf ekn dkwedknend ekn ksad adsaed,em cde dejd kedn a,rnf r efea jf jh. ",
-            sent_at: "2025-11-24 00:03:50.03132+00",
-        },
-    },
-    {
-        request_id: 4,
-        student_icon: "../images/user_profile_icon/polar_bear_1.png",
-        student_icon_bg_color: "#b0ecacff",
-        student_name: "Sarah Doe",
-        request_text: "I want to drink water",
-        created_at: "2025-11-24 00:03:50.03132+00",
-        status: "message",
-        responded_at: null,
-        message: {
-            message_id: 12,
-            content:
-            "Please return the signed form by tomorrow. aaas sa an asdm asdnasd sak. sd ak d aks da kd qwk dandedkeja dkfea nf ekn dkwedknend ekn ksad adsaed,em cde dejd kedn a,rnf r efea jf jh. ",
-            sent_at: "2025-11-24 00:03:50.03132+00",
-        },
-    },
-    {
-        request_id: 5,
-        student_icon: "../images/user_profile_icon/polar_bear_1.png",
-        student_icon_bg_color: "#b0ecacff",
-        student_name: "Sarah Doe",
-        request_text: "I feel sick",
-        created_at: "2025-11-22 00:03:50.03132+00",
-        status: "message",
-        responded_at: null,
-        message: {
-            message_id: 12,
-            content:
-            "Please return the signed form by tomorrow. aaas sa an asdm asdnasd sak. sd ak d aks da kd qwk dandedkeja dkfea nf ekn dkwedknend ekn ksad adsaed,em cde dejd kedn a,rnf r efea jf jh. ",
-            sent_at: "2025-11-22 00:03:50.03132+00",
-        },
-    },
-    {
-        request_id: 6,
-        student_icon: "../images/user_profile_icon/polar_bear_1.png",
-        student_icon_bg_color: "#b0ecacff",
-        student_name: "Sarah Doe",
-        request_text: "I need help",
-        created_at: "2025-11-21 00:03:50.03132+00",
-        status: "message",
-        responded_at: null,
-        message: {
-            message_id: 12,
-            content:
-            "Please return the signed form by tomorrow. aaas sa an asdm asdnasd sak. sd ak d aks da kd qwk dandedkeja dkfea nf ekn dkwedknend ekn ksad adsaed,em cde dejd kedn a,rnf r efea jf jh. ",
-            sent_at: "2025-11-21 00:03:50.03132+00",
-        },
-    },
-    {
-        request_id: 7,
-        student_icon: "../images/user_profile_icon/polar_bear_1.png",
-        student_icon_bg_color: "#b0ecacff",
-        student_name: "Sarah Doe",
-        request_text: "I want to go to the bathroom",
-        created_at: "2025-11-20 00:03:50.03132+00",
-        status: "message",
-        responded_at: null,
-        message: {
-            message_id: 12,
-            content:
-            "Please return the signed form by tomorrow. aaas sa an asdm asdnasd sak. sd ak d aks da kd qwk dandedkeja dkfea nf ekn dkwedknend ekn ksad adsaed,em cde dejd kedn a,rnf r efea jf jh. ",
-            sent_at: "2025-11-20 00:03:50.03132+00",
-        },
-    }
-];
+// for testing request feature
+import { sampleRequests } from "../../utils/sampleRequests.js";
 
 export default function RequestLogPage() {
     const navigate = useNavigate();
@@ -147,12 +43,16 @@ export default function RequestLogPage() {
             //     const data = await request(`/api/teachers/request-history-class/${class_id}`, {
             //         method: "GET",
             //         headers: {
-            //             "Authorization": `Bearer ${token}`,
             //             "Content-Type": "application/json"
             //         }
             //     });
 
-            //     setRequests(data.requests || []);
+            //     if (data.success) {
+            //         setRequests(data.requests || []);
+            //     } else {
+            //         console.error("request history page error: ", data.message);
+            //         setRequests([]);
+            //     }
             // } catch (err) {
             //     alert("Error loading request history: " + err.message);
             // } finally {
@@ -161,7 +61,7 @@ export default function RequestLogPage() {
         }
 
         getRequests();
-    }, [class_id, token]);
+    }, [class_id]);
 
 // TODO: to be deleted the below test data:
     useEffect(() => {
