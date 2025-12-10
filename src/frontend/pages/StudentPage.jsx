@@ -183,6 +183,7 @@ export default function StudentPage( ) {
                 style={{ backgroundColor: btn.color }}
                 className="cursor-pointer text-black rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40 border"
                 onClick={() => handleButtonClick({ 
+                    id: btn.id,
                     userLangText: btn.userLangText,
                     targetLangText: btn.targetLangText, 
                     img: btn.img,
@@ -335,6 +336,7 @@ export default function StudentPage( ) {
                 command={selectedCommand}
                 mode={tryMode} // can choose either "normal" or "star" mode
                 textTranslations={COMMAND_POP_UP_TEXT[userLang]}
+                classId = {classesInfo[0]?.class_id}
             />
 
             {showHelp && (

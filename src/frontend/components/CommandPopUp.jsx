@@ -1,5 +1,6 @@
 import { speak, stopSpeaking } from "../utils/speechSynthesis";
 import { useState } from "react";
+import request from "../utils/auth";
 
 export default function CommandPopUp({
     visible,
@@ -7,6 +8,7 @@ export default function CommandPopUp({
     command,
     mode,
     textTranslations,
+    classId
 }) {
     const [isSpeaking, setIsSpeaking] = useState(false);
     
@@ -21,6 +23,27 @@ export default function CommandPopUp({
         } else {
             stopSpeaking();
             setIsSpeaking(false);
+        }
+    };
+
+    const sendRequest = async () => {
+        try {
+            const response = await request("/api/students/create-request", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    command_id: command.id,
+                    class_id: classId,
+            }),
+        });
+        alert("Sent request to teacher!");
+        onClose();
+        } 
+        catch (err) {
+            console.error("Failed to create request:", err);
+            alert("Unable to send request to teacher.");
         }
     };
 
@@ -53,12 +76,12 @@ export default function CommandPopUp({
                     <div className="flex flex-col items-end space-y-4">
                         {mode === "normal" ? ( <> 
                             <button onClick={onClose} className="bg-[#ffe57f] hover:bg-yellow-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.tryOnOwn}</button> 
-                            <button className="bg-[#afa4f3] hover:bg-purple-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.sendToTeacher}</button>
+                            <button onClick={sendRequest} className="bg-[#afa4f3] hover:bg-purple-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.sendToTeacher}</button>
                             </> ) 
                             : 
                             ( <> 
                             <button onClick={onClose} className="bg-[#c3f3d8] hover:bg-green-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.yesTry}</button> 
-                            <button className="bg-[#ff9493] hover:bg-red-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.noTry}</button> 
+                            <button onClick={sendRequest} className="bg-[#ff9493] hover:bg-red-400 border text-black py-2 px-4 rounded-lg w-full">{textTranslations.noTry}</button> 
                             </> )
                         }
                         <button className="bg-[#c7c6c6] hover:bg-gray-400 border text-black py-2 px-4 rounded-lg w-full"onClick={handleSpeak}>
