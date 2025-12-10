@@ -4,12 +4,20 @@ const COMMANDS_TEXT_MAP = {
         needBathroom: "Quiero ir al baño",
         sick: "Me siento enfermo",
         needHelp: "Necesito ayuda",
+        userCommand1: "Quiero beber agua",
+        userCommand2: "Spanish",
+        userCommand3: "Spanish", 
+        userCommand4: "Spanish"
     }, 
     en : {
         wantWater: "I want to drink water",
         needBathroom: "I need to go to the bathroom",
         sick: "I feel sick",
         needHelp: "I need help",
+        userCommand1: "I want to drink water",
+        userCommand2: "English",
+        userCommand3: "English", 
+        userCommand4: "English"
     }, 
 };
 
@@ -18,13 +26,21 @@ const COMMAND_IMG_MAP = {
     needBathroom: "../images/commands_icon/chicken_moving.png",
     sick: "../images/commands_icon/sick.png",
     needHelp: "../images/commands_icon/question.png",
+    userCommand1: "../images/commands_icon/glasses.png", 
+    userCommand2: "../images/commands_icon/computer_moving.png",
+    userCommand3: "../images/commands_icon/pencil.png",
+    userCommand4: "../images/commands_icon/raining.png"
 };
 
 const COMMAND_COLOR_MAP = {
-    wantWater: "bg-blue-500",
-    needBathroom: "bg-yellow-500", 
-    sick: "bg-orange-500",
-    needHelp: "bg-red-500",
+    wantWater: "#e0eafd",
+    needBathroom: "#fff7b6", 
+    sick: "#f8d4ae",
+    needHelp: "#ffc6c6" ,
+    userCommand1: "#f0fcf6",
+    userCommand2: "#dfdaff",
+    userCommand3: "#e7e7e7", 
+    userCommand4: "#c6ddff" 
 };
 
 const COMMAND_PRIORITY_MAP = {
@@ -32,6 +48,10 @@ const COMMAND_PRIORITY_MAP = {
     needBathroom: 1, 
     sick: 1,
     needHelp: 2,
+    userCommand1: 3,
+    userCommand2: 3,
+    userCommand3: 3, 
+    userCommand4: 3
 };
 
 /**
