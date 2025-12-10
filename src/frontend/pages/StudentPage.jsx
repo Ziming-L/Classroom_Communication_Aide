@@ -125,6 +125,22 @@ export default function StudentPage( ) {
                 setStudentInfo(res.student);
                 setClassesInfo(res.classes);
                 setCommandsInfo(res.commands);
+
+                const commands = res.commands || [];
+
+                // get the editable commands specifically
+                const editable = commands.filter(cmd => cmd.is_default == false)
+                    .map(cmd => ({
+                        id: cmd.command_id,
+                        userLangText: cmd.command_text,
+                        targetLangText: cmd.translated_text?.en || "",
+                        img: cmd.image,
+                        color: cmd.color
+                    })
+                );
+
+                setEditableButtons(editable);
+
             } else {
                 console.error("Backend error:", res);
                 setError("Backend error:" + res);
@@ -227,9 +243,7 @@ export default function StudentPage( ) {
                     <label >
                         <select name="subject" default="default"
                             className="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
-                            <option value="Math">Math</option>
-                            <option value="Literature">Literature</option>
-                            <option value="Science">Science</option>
+                            <option value="Math">{classesInfo[0]?.class_code}</option>
                         </select>
                     </label>
 
