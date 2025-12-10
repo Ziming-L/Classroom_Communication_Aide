@@ -33,41 +33,38 @@ export default function RequestLogPage() {
     useEffect(() => {
         if (!class_id) {
             console.error("Missing class_id");
+            console.log("NOW: use example requests history because missing 'class id'");
+            setRequests(sampleRequests);
             return;
         }
 
         async function getRequests() {
-            // try {
-            //     setLoading(true);
+            try {
+                setLoading(true);
 
-            //     const data = await request(`/api/teachers/request-history-class/${class_id}`, {
-            //         method: "GET",
-            //         headers: {
-            //             "Content-Type": "application/json"
-            //         }
-            //     });
+                const data = await request(`/api/teachers/request-history-class/${class_id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
 
-            //     if (data.success) {
-            //         setRequests(data.requests || []);
-            //     } else {
-            //         console.error("request history page error: ", data.message);
-            //         setRequests([]);
-            //     }
-            // } catch (err) {
-            //     alert("Error loading request history: " + err.message);
-            // } finally {
-            //     setLoading(false);
-            // }
+                if (data.success) {
+                    setRequests(data.requests || []);
+                } else {
+                    console.error("request history page error: ", data.message);
+                    setRequests([]);
+                }
+            } catch (err) {
+                alert("Error loading request history: " + err.message);
+                setRequests([]);
+            } finally {
+                setLoading(false);
+            }
         }
 
         getRequests();
     }, [class_id]);
-
-// TODO: to be deleted the below test data:
-    useEffect(() => {
-        setRequests(sampleRequests);
-    }, []);
-// detete till here
 
     const filteredRequests = useMemo(() => {
         const nf = nameFilter.trim().toLowerCase();
