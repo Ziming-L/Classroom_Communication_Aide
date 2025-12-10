@@ -5,7 +5,6 @@ import { useNavigate,useLocation } from "react-router-dom";
 import request from '../../utils/auth';
 import { formatToLocal } from "../../utils/convertTime";
 
-
 export default function CustomMessagePage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -21,8 +20,29 @@ export default function CustomMessagePage() {
         teacher_icon, 
         teacher_icon_bg_color 
     } = location.state || {};
+
     // if (!request_id) {
-    //     return <p className="text-center mt-10 text-red-600">No request selected!</p>;
+    //     console.error("No request_id in custom message page: You need to back and try again");
+    //     return (
+    //         <div className="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200">
+    //             <div className="absolute top-4 left-4 z-10">
+    //                 <GoBackButton
+    //                     label="Go Back"
+    //                     fallback="/teacher"
+    //                 />
+    //             </div>
+
+    //             <div className="flex flex-col items-center justify-center h-screen">
+    //                 <p className="
+    //                     text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold 
+    //                     bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text 
+    //                     text-transparent mb-6 leading-tight px-4"
+    //                 >
+    //                     No request selected!
+    //                 </p>
+    //             </div>
+    //         </div>
+    //     )
     // }
 
     const studentIcon = student_icon ? "../" + student_icon : "../../images/user_profile_icon/woman_2.png";
