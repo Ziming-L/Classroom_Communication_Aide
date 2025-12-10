@@ -121,9 +121,9 @@ export default function StudentPage( ) {
 
             console.log("API returned:", res);
             if (res.success) {
-                setStudentInfo(res.student);
-                setClassesInfo(res.classes);
-                setCommandsInfo(res.commands);
+                setStudentInfo(res.student || {});
+                setClassesInfo(res.classes || {});
+                setCommandsInfo(res.commands || {});
                 setTryMode(res.student?.tryMode ? "star" : "normal")
                 const commands = res.commands || [];
 
@@ -176,7 +176,7 @@ export default function StudentPage( ) {
 
 
     const createButtonGrid = (buttons) => (
-        <div className="flex flex-row gap-24 justify-center">
+        <div className="flex flex-row gap-24 justify-center mb-5">
             {buttons.map((btn) => (
             <button
                 key={btn.id}
@@ -255,7 +255,7 @@ export default function StudentPage( ) {
                     <label >
                         <select name="subject" default="default"
                             className="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
-                            <option value="Math">{classesInfo[0]?.class_code}</option>
+                            <option value="Math">{classesInfo?.[0]?.class_code || "No Class"}</option>
                         </select>
                     </label>
 
@@ -271,35 +271,40 @@ export default function StudentPage( ) {
                 </div> 
             </header>
 
-            {/* Current Activity */}
-            <p className="text-xl mb-2">
-                {currentActivity}
-            </p>
-            <p ref={activityBtnRef}>
-                {STUDENT_PAGE_TEXT[userLang].buttonPrompt}
-            </p>
-            {/* Edit Button */}
-            <div className="flex justify-end">
-                <button ref={editBtnRef}
-                onClick={handleGoToEdit}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow px-3 py-1.5 cursor-pointer">
-                    <img 
-                        src="/images/button_icon/edit_icon.png"
-                        alt="Edit Icon"
-                        className="w-5 h-5"
-                    />
-                    {STUDENT_PAGE_TEXT[userLang].edit}
-                </button>
-            </div>
-            {/* Button Grids */}
-            <div>
-                {createButtonGrid(buttons)}
-            </div>
-            <br></br>
-            <div>
-                {createButtonGrid(editableButtonsState)}
-            </div>
-       
+            {classesInfo?.[0]?.class_code && ( // withold messaging, editing, and button command features until connected to a class
+                <div>
+                    {/* Current Activity */}
+                    <p className="text-xl mb-2">
+                        {currentActivity}
+                    </p>
+                    <p ref={activityBtnRef}>
+                        {STUDENT_PAGE_TEXT[userLang].buttonPrompt}
+                    </p>
+                    {/* Edit Button */}
+                    <div className="flex justify-end">
+                        <button ref={editBtnRef}
+                            onClick={handleGoToEdit}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow px-3 py-1.5 cursor-pointer"
+                        >
+                            <img 
+                            src="/images/button_icon/edit_icon.png"
+                            alt="Edit Icon"
+                            className="w-5 h-5"
+                            />
+                            {STUDENT_PAGE_TEXT[userLang].edit}
+                        </button>
+                    </div>
+                    {/* Button Grids */}
+                    <div>{createButtonGrid(buttons)}</div>
+                    <div>{createButtonGrid(editableButtonsState)}</div>
+                </div>
+            )}
+
+            {!(classesInfo?.[0]?.class_code) && ( // message if student is not added to any classes
+                <p className="text-center text-lg text-gray-600 mt-6"> 
+                    {STUDENT_PAGE_TEXT[userLang]?.noClass} 
+                </p> 
+            )}
             {/* Translator */}
             <div>
                 <button
@@ -323,12 +328,14 @@ export default function StudentPage( ) {
                     />
                     {STUDENT_PAGE_TEXT[userLang].translator}
                 </button>
-                <button onClick={toggleTryMode} className={`border hover:bg-blue-400 mt-3 ${tryMode === "normal" ? "bg-blue-200" : "bg-yellow-200"}`}>
-                     ⭐ 
+                <button onClick={toggleTryMode} className={`border hover:bg-blue-400 ${tryMode === "normal" ? "bg-blue-200" : "bg-yellow-200"}`}>
+                    ⭐? 
                 </button>
             </div>
             <div ref={messageBtnRef} className="h-1 mb-1"></div>
-            <MessageBox placeholderText={STUDENT_PAGE_TEXT[userLang].message}/>
+            {classesInfo?.[0]?.class_code && ( // only allow messages if student is added to a class
+                <MessageBox placeholderText={STUDENT_PAGE_TEXT[userLang].message}/>
+            )}
             <StarBox starCount={starCount} text={STUDENT_PAGE_TEXT[userLang].star}/>
             <CommandPopUp 
                 visible={commandPopUpVisible}

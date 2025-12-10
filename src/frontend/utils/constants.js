@@ -127,7 +127,8 @@ export const STUDENT_PAGE_TEXT = {
         help: "Help",
         greeting: "Hello",
         buttonPrompt: "I want to tell my teacher that...",
-        star: "Star count:"
+        star: "Star count:",
+        noClass: "Please add a class in order to send requests and messages to your teacher"
     },
     es: {
         edit: "edita",
@@ -136,7 +137,8 @@ export const STUDENT_PAGE_TEXT = {
         help: "Ayuda",
         greeting: "Hola",
         buttonPrompt: "Le quiero decir a mi maestro que...",
-        star: "Estrellas:"
+        star: "Estrellas:",
+        noClass: "Por favor, añade una clase para poder enviar solicitudes y mensajes a tu maestro"
     },
 };
 
