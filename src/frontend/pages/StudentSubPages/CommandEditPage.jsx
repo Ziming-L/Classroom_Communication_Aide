@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { TOP_BUTTONS_MAP, BUTTON_EDITOR_TEXT} from "../../utils/constants.js";
 import EditableButton from "../../components/EditableButton.jsx";
 import { translateText } from "../../utils/translateText.js";
+import request from "../../utils/auth.js";
 
 export default function StudentProfile() {
     const navigate = useNavigate();
@@ -11,7 +12,6 @@ export default function StudentProfile() {
     const location = useLocation();
     const studentInfo = location.state?.studentInfo;
     const userLang = studentInfo?.language_code || "es";
-    //const originalButtons = location.state.editableButtonsState;
     const originalButtons = location.state?.editableButtonsState ?? [];
     const [editedButtons, setEditedButtons] = useState(
         JSON.parse(JSON.stringify(originalButtons))
@@ -24,6 +24,29 @@ export default function StudentProfile() {
         "/images/commands_icon/raining.png"
     ];
 
+    // update the buttons in database
+    const saveChangesBackend = async () => {
+        try {
+            for (const btn of editedButtons) {
+                await request(`/api/students/update-command/${btn.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        command_text: btn.userLangText,
+                        translated_text: btn.targetLangText, // doesn't update in backend?
+                        command_color: btn.color,
+                        command_image: `..${btn.img}`,
+                    })
+                });
+            }
+
+            navigate("/student");
+        } 
+        catch (err) {
+            console.error("Did not save command:", err);
+            alert("Failed to save the changes");
+        }
+    };
  
     const updateButton = (id, fields) => {
         setEditedButtons(prev =>
@@ -51,10 +74,6 @@ export default function StudentProfile() {
         }
     }
 
-    const saveChanges = () => {
-        navigate("/student", { state: { updatedButtons: editedButtons } });
-    };
-
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-6">
@@ -67,7 +86,7 @@ export default function StudentProfile() {
                     hover:bg-purple-700">
                     {TOP_BUTTONS_MAP[userLang]?.goBack}
                 </button>
-                <button className="bg-green-500 text-white px-4 py-2 rounded-full" onClick={saveChanges}> 
+                <button className="bg-green-500 text-white px-4 py-2 rounded-full" onClick={saveChangesBackend}> 
                     {BUTTON_EDITOR_TEXT[userLang]?.save}
                 </button>
             </div>
