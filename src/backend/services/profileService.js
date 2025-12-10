@@ -12,10 +12,10 @@ export async function createProfile(user_id, role, data) {
     try {
         const { name, language_code, icon, icon_bg_color, school_name } = data;
 
-        if (role !== "teacher" || role !== "student") {
-            return { 
-                success: false, 
-                message: "Invalid role" 
+        if (role !== "teacher" && role !== "student") {
+            return {
+                success: false,
+                message: "Invalid role"
             };
         }
 

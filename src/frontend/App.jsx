@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import StudentPage from './pages/StudentPage';
 import TranslatorPage from './pages/TranslatorPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
+import FinishRegistrationPage from './pages/FinishRegistrationPage';
 import TeacherPage from './pages/TeacherPage';
 import AllStudentPage from './pages/TeacherSubPages/AllStudentPage';
 import RequestLogPage from './pages/TeacherSubPages/RequestLogPage';
@@ -50,6 +51,7 @@ export default function App() {
       <Route path="/login" element={<LoginPage onLogin={handleLogin} onBack={() => navigate('/')} />} />
       <Route path="/callback" element={<AuthCallbackPage />} />
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
+      <Route path="/finish-registration" element={<FinishRegistrationPage />} />
       <Route path="/student" element={user && user.role === 'student' ? <StudentPage user={user} onLogout={handleLogout} /> : <LoginPage userType="student" onLogin={handleLogin} onBack={() => navigate('/')} />} />
       <Route path="/student/translator" element={<TranslatorPage />} />
       <Route path="/student/profile" element={<StudentProfile />} />
