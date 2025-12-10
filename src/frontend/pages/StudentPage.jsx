@@ -41,8 +41,7 @@ export default function StudentPage( ) {
     const [selectedCommand, setSelectedCommand] = useState(null);
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
     const [tryMode, setTryMode] = useState("normal");
-    const userLang = studentInfo?.language_code || "en";
-    
+    const userLang = studentInfo?.language_code || "en";    
 
     const handleGoToTranslator = () => {
         navigate("/student/translator", {
@@ -125,7 +124,7 @@ export default function StudentPage( ) {
                 setStudentInfo(res.student);
                 setClassesInfo(res.classes);
                 setCommandsInfo(res.commands);
-
+                setTryMode(res.student?.tryMode ? "star" : "normal")
                 const commands = res.commands || [];
 
                 // get the editable commands specifically

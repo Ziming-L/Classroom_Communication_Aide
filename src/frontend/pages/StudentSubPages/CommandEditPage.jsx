@@ -33,7 +33,8 @@ export default function StudentProfile() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         command_text: btn.userLangText,
-                        translated_text: btn.targetLangText, // doesn't update in backend?
+                        translated_text: btn.targetLangText,
+                        target_language_code: "en", // assumes teacher language for now
                         command_color: btn.color,
                         command_image: `..${btn.img}`,
                     })
