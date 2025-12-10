@@ -98,6 +98,7 @@ Classroom Communication Aide is a web-based tool designed to improve communicati
         ├── package.json
         ├── pages
         │   ├── AuthCallbackPage.jsx
+        │   ├── FinishRegistrationPage.jsx
         │   ├── LandingPage.jsx
         │   ├── LoginPage.jsx
         │   ├── StudentPage.jsx
