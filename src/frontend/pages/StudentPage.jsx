@@ -28,10 +28,9 @@ export default function StudentPage( ) {
     const [showHelp, setShowHelp] = useState(false);
     const [positions, setPositions] = useState({})
 
-
-
-    const [studentName, setStudentName] = useState("");
     const [studentInfo, setStudentInfo] = useState(null);
+    const [classesInfo, setClassesInfo] = useState([]);
+    const [commandsInfo, setCommandsInfo] = useState([]);
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
 
@@ -124,6 +123,8 @@ export default function StudentPage( ) {
             console.log("API returned:", res);
             if (res.success) {
                 setStudentInfo(res.student);
+                setClassesInfo(res.classes);
+                setCommandsInfo(res.commands);
             } else {
                 console.error("Backend error:", res);
                 setError("Backend error:" + res);
