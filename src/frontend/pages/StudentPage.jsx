@@ -128,8 +128,19 @@ export default function StudentPage( ) {
                 const commands = res.commands || [];
 
                 // get the editable commands specifically
-                const editable = commands.filter(cmd => cmd.is_default == false)
-                    .map(cmd => ({
+                const editableCommands = commands.filter(cmd => cmd.is_default === false);
+                const editable = editableCommands.map(cmd => ({
+                        id: cmd.command_id,
+                        userLangText: cmd.command_text,
+                        targetLangText: cmd.translated_text?.en || "",
+                        img: cmd.image,
+                        color: cmd.color
+                    })
+                );
+
+                // get the essential non-editable commands
+                 const essentialCommands = commands.filter(cmd => cmd.is_default === true);
+                const essential = essentialCommands.map(cmd => ({
                         id: cmd.command_id,
                         userLangText: cmd.command_text,
                         targetLangText: cmd.translated_text?.en || "",
@@ -139,6 +150,7 @@ export default function StudentPage( ) {
                 );
 
                 setEditableButtons(editable);
+                setButtons(essential);
 
             } else {
                 console.error("Backend error:", res);
