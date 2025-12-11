@@ -33,6 +33,7 @@ export default function StudentPage( ) {
     const [commandsInfo, setCommandsInfo] = useState([]);
     const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
     const [currentClass, setCurrentClass] = useState("Math");
+    const [classCode, setClassCode] = useState("");
 
     const [buttons, setButtons] = useState(studentButtons);
     const [editableButtonsState, setEditableButtons] = useState(editableButtons);
@@ -161,6 +162,35 @@ export default function StudentPage( ) {
             setError("Error fetching student info:" + err);
         }
     };
+
+    // add a student to a class using the inputted class code
+    const handleJoinClass = async () => {
+        if (!classCode || classCode.length !== 10) { 
+            setError("Class code must be 10 characters.");
+            return;
+        }
+        try {
+            const res = await request("/api/students/join-class", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ class_code: classCode }),
+            });
+
+            if (!res.success) {
+                setError(res.message || "Failed to join class.");
+                return;
+            }
+
+            await fetchStudentInfo();
+            setClassCode("");
+        } 
+        catch (err) {
+            console.error("Join class error:", err);
+            setError("Error joining class: " + err.message);
+        }
+    }
 
     // get all information from the backend to continue rendering
     useEffect(() => {
@@ -301,9 +331,31 @@ export default function StudentPage( ) {
             )}
 
             {!(classesInfo?.[0]?.class_code) && ( // message if student is not added to any classes
-                <p className="text-center text-lg text-gray-600 mt-6"> 
-                    {STUDENT_PAGE_TEXT[userLang]?.noClass} 
-                </p> 
+                <div>
+                    <p className="text-center text-lg text-gray-600 mt-6"> 
+                        {STUDENT_PAGE_TEXT[userLang]?.noClass} 
+                    </p> 
+                    {/* Allow student to enter class code */}
+                    <div className="flex items-center gap-3 mt-10 mb-10">
+                        <label className="text-gray-800 font-medium">
+                            Input a class code:
+                        </label>
+                        <input 
+                            type="text" 
+                            value={classCode} 
+                            onChange={(e) => setClassCode(e.target.value)} 
+                            className="border border-gray-300 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                            placeholder="Enter code" 
+                        />
+                        <button 
+                            onClick={handleJoinClass} 
+                            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700" 
+                        > 
+                            Join 
+                        </button>
+                    </div>
+                </div>
+                
             )}
             {/* Translator */}
             <div>
