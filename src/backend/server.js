@@ -18,12 +18,22 @@ app.use(express.json());
 const server = createServer(app);
 const wsServer = new WebSocketServer({ server });
 
+//students and teacher lists
+const studentMap = {};
+const teacherMap = {};
+
 wsServer.on('connection', socket => {
     console.log('Client connected.');
 
     socket.on('message', (msg) => {
-        const data = JSON.parse(msg);
-        //error handling for invalid json
+        let data;
+        // error handling for invalid message
+        try {
+            data = JSON.parse(msg)
+        } catch (e) {
+            console.log("invalid JSON message", e);
+            return;
+        }
 
         if (data.type == "activity") {
             broadcast(JSON.stringify({
@@ -32,8 +42,17 @@ wsServer.on('connection', socket => {
             }));
             return;
         }
-        if (data.type == "message") {
-            //NOT IMPLEMENTED YET
+        if (data.type == "student-message") {
+            broadcast(JSON.stringify({
+                type: "student-message",
+                payload: data.payload
+
+            }))
+            return;
+        }
+        if (data.type == "teacher-message") {
+            // Teacher's response message
+            // NOT IMPLEMENTED
             return;
         }
     });

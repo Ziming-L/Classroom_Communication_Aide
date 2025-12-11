@@ -7,8 +7,38 @@ import styles from "../components/TeacherPage/styles.module.css";
 export default function TeacherPage() {
     const navigate = useNavigate();
     const [activity, setActivity] = useState("");
+    const [prevActivity, setPrevActivity] = useState("Type activity...");
     //const [currentClass, setCurrentClass] = useState("Math");
-    const [messages, setMessages] = useState([])
+    const testMessages = [
+        {
+            id: 1,
+            payload: {
+                name: "Batman",
+                message: "I need help!",
+                studentColor: "#A8DCAB",
+                time: "(3m)"
+            }
+        },
+        {
+            id: 2,
+            payload: {
+                name: "Walter White",
+                message: "I need to go to the bathroom",
+                studentColor: "#FFCCCB",
+                time: "(2m)"
+            }
+        },
+        {
+            id: 3,
+            payload: {
+                name: "Jesse",
+                message: "I need to cook",
+                studentColor: "#b5e2ff",
+                time: "(1m)"
+            }
+        }
+    ]
+    const [messages, setMessages] = useState(testMessages)
 
     const goToRequestLog = () => navigate("/teacher/requestlogs");
     const goToAllStudent = () => navigate("/teacher/allstudents");
@@ -20,25 +50,23 @@ export default function TeacherPage() {
 
     useEffect(() => {
         wsRef.current = new WebSocket(wsURL);
-        wsRef.current.onopen = () => {
-            addMessage("connected to socket server");
-        };
         // when recieving message
         wsRef.current.onmessage = (event) => {
             const msg = JSON.parse(event.data);
-            if (msg.type === "activity") {
-                addMessage("activity: ");
+            if (msg.type == "activity") {
+                //nothing
             }
-        };
-        wsRef.current.onclose = () => {
-            addMessage("disconected from socket server");
+            if (msg.type == "student-message") {
+                addMessage(msg);
+            }
+
         };
 
         return () => wsRef.current.close();
     }, []);
 
-    const addMessage = (text) => {
-        setMessages((prev) => [...prev, text]);
+    const addMessage = (msg) => {
+        setMessages((prev) => [...prev, msg]);
     };
 
     const sendActivity = () => {
@@ -53,6 +81,7 @@ export default function TeacherPage() {
         }
         // send update activity message
         wsRef.current.send(JSON.stringify(msg));
+        setPrevActivity(activity.trim());
         setActivity("");
     };
 
@@ -94,7 +123,7 @@ export default function TeacherPage() {
                 <div style={local.ActivityContainer}>
                     <h2 style={local.ActivityText}><b>Set Activity: </b></h2>
                     <input
-                        placeholder="Type activity..."
+                        placeholder={prevActivity}
                         value={activity}
                         onChange={(e) => setActivity(e.target.value)}
                         style={local.inputBox}
@@ -107,9 +136,7 @@ export default function TeacherPage() {
             {/* Message Queue */}
             <div>
                 <h1 style={{ marginTop: "20px", fontSize: '18px' }}>Student Messages:</h1>
-                <MessageQueue
-                    messages={messages}
-                />
+                <MessageQueue messages={messages} setMessages={setMessages} />
             </div>
             <br></br>
         </div>

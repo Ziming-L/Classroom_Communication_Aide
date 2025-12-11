@@ -10,7 +10,7 @@ import Tooltip from "../components/Tooltip.jsx";
 import request from "../utils/auth";
 import Profile from "../components/Profile";
 
-export default function StudentPage( ) {
+export default function StudentPage() {
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -31,7 +31,7 @@ export default function StudentPage( ) {
     const [studentInfo, setStudentInfo] = useState(null);
     const [classesInfo, setClassesInfo] = useState([]);
     const [commandsInfo, setCommandsInfo] = useState([]);
-    const [currentActivity, setCurrentActivity] = useState( 'Class is heading to the reading rug to read "Pete the Cat"!' );
+    const [activity, setActivity] = useState('Class is heading to the reading rug to read "Pete the Cat"!');
     const [currentClass, setCurrentClass] = useState("Math");
     const [classCode, setClassCode] = useState("");
 
@@ -42,13 +42,13 @@ export default function StudentPage( ) {
     const [selectedCommand, setSelectedCommand] = useState(null);
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
     const [tryMode, setTryMode] = useState("normal");
-    const userLang = studentInfo?.language_code || "en";    
+    const userLang = studentInfo?.language_code || "en";
 
     const handleGoToTranslator = () => {
         navigate("/student/translator", {
             state: {
-                userLang: userLang, 
-                teacherLang: "en", 
+                userLang: userLang,
+                teacherLang: "en",
             },
         });
     };
@@ -61,9 +61,9 @@ export default function StudentPage( ) {
         navigate("/student/edit", { state: { editableButtonsState, studentInfo } });
     };
 
-    const handleButtonClick = (btn) => { 
-        setSelectedCommand(btn); 
-        setcommandPopUpVisible(true); 
+    const handleButtonClick = (btn) => {
+        setSelectedCommand(btn);
+        setcommandPopUpVisible(true);
     };
 
     const toggleTryMode = () => {
@@ -131,23 +131,23 @@ export default function StudentPage( ) {
                 // get the editable commands specifically
                 const editableCommands = commands.filter(cmd => cmd.is_default === false);
                 const editable = editableCommands.map(cmd => ({
-                        id: cmd.command_id,
-                        userLangText: cmd.command_text,
-                        targetLangText: cmd.translated_text?.en || "",
-                        img: cmd.image,
-                        color: cmd.color
-                    })
+                    id: cmd.command_id,
+                    userLangText: cmd.command_text,
+                    targetLangText: cmd.translated_text?.en || "",
+                    img: cmd.image,
+                    color: cmd.color
+                })
                 );
 
                 // get the essential non-editable commands
-                 const essentialCommands = commands.filter(cmd => cmd.is_default === true);
+                const essentialCommands = commands.filter(cmd => cmd.is_default === true);
                 const essential = essentialCommands.map(cmd => ({
-                        id: cmd.command_id,
-                        userLangText: cmd.command_text,
-                        targetLangText: cmd.translated_text?.en || "",
-                        img: cmd.image,
-                        color: cmd.color
-                    })
+                    id: cmd.command_id,
+                    userLangText: cmd.command_text,
+                    targetLangText: cmd.translated_text?.en || "",
+                    img: cmd.image,
+                    color: cmd.color
+                })
                 );
 
                 setEditableButtons(editable);
@@ -165,7 +165,7 @@ export default function StudentPage( ) {
 
     // add a student to a class using the inputted class code
     const handleJoinClass = async () => {
-        if (!classCode || classCode.length !== 10) { 
+        if (!classCode || classCode.length !== 10) {
             setError("Class code must be 10 characters.");
             return;
         }
@@ -185,7 +185,7 @@ export default function StudentPage( ) {
 
             await fetchStudentInfo();
             setClassCode("");
-        } 
+        }
         catch (err) {
             console.error("Join class error:", err);
             setError("Error joining class: " + err.message);
@@ -196,7 +196,7 @@ export default function StudentPage( ) {
     useEffect(() => {
         const loadData = async () => {
             await Promise.all([
-                fetchStudentInfo(), 
+                fetchStudentInfo(),
                 fetchStarCount()
             ]);
             setLoading(false);
@@ -208,25 +208,25 @@ export default function StudentPage( ) {
     const createButtonGrid = (buttons) => (
         <div className="flex flex-row gap-24 justify-center mb-5">
             {buttons.map((btn) => (
-            <button
-                key={btn.id}
-                style={{ backgroundColor: btn.color }}
-                className="cursor-pointer text-black rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40 border"
-                onClick={() => handleButtonClick({ 
-                    id: btn.id,
-                    userLangText: btn.userLangText,
-                    targetLangText: btn.targetLangText, 
-                    img: btn.img,
-                })}
-            >
-                <span className="text-sm">{btn.userLangText}</span>
+                <button
+                    key={btn.id}
+                    style={{ backgroundColor: btn.color }}
+                    className="cursor-pointer text-black rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40 border"
+                    onClick={() => handleButtonClick({
+                        id: btn.id,
+                        userLangText: btn.userLangText,
+                        targetLangText: btn.targetLangText,
+                        img: btn.img,
+                    })}
+                >
+                    <span className="text-sm">{btn.userLangText}</span>
                     <img
                         src={btn.img}
                         alt="button image"
                         className="w-12 h-12 my-2"
                     />
-                <span className="text-sm">{btn.targetLangText}</span>
-            </button>
+                    <span className="text-sm">{btn.targetLangText}</span>
+                </button>
             ))}
         </div>
     );
@@ -251,21 +251,38 @@ export default function StudentPage( ) {
                 <p className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text text-transparent mb-6 leading-tight px-4">Loading Student Page...</p>
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
-                    <p className="font-bold">Error</p>
-                    <p>{error}</p>
+                        <p className="font-bold">Error</p>
+                        <p>{error}</p>
                     </div>
                 )}
             </div>
         )
     }
 
+    /* section for web socket, client2client messaging */
+    const wsURL = 'ws://localhost:5100';
+    // use ref so websocket stays across renders
+    const wsRef = useRef(null);
+
+    useEffect(() => {
+        wsRef.current = new WebSocket(wsURL);
+        // when recieving message
+        wsRef.current.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "activity") {
+                setActivity(msg.payload);
+            }
+        };
+        return () => wsRef.current.close();
+    }, []);
+
     return (
-        <div className="flex flex-col p-8 w-full font-sans relative"> 
+        <div className="flex flex-col p-8 w-full font-sans relative">
             {/* Header */}
-            <header className="mb-6 flex justify-between items-center"> 
+            <header className="mb-6 flex justify-between items-center">
                 {/* Student Greeting */}
                 <h1 className="text-3xl font-bold mb-2">{STUDENT_PAGE_TEXT[userLang].greeting} {studentInfo?.student_name}!</h1>
-        
+
                 <div className="flex items-center gap-2.5">
 
                     {/* Help Button */}
@@ -292,20 +309,20 @@ export default function StudentPage( ) {
                     {/* Profile */}
                     <div className="text-[26px] cursor-pointer">
                         <button onClick={handleGoToProfile}>
-                            <Profile 
+                            <Profile
                                 image={studentInfo.student_icon}
                                 color={studentInfo.student_icon_bg_color}
                             />
                         </button>
                     </div>
-                </div> 
+                </div>
             </header>
 
             {classesInfo?.[0]?.class_code && ( // withold messaging, editing, and button command features until connected to a class
                 <div>
                     {/* Current Activity */}
                     <p className="text-xl mb-2">
-                        {currentActivity}
+                        {activity}
                     </p>
                     <p ref={activityBtnRef}>
                         {STUDENT_PAGE_TEXT[userLang].buttonPrompt}
@@ -316,10 +333,10 @@ export default function StudentPage( ) {
                             onClick={handleGoToEdit}
                             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow px-3 py-1.5 cursor-pointer"
                         >
-                            <img 
-                            src="/images/button_icon/edit_icon.png"
-                            alt="Edit Icon"
-                            className="w-5 h-5"
+                            <img
+                                src="/images/button_icon/edit_icon.png"
+                                alt="Edit Icon"
+                                className="w-5 h-5"
                             />
                             {STUDENT_PAGE_TEXT[userLang].edit}
                         </button>
@@ -332,30 +349,30 @@ export default function StudentPage( ) {
 
             {!(classesInfo?.[0]?.class_code) && ( // message if student is not added to any classes
                 <div>
-                    <p className="text-center text-lg text-gray-600 mt-6"> 
-                        {STUDENT_PAGE_TEXT[userLang]?.noClass} 
-                    </p> 
+                    <p className="text-center text-lg text-gray-600 mt-6">
+                        {STUDENT_PAGE_TEXT[userLang]?.noClass}
+                    </p>
                     {/* Allow student to enter class code */}
                     <div className="flex items-center gap-3 mt-10 mb-10">
                         <label className="text-gray-800 font-medium">
                             Input a class code:
                         </label>
-                        <input 
-                            type="text" 
-                            value={classCode} 
-                            onChange={(e) => setClassCode(e.target.value)} 
-                            className="border border-gray-300 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                            placeholder="Enter code" 
+                        <input
+                            type="text"
+                            value={classCode}
+                            onChange={(e) => setClassCode(e.target.value)}
+                            className="border border-gray-300 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter code"
                         />
-                        <button 
-                            onClick={handleJoinClass} 
-                            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700" 
-                        > 
-                            Join 
+                        <button
+                            onClick={handleJoinClass}
+                            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+                        >
+                            Join
                         </button>
                     </div>
                 </div>
-                
+
             )}
             {/* Translator */}
             <div>
@@ -381,21 +398,21 @@ export default function StudentPage( ) {
                     {STUDENT_PAGE_TEXT[userLang].translator}
                 </button>
                 <button onClick={toggleTryMode} className={`border hover:bg-blue-400 ${tryMode === "normal" ? "bg-blue-200" : "bg-yellow-200"}`}>
-                    ⭐? 
+                    ⭐?
                 </button>
             </div>
             <div ref={messageBtnRef} className="h-1 mb-1"></div>
             {classesInfo?.[0]?.class_code && ( // only allow messages if student is added to a class
-                <MessageBox placeholderText={STUDENT_PAGE_TEXT[userLang].message}/>
+                <MessageBox placeholderText={STUDENT_PAGE_TEXT[userLang].message} />
             )}
-            <StarBox starCount={starCount} text={STUDENT_PAGE_TEXT[userLang].star}/>
-            <CommandPopUp 
+            <StarBox starCount={starCount} text={STUDENT_PAGE_TEXT[userLang].star} />
+            <CommandPopUp
                 visible={commandPopUpVisible}
                 onClose={() => setcommandPopUpVisible(false)}
                 command={selectedCommand}
                 mode={tryMode} // can choose either "normal" or "star" mode
                 textTranslations={COMMAND_POP_UP_TEXT[userLang]}
-                classId = {classesInfo[0]?.class_id}
+                classId={classesInfo[0]?.class_id}
             />
 
             {showHelp && (
@@ -453,6 +470,6 @@ export default function StudentPage( ) {
                 </div>
             )}
         </div>
- 
+
     );
 }
