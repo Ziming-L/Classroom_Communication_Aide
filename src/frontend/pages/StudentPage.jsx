@@ -1,11 +1,10 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { studentButtons, editableButtons } from "../utils/studentButtons";
 import { COMMAND_POP_UP_TEXT, STUDENT_PAGE_HELP_TEXT, STUDENT_PAGE_TEXT } from "../utils/constants";
 import { useNavigate, useLocation } from "react-router-dom";
 import MessageBox from "../components/MessageBox";
 import StarBox from "../components/StarBox"
 import CommandPopUp from "../components/CommandPopUp";
-import { useEffect } from "react";
 import Tooltip from "../components/Tooltip.jsx";
 import request from "../utils/auth";
 import Profile from "../components/Profile";
@@ -31,7 +30,7 @@ export default function StudentPage() {
     const [studentInfo, setStudentInfo] = useState(null);
     const [classesInfo, setClassesInfo] = useState([]);
     const [commandsInfo, setCommandsInfo] = useState([]);
-    const [activity, setActivity] = useState('Class is heading to the reading rug to read "Pete the Cat"!');
+    const [currActivity, setActivity] = useState('Class is heading to the reading rug to read "Pete the Cat"!');
     const [currentClass, setCurrentClass] = useState("Math");
     const [classCode, setClassCode] = useState("");
 
@@ -43,6 +42,39 @@ export default function StudentPage() {
     const [commandPopUpVisible, setcommandPopUpVisible] = useState(false);
     const [tryMode, setTryMode] = useState("normal");
     const userLang = studentInfo?.language_code || "en";
+
+    /* section for web socket, client2client messaging */
+    const wsURL = 'ws://localhost:5100';
+    // use ref so websocket stays across renders
+    const wsRef = useRef(null);
+
+    useEffect(() => {
+        wsRef.current = new WebSocket(wsURL);
+        // when recieving message
+        wsRef.current.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.type == "activity") {
+                setActivity("activity");
+            }
+
+        };
+
+        return () => wsRef.current.close();
+    }, []);
+
+    useEffect(() => {
+        wsRef.current = new WebSocket(wsURL);
+        // when recieving message
+        wsRef.current.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.type == "activity") {
+                setActivity("activity");
+            }
+
+        };
+
+        return () => wsRef.current.close();
+    }, []);
 
     const handleGoToTranslator = () => {
         navigate("/student/translator", {
@@ -69,6 +101,7 @@ export default function StudentPage() {
     const toggleTryMode = () => {
         setTryMode(tryMode === "normal" ? "star" : "normal");
     }
+
 
     useEffect(() => {
         if (location.state?.updatedButtons) {
@@ -259,23 +292,6 @@ export default function StudentPage() {
         )
     }
 
-    /* section for web socket, client2client messaging */
-    const wsURL = 'ws://localhost:5100';
-    // use ref so websocket stays across renders
-    const wsRef = useRef(null);
-
-    useEffect(() => {
-        wsRef.current = new WebSocket(wsURL);
-        // when recieving message
-        wsRef.current.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
-            if (msg.type === "activity") {
-                setActivity(msg.payload);
-            }
-        };
-        return () => wsRef.current.close();
-    }, []);
-
     return (
         <div className="flex flex-col p-8 w-full font-sans relative">
             {/* Header */}
@@ -322,7 +338,7 @@ export default function StudentPage() {
                 <div>
                     {/* Current Activity */}
                     <p className="text-xl mb-2">
-                        {activity}
+                        {currActivity}
                     </p>
                     <p ref={activityBtnRef}>
                         {STUDENT_PAGE_TEXT[userLang].buttonPrompt}
