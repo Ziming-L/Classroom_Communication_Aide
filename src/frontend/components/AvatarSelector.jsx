@@ -136,9 +136,10 @@ export default function AvatarSelector({ avatar, onChange, pathPrefix = "", styl
             {avatarOptions.map((a) => (
                 <button
                     key={a}
+                    type="button"
                     onClick={() => onChange(a)}
                     className={`
-                        p-1 rounded-lg border 
+                        p-1 rounded-lg border
                         ${avatar === a ? "border-black" : "border-transparent"}
                         hover:border-blue-500 hover:scale-108
                         transition-all duration-200

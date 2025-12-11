@@ -34,9 +34,10 @@ export default function ColorSelector({ color, onChange, style = ""}) {
             {colorOptions.map((c) => (
                 <button
                     key={c}
+                    type="button"
                     onClick={() => onChange(c)}
                     className={`
-                        w-10 h-10 rounded-full border 
+                        w-10 h-10 rounded-full border
                         ${color === c ? "border-black scale-105" : "border-transparent"}
                         transition-all duration-200
                         hover:border-blue-500 hover:scale-108
