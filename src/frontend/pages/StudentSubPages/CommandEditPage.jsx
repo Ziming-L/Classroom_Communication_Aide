@@ -18,10 +18,10 @@ export default function StudentProfile() {
     );
 
     const colorOptions = ["#c6ddff", "#e7e7e7", "#dfdaff", "#f0fcf6"];
-    const iconOptions = ["/images/commands_icon/glasses.png", 
-        "/images/commands_icon/computer_moving.png",
-        "/images/commands_icon/pencil.png",
-        "/images/commands_icon/raining.png"
+    const iconOptions = ["../images/commands_icon/glasses.png", 
+        "../images/commands_icon/computer_moving.png",
+        "../images/commands_icon/pencil.png",
+        "../images/commands_icon/raining.png"
     ];
 
     // update the buttons in database
@@ -36,7 +36,7 @@ export default function StudentProfile() {
                         translated_text: btn.targetLangText,
                         target_language_code: "en", // assumes teacher language for now
                         command_color: btn.color,
-                        command_image: `..${btn.img}`,
+                        command_image: btn.img,
                     })
                 });
             }
