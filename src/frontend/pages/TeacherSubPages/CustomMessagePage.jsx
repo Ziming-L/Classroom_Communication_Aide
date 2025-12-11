@@ -21,30 +21,6 @@ export default function CustomMessagePage() {
         teacher_icon_bg_color 
     } = location.state || {};
 
-    // if (!request_id) {
-    //     console.error("No request_id in custom message page: You need to back and try again");
-    //     return (
-    //         <div className="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200">
-    //             <div className="absolute top-4 left-4 z-10">
-    //                 <GoBackButton
-    //                     label="Go Back"
-    //                     fallback="/teacher"
-    //                 />
-    //             </div>
-
-    //             <div className="flex flex-col items-center justify-center h-screen">
-    //                 <p className="
-    //                     text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold 
-    //                     bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text 
-    //                     text-transparent mb-6 leading-tight px-4"
-    //                 >
-    //                     No request selected!
-    //                 </p>
-    //             </div>
-    //         </div>
-    //     )
-    // }
-
     const studentIcon = student_icon ? "../" + student_icon : "../../images/user_profile_icon/woman_2.png";
     const studentIconColor = student_icon_bg_color || "#ffb6c1";
     const studentName = student_name || "daisy";
@@ -59,6 +35,30 @@ export default function CustomMessagePage() {
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(false);
     const [messageId, setMessageId] = useState(null);
+
+    if (!request_id) {
+        console.error("No request_id passed to custom message page: You need to go back and try again");
+        return (
+            <div className="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200">
+                <div className="absolute top-4 left-4 z-10">
+                    <GoBackButton
+                        label="Go Back"
+                        fallback="/teacher"
+                    />
+                </div>
+
+                <div className="flex flex-col items-center justify-center h-screen">
+                    <p className="
+                        text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold 
+                        bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text 
+                        text-transparent mb-6 leading-tight px-4"
+                    >
+                        No request selected!
+                    </p>
+                </div>
+            </div>
+        )
+    }
 
     const handleCancel = () => {
         setContent("");
@@ -77,33 +77,33 @@ export default function CustomMessagePage() {
 
         setLoading(true);
         try {
-            // const sent_at = new Date().toISOString();
-            // const data = await request("/api/teachers/approve-request-message", {
-            //     method: "POST", 
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify({
-            //         request_id, 
-            //         content: trimmedContent, 
-            //         sent_at
-            //     }),
-            // });
+            const sent_at = new Date().toISOString();
+            const data = await request("/api/teachers/approve-request-message", {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    request_id, 
+                    content: trimmedContent, 
+                    sent_at
+                }),
+            });
 
-            // console.log("Backend response: ", data);
+            console.log("Backend response: ", data);
 
-            // if (data.success) {
-            //     setMessageId(data.message_id);
-            //     console.log("Stored message id in CustomMessagePage");
+            if (data.success) {
+                setMessageId(data.message_id);
+                console.log("Stored message id in CustomMessagePage");
 
-            //     // TODO:
-            //     // need to send the message to student
-            //     // can be handle here or pass the message id to the teacher
-            //     // might use messageId to notify the student
-            //     navigate("/teacher");
-            // } else {
-            //     alert(data.message || "Error occurred");
-            // }
+                // TODO:
+                // need to send the message to student
+                // can be handle here or pass the message id to the teacher
+                // might use messageId to notify the student
+
+            } else {
+                alert(data.message || "Error occurred");
+            }
 
         } catch (err) {
             console.error("Failed to send message:", err);
@@ -112,8 +112,7 @@ export default function CustomMessagePage() {
             setLoading(false);
         }
         
-        // for actual, uncomment above and delete below
-        console.log("Content: " + content);
+        console.log("Going back to the main parent page");
         handleCancel();
     };
 
