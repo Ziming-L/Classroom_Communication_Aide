@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MessageQueue from "../components/TeacherPage/MessageQueue";
 import Profile from "../components/Profile";
@@ -6,16 +6,49 @@ import styles from "../components/TeacherPage/styles.module.css";
 
 export default function TeacherPage() {
     const navigate = useNavigate();
-    const [currentActivity, setCurrentActivity] = useState("");
+    const [activity, setActivity] = useState("");
     const [currentClass, setCurrentClass] = useState("Math");
+    const [messages, setMessages] = useState([])
 
     const goToRequestLog = () => navigate("/teacher/requestlogs");
     const goToAllStudent = () => navigate("/teacher/allstudents");
     const goToProfile = () => navigate("/teacher/profile");
 
-    const setActivity = () => {
-        /* TODO: send activity to students */
-        setCurrentActivity("")
+    const wsURL = 'ws://127.0.0.1:5100';
+    const wsRef = useRef(null);
+
+    useEffect(() => {
+        wsRef.current = new WebSocket(wsURL);
+        wsRef.current.onopen = () => {
+            addMessage("connected to socket server");
+        };
+        // when recieving message
+        wsRef.current.onmessage = (event) => {
+            const msg = JSON.parse(event.data)
+            if (msg.type == "activity") {
+                addMessage("activity: ", msg.payload);
+            }
+        };
+        wsRef.current.onclose = () => {
+            addMessage("disconected from socket server")
+        };
+
+        return () => wsRef.current.close();
+    }, []);
+
+    const sendActivity = () => {
+        // empty activity error check
+        if (!activity.trim()) return;
+        const msg = {
+            type: 'activity',
+            payload: {
+                user: "teacher",
+                activity: activity.trim()
+            }
+        }
+        // send update activity message
+        ws.send(JSON.stringify(msg));
+        setActivity("");
     };
 
     return (
@@ -56,19 +89,21 @@ export default function TeacherPage() {
             <p>
                 <div style={local.ActivityContainer}>
                     <h2 style={local.ActivityText}><b>Set Activity: </b></h2>
-                    <textarea
-                        placeholder={currentActivity}
-                        value={currentActivity}
-                        onChange={(e) => setCurrentActivity(e.target.value)}
+                    <input
+                        placeholder="Type activity..."
+                        value={activity}
+                        onChange={(e) => setActivity(e.target.value)}
                         style={local.inputBox}
                     />
-                    <button onClick={setActivity} className={styles.button}>Send</button>
+                    <button onClick={sendActivity} className={styles.button}>Send</button>
                 </div>
             </p>
             {/* Message Queue */}
             <div>
-                <h1 style={{ marginTop: "20px", fontSize: '18px' }}>Incoming Student Messages:</h1>
-                <MessageQueue />
+                <h1 style={{ marginTop: "20px", fontSize: '18px' }}>Student Messages:</h1>
+                <MessageQueue
+                    messages={messages}
+                />
             </div>
             <br></br>
         </div>

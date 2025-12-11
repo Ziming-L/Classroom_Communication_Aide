@@ -4,9 +4,7 @@
 import { useState } from "react";
 import StudentMessage from "./StudentMessage";
 
-export default function MessageQueue() {
-    const [messages, setMessages] = useState([]);
-
+export default function MessageQueue(messages) {
     const testMessages = [
         {
             id: 1,
