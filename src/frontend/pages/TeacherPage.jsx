@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MessageQueue from "../components/TeacherPage/MessageQueue";
 import Profile from "../components/Profile";
@@ -7,14 +7,15 @@ import styles from "../components/TeacherPage/styles.module.css";
 export default function TeacherPage() {
     const navigate = useNavigate();
     const [activity, setActivity] = useState("");
-    const [currentClass, setCurrentClass] = useState("Math");
+    //const [currentClass, setCurrentClass] = useState("Math");
     const [messages, setMessages] = useState([])
 
     const goToRequestLog = () => navigate("/teacher/requestlogs");
     const goToAllStudent = () => navigate("/teacher/allstudents");
     const goToProfile = () => navigate("/teacher/profile");
 
-    const wsURL = 'ws://127.0.0.1:5100';
+    const wsURL = 'ws://localhost:5100';
+    // use ref so websocket stays across renders
     const wsRef = useRef(null);
 
     useEffect(() => {
@@ -24,17 +25,21 @@ export default function TeacherPage() {
         };
         // when recieving message
         wsRef.current.onmessage = (event) => {
-            const msg = JSON.parse(event.data)
-            if (msg.type == "activity") {
-                addMessage("activity: ", msg.payload);
+            const msg = JSON.parse(event.data);
+            if (msg.type === "activity") {
+                addMessage("activity: ");
             }
         };
         wsRef.current.onclose = () => {
-            addMessage("disconected from socket server")
+            addMessage("disconected from socket server");
         };
 
         return () => wsRef.current.close();
     }, []);
+
+    const addMessage = (text) => {
+        setMessages((prev) => [...prev, text]);
+    };
 
     const sendActivity = () => {
         // empty activity error check
@@ -47,7 +52,7 @@ export default function TeacherPage() {
             }
         }
         // send update activity message
-        ws.send(JSON.stringify(msg));
+        wsRef.current.send(JSON.stringify(msg));
         setActivity("");
     };
 
@@ -84,7 +89,6 @@ export default function TeacherPage() {
                     </button>
                 </div>
             </header>
-
             {/* Change Current Activity */}
             <p>
                 <div style={local.ActivityContainer}>
@@ -95,7 +99,9 @@ export default function TeacherPage() {
                         onChange={(e) => setActivity(e.target.value)}
                         style={local.inputBox}
                     />
-                    <button onClick={sendActivity} className={styles.button}>Send</button>
+                    <button onClick={sendActivity} className={styles.button}>
+                        Send
+                    </button>
                 </div>
             </p>
             {/* Message Queue */}

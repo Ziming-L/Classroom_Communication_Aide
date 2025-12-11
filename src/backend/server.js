@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { WebSocketServer } from 'ws';
+import ws, { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 
 import studentRoutes from './routes/studentRoutes.js';
@@ -23,37 +23,34 @@ wsServer.on('connection', socket => {
 
     socket.on('message', (msg) => {
         const data = JSON.parse(msg);
-        //activity
-        if (data.type == "activity") {
-            console.log("updating activity:", data);
+        //error handling for invalid json
 
-            wsServer.clients.forEach((client) => {
-                if (client.readyState === 1) {
-                    client.send(
-                        JSON.stringify({
-                            type: "activity",
-                            payload: data.payload
-                        })
-                    );
-                }
-            });
+        if (data.type == "activity") {
+            broadcast(JSON.stringify({
+                type: "activity",
+                payload: data.payload
+            }));
+            return;
         }
-        console.log(`Received message: type: ${data.type}, message: ${data.message}`);
-        broadcast(data.message);
+        if (data.type == "message") {
+            //NOT IMPLEMENTED YET
+            return;
+        }
     });
 
     socket.on('close', () => {
         console.log('Client disconnected.');
     });
 });
-// // sends message to all open clients
-// function broadcast(message) {
-//     for (const client of wsServer.clients) {
-//         if (client.readyState === ws.OPEN) {
-//             client.send(message)
-//         }
-//     }
-// }
+
+// sends message to all open clients
+function broadcast(message) {
+    wsServer.clients.forEach(client => {
+        if (client.readyState === ws.OPEN) {
+            client.send(message)
+        }
+    });
+}
 
 
 // Routes
