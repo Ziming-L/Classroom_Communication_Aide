@@ -124,7 +124,7 @@ export default function StudentPage( ) {
                 setStudentInfo(res.student || {});
                 setClassesInfo(res.classes || {});
                 setCommandsInfo(res.commands || {});
-                setTryMode(res.student?.tryMode ? "star" : "normal")
+                setTryMode(res.student?.try_yourself ? "star" : "normal")
                 const commands = res.commands || [];
 
                 // get the editable commands specifically
