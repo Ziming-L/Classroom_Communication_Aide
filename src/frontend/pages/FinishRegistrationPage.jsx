@@ -19,10 +19,10 @@ export default function FinishRegistrationPage() {
     const location = useLocation();
 
     // Get auth data passed from previous page
-    const { auth_uid, email, session, role: initialRole } = location.state || {};
+    const { auth_uid, email, session, role: initialRole, username: initialUsername } = location.state || {};
 
     // State variables
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState(initialUsername || '');
     const [role, setRole] = useState(initialRole || 'student');
     const [displayName, setDisplayName] = useState('');
     const [selectedIcon, setSelectedIcon] = useState('../images/user_profile_icon/default_user.png');
@@ -285,7 +285,7 @@ export default function FinishRegistrationPage() {
                             className="w-full px-3 py-2 text-sm border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500"
                         >
                             <option value="en">English</option>
-                            <option value="es">Español</option>
+                            {role === 'student' && <option value="es">Español</option>}
                         </select>
                     </div>
 

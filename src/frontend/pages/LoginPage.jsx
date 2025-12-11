@@ -99,7 +99,8 @@ export default function LoginPage({ userType, onBack, onLogin }) {
                     auth_uid: data.user.id,
                     email: data.user.email,
                     session: data.session,
-                    role: role
+                    role: role,
+                    username: username
                 }
             });
         } catch (err) {
@@ -112,6 +113,9 @@ export default function LoginPage({ userType, onBack, onLogin }) {
         setLoading(true);
         setError(null);
         try {
+            // Store the role in localStorage so it persists through OAuth redirect
+            localStorage.setItem('pendingRole', role || userType);
+
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {

@@ -20,6 +20,9 @@ export default function AuthCallbackPage() {
                 return;
             }
             if (session) {
+                // Get the role that was stored before OAuth redirect
+                const pendingRole = localStorage.getItem('pendingRole') || 'student';
+
                 // Sync OAuth user with your backend
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/auth/oauth`, {
@@ -47,11 +50,15 @@ export default function AuthCallbackPage() {
                                 auth_uid: result.auth_uid,
                                 email: result.email,
                                 session: session,
-                                role: 'student'
+                                role: pendingRole
                             }
                         });
+                        // Clear the pending role after using it
+                        localStorage.removeItem('pendingRole');
                         return;
                     }
+                    // Clear the pending role for existing users too
+                    localStorage.removeItem('pendingRole');
                     // Existing user
                     localStorage.setItem('user', JSON.stringify(result.user));
                     // Navigate based on user role
