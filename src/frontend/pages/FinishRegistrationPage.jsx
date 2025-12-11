@@ -32,6 +32,9 @@ export default function FinishRegistrationPage() {
     const [classCode, setClassCode] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [schools, setSchools] = useState([]);
+    const [useExistingSchool, setUseExistingSchool] = useState(true);
+    const [selectedSchool, setSelectedSchool] = useState('');
 
     // Redirect if no auth data
     React.useEffect(() => {
@@ -40,6 +43,26 @@ export default function FinishRegistrationPage() {
             navigate('/login');
         }
     }, [auth_uid, email, navigate]);
+
+    // Fetch schools list
+    React.useEffect(() => {
+        const fetchSchools = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/schools`);
+                const data = await response.json();
+                if (data.success && data.schools) {
+                    setSchools(data.schools);
+                    // If schools exist, default to the first one
+                    if (data.schools.length > 0) {
+                        setSelectedSchool(data.schools[0]);
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching schools:', err);
+            }
+        };
+        fetchSchools();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -58,10 +81,13 @@ export default function FinishRegistrationPage() {
             return;
         }
 
-        if (role === 'teacher' && !schoolName.trim()) {
-            setError('Please enter your school name');
-            setLoading(false);
-            return;
+        if (role === 'teacher') {
+            const finalSchoolName = useExistingSchool ? selectedSchool : schoolName;
+            if (!finalSchoolName.trim()) {
+                setError('Please select or enter your school name');
+                setLoading(false);
+                return;
+            }
         }
 
         try {
@@ -104,7 +130,7 @@ export default function FinishRegistrationPage() {
                 icon_bg_color: selectedColor,
             };
             if (role === 'teacher') {
-                profilePayload.school_name = schoolName;
+                profilePayload.school_name = useExistingSchool ? selectedSchool : schoolName;
             }
             const profileResponse = await fetch(profileEndpoint, {
                 method: 'POST',
@@ -292,19 +318,63 @@ export default function FinishRegistrationPage() {
                     {/* School Name (for teachers only) */}
                     {role === 'teacher' && (
                         <div>
-                            <label htmlFor="schoolName" className="block text-sm font-semibold text-gray-700 mb-1">
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
                                 School Name
                             </label>
-                            <input
-                                id="schoolName"
-                                type="text"
-                                value={schoolName}
-                                onChange={(e) => setSchoolName(e.target.value)}
-                                required
-                                maxLength={100}
-                                className="w-full px-3 py-2 text-sm border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500"
-                                placeholder="Enter your school name"
-                            />
+
+                            {/* Toggle between existing and new school */}
+                            {schools.length > 0 && (
+                                <div className="flex gap-4 mb-2">
+                                    <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="schoolChoice"
+                                            checked={useExistingSchool}
+                                            onChange={() => setUseExistingSchool(true)}
+                                            className="mr-2"
+                                        />
+                                        <span className="text-sm text-gray-700">Select existing school</span>
+                                    </label>
+                                    <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="schoolChoice"
+                                            checked={!useExistingSchool}
+                                            onChange={() => setUseExistingSchool(false)}
+                                            className="mr-2"
+                                        />
+                                        <span className="text-sm text-gray-700">Enter new school</span>
+                                    </label>
+                                </div>
+                            )}
+
+                            {/* Show dropdown if using existing school and schools are available */}
+                            {useExistingSchool && schools.length > 0 ? (
+                                <select
+                                    id="selectedSchool"
+                                    value={selectedSchool}
+                                    onChange={(e) => setSelectedSchool(e.target.value)}
+                                    required
+                                    className="w-full px-3 py-2 text-sm border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500"
+                                >
+                                    {schools.map((school, index) => (
+                                        <option key={index} value={school}>
+                                            {school}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <input
+                                    id="schoolName"
+                                    type="text"
+                                    value={schoolName}
+                                    onChange={(e) => setSchoolName(e.target.value)}
+                                    required
+                                    maxLength={100}
+                                    className="w-full px-3 py-2 text-sm border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500"
+                                    placeholder="Enter your school name"
+                                />
+                            )}
                         </div>
                     )}
 
