@@ -56,7 +56,7 @@ export default function App() {
       <Route path="/student/translator" element={<TranslatorPage />} />
       <Route path="/student/profile" element={<StudentProfile />} />
       <Route path="/student/edit" element={<CommandEditPage />} />
-      <Route path="/teacher" element={<TeacherPage user={user} onLogout={handleLogout} />} />
+      <Route path="/teacher" element={user && user.role === 'teacher' ? <TeacherPage user={user} onLogout={handleLogout} /> : <LoginPage userType="teacher" onLogin={handleLogin} onBack={() => navigate('/')} />} />
       <Route path="/teacher/allstudents" element={<AllStudentPage />} />
       <Route path="/teacher/requestlogs" element={<RequestLogPage />} />
       <Route path="/teacher/profile" element={<TeacherProfile />} />
