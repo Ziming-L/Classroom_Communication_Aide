@@ -53,14 +53,14 @@ export default function App() {
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route path="/finish-registration" element={<FinishRegistrationPage />} />
       <Route path="/student" element={user && user.role === 'student' ? <StudentPage user={user} onLogout={handleLogout} /> : <LoginPage userType="student" onLogin={handleLogin} onBack={() => navigate('/')} />} />
-      <Route path="/student/translator" element={<TranslatorPage />} />
-      <Route path="/student/profile" element={<StudentProfile />} />
-      <Route path="/student/edit" element={<CommandEditPage />} />
+      <Route path="/student/translator" element={user && user.role === 'student' ? <TranslatorPage /> : <LoginPage userType="student" onLogin={handleLogin} onBack={() => navigate('/')} />} />
+      <Route path="/student/profile" element={user && user.role === 'student' ? <StudentProfile /> : <LoginPage userType="student" onLogin={handleLogin} onBack={() => navigate('/')} />} />
+      <Route path="/student/edit" element={user && user.role === 'student' ? <CommandEditPage /> : <LoginPage userType="student" onLogin={handleLogin} onBack={() => navigate('/')} />} />
       <Route path="/teacher" element={user && user.role === 'teacher' ? <TeacherPage user={user} onLogout={handleLogout} /> : <LoginPage userType="teacher" onLogin={handleLogin} onBack={() => navigate('/')} />} />
-      <Route path="/teacher/allstudents" element={<AllStudentPage />} />
-      <Route path="/teacher/requestlogs" element={<RequestLogPage />} />
-      <Route path="/teacher/profile" element={<TeacherProfile />} />
-      <Route path="/teacher/custommessage" element={<CustomMessagePage />} />
+      <Route path="/teacher/allstudents" element={user && user.role === 'teacher' ? <AllStudentPage /> : <LoginPage userType="teacher" onLogin={handleLogin} onBack={() => navigate('/')} />} />
+      <Route path="/teacher/requestlogs" element={user && user.role === 'teacher' ? <RequestLogPage /> : <LoginPage userType="teacher" onLogin={handleLogin} onBack={() => navigate('/')} />} />
+      <Route path="/teacher/profile" element={user && user.role === 'teacher' ? <TeacherProfile /> : <LoginPage userType="teacher" onLogin={handleLogin} onBack={() => navigate('/')} />} />
+      <Route path="/teacher/custommessage" element={user && user.role === 'teacher' ? <CustomMessagePage /> : <LoginPage userType="teacher" onLogin={handleLogin} onBack={() => navigate('/')} />} />
     </Routes>
   );
 }
