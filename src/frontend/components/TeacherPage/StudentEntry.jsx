@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import request from '../../utils/auth';
 
 export default function StudentEntry({ student }) {
 
     // State variables to manage dynamic display
     const [studentInfoDisplay, setStudentInfoDisplay] = useState(false);
     const [studentTryOnOwnDisplay, setStudentTryOnOwnDisplay] = useState(false);
+    const [incrementingStar, setIncrementingStar] = useState(false);
+    const [currentStars, setCurrentStars] = useState(student.stars);
 
     // Used to trigger student details
     const displayStudent = (e) => {
@@ -18,33 +21,38 @@ export default function StudentEntry({ student }) {
         setStudentTryOnOwnDisplay(!studentTryOnOwnDisplay);
     }
 
-    // Student Stars are incremented, star changes are not stored persistently.
-    // TODO: Use /try-yourself/:student_id API
-    const tryOnOwnSuccess = (e) => {
+    // Student Stars are incremented via API
+    const tryOnOwnSuccess = async (e) => {
         e.stopPropagation();
-        setStudentTryOnOwnDisplay(false);
-        student.stars += 1;
+        if (!student.student_id) {
+            console.error('Student ID not available');
+            return;
+        }
+        try {
+            setIncrementingStar(true);
+            const response = await request(`/api/teachers/increment-star/${student.student_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.success) {
+                // Increment stars locally to reflect change
+                setCurrentStars(prev => prev + 1);
+                setStudentTryOnOwnDisplay(false);
+            } else {
+                console.error('Failed to increment star:', response.message);
+            }
+        } catch (err) {
+            console.error('Error incrementing star:', err.message);
+        } finally {
+            setIncrementingStar(false);
+        }
     }
 
-    // This handler will preform actions if a student does not complete a request on their own.
-    // TODO: Use /try-yourself/:student_id API
     const tryOnOwnCancel = (e) => {
         e.stopPropagation();
         setStudentTryOnOwnDisplay(false);
-    }
-    
-    // Set background color based on usage
-    const getUsageColor = (usage) => {
-        switch (usage.trim().toLowerCase()) {
-            case "high":
-                return "bg-red-400";
-            case "medium":
-                return "bg-orange-300";
-            case "low":
-                return "bg-green-300";
-            default:
-                return "bg-gray-500";
-        }
     }
 
     // Return the full language name given language code
@@ -70,15 +78,11 @@ export default function StudentEntry({ student }) {
                     <div className='flex items-center justify-center flex-1'>
                         <p className='text-center'>Username: {student.username}</p>
                     </div>
-                    
                     <div className='flex flex-row gap-5 items-center justify-end flex-1'>
-                        <div className={`${getUsageColor(student.usage)} p-3 rounded-xl w-32 text-center flex items-center justify-center`}>
-                            {student.usage}
-
-                        </div>
                         <button
-                            className='bg-blue-200 p-3 rounded-xl shadow-lg hover:bg-blue-300 transition-all duration-200 cursor-pointer w-32 text-center'
+                            className='bg-blue-200 p-3 rounded-xl shadow-lg hover:bg-blue-300 transition-all duration-200 cursor-pointer w-32 text-center disabled:opacity-50 disabled:cursor-not-allowed'
                             onClick={displayStudentTryOnOwn}
+                            disabled={incrementingStar}
                         >
                             Try On Own
                         </button>
@@ -126,9 +130,9 @@ export default function StudentEntry({ student }) {
                         <div className='flex flex-col items-center flex-1'>
                             <h2 className='font-bold text-xl mb-4 text-center'>Number of Times They Tried By Themselves</h2>
                             <p className='text-center text-5xl flex flex-row items-center justify-center gap-2'>
-                                {student.stars} 
-                                <img src="/images/commands_icon/star.png" alt="Students Stars" className='max-h-20'/> 
-                            </p> 
+                                {currentStars}
+                                <img src="/images/commands_icon/star.png" alt="Students Stars" className='max-h-20'/>
+                            </p>
                         </div>
                         <div className='flex flex-col items-center flex-1'>
                             <h2 className='font-bold text-xl mb-4 text-center'>Language</h2>

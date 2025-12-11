@@ -5,6 +5,8 @@ import Profile from '../components/Profile';
 import AvatarSelector from '../components/AvatarSelector';
 import ColorSelector from '../components/ColorSelector';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 /**
  * FinishRegistrationPage component
  *
@@ -27,6 +29,7 @@ export default function FinishRegistrationPage() {
     const [selectedColor, setSelectedColor] = useState('#add8e6');
     const [languageCode, setLanguageCode] = useState('en');
     const [schoolName, setSchoolName] = useState('');
+    const [classCode, setClassCode] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -63,7 +66,7 @@ export default function FinishRegistrationPage() {
 
         try {
             // Create user record with auth_uid, username, and role
-            const createUserResponse = await fetch('http://localhost:5100/api/auth/create-user', {
+            const createUserResponse = await fetch(`${API_BASE_URL}/api/auth/create-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -93,7 +96,7 @@ export default function FinishRegistrationPage() {
                 throw new Error('No access token available. Please try logging in again.');
             }
             // Create profile with display name, icon, color, and language
-            const profileEndpoint = role === 'teacher'? 'http://localhost:5100/api/teachers/create-profile' : 'http://localhost:5100/api/students/create-profile';
+            const profileEndpoint = role === 'teacher'? `${API_BASE_URL}/api/teachers/create-profile` : `${API_BASE_URL}/api/students/create-profile`;
             const profilePayload = {
                 name: displayName,
                 language_code: languageCode,
@@ -134,6 +137,35 @@ export default function FinishRegistrationPage() {
                     access_token: session.access_token,
                     refresh_token: session.refresh_token
                 });
+            }
+
+            // If student provided a class code, join the class
+            if (role === 'student' && classCode.trim()) {
+                try {
+                    const joinClassResponse = await fetch(`${API_BASE_URL}/api/students/join-class`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`,
+                        },
+                        body: JSON.stringify({
+                            class_code: classCode.trim(),
+                            student_language_code: languageCode
+                        }),
+                    });
+                    const joinClassData = await joinClassResponse.json();
+                    if (!joinClassResponse.ok || !joinClassData.success) {
+                        // Actual error
+                        console.error('Failed to join class - Full response:', {
+                            status: joinClassResponse.status,
+                            data: joinClassData
+                        });
+                        alert(`Profile created, class could not be joined.`);
+                    }
+                } catch (err) {
+                    console.error('Error joining class - Exception:', err);
+                    alert('Profile created, class could not be joined.');
+                }
             }
             // Navigate based on role
             if (role === 'student') {
@@ -272,6 +304,24 @@ export default function FinishRegistrationPage() {
                                 maxLength={100}
                                 className="w-full px-3 py-2 text-sm border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500"
                                 placeholder="Enter your school name"
+                            />
+                        </div>
+                    )}
+
+                    {/* Class Code (for students only) */}
+                    {role === 'student' && (
+                        <div>
+                            <label htmlFor="classCode" className="block text-sm font-semibold text-gray-700 mb-1">
+                                Class Code <span className="text-gray-500 font-normal">(Optional)</span>
+                            </label>
+                            <input
+                                id="classCode"
+                                type="text"
+                                value={classCode}
+                                onChange={(e) => setClassCode(e.target.value)}
+                                maxLength={10}
+                                className="w-full px-3 py-2 text-sm border-2 border-purple-300 rounded-xl focus:outline-none focus:border-purple-500"
+                                placeholder="v4KL0e52y8"
                             />
                         </div>
                     )}

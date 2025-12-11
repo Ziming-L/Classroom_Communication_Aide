@@ -104,6 +104,18 @@ router.post('/login', async (req, res) => {
 
     if (!result.success) {
         console.log("Login failed with message:", result.message);
+
+        // User needs to complete registration
+        if (result.needsRegistration) {
+            return res.status(200).json({
+                success: false,
+                needsRegistration: true,
+                auth_uid: result.auth_uid,
+                email: result.email,
+                message: result.message
+            });
+        }
+
         return res.status(401).json({
             success: false,
             message: result.message

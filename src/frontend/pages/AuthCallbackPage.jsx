@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabase';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function AuthCallbackPage() {
 
     const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function AuthCallbackPage() {
             if (session) {
                 // Sync OAuth user with your backend
                 try {
-                    const response = await fetch('http://localhost:5100/api/auth/oauth', {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/oauth`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

@@ -28,9 +28,22 @@ export async function loginUser({ email, password, role }) {
         if (userErr) {
             throw userErr;
         }
-        
+
+        // User exists in Supabase but hasn't completed registration
+        if (!userData.user) {
+            return {
+                success: false,
+                needsRegistration: true,
+                auth_uid: auth_uid,
+                email: email,
+                message: 'Please complete your registration',
+                user: null,
+                token: null
+            };
+        }
+
         // check role
-        if (!userData.user || userData.user.role !== role) {
+        if (userData.user.role !== role) {
             return {
                 success: false,
                 message: `Role does not match. Please login as ${userData.user.role}`,

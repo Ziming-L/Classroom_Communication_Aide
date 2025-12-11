@@ -38,11 +38,25 @@ export default function LoginPage({ userType, onBack, onLogin }) {
                 throw new Error(signInError.message);
             }
             // Verify role with backend
-            const { token, user } = await loginUser({ email, password, role: userType });
-            localStorage.setItem('user', JSON.stringify(user));
+            const response = await loginUser({ email, password, role: userType });
+
+            // Check if user needs to complete registration
+            if (response.needsRegistration) {
+                navigate('/finish-registration', {
+                    state: {
+                        auth_uid: response.auth_uid,
+                        email: response.email,
+                        session: authData.session,
+                        role: userType
+                    }
+                });
+                return;
+            }
+
+            localStorage.setItem('user', JSON.stringify(response.user));
 
             if (typeof onLogin === 'function') {
-                onLogin(user);
+                onLogin(response.user);
             } else {
                 console.error("onLogin is not a function!");
             }

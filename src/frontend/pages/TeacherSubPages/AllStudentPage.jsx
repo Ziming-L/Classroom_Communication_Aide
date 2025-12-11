@@ -1,78 +1,154 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import request from "../../utils/auth";
 import Profile from "../../components/Profile"
 import StudentEntryList from "../../components/TeacherPage/StudentEntryList";
 import StudentEntry from "../../components/TeacherPage/StudentEntry";
 import styles from "../../components/TeacherPage/styles.module.css"
 
 export default function AllStudentPage() {
-
-    // Mock student data - TODO: Replace with API call
-    const students = [
-        {
-            name: "Han Solo",
-            icon: "/images/user_profile_icon/cow_1.png",
-            lang: "es",
-            stars: 54,
-            username: "han_s",
-            usage: "high",
-            command_history: [
-                { command: "Can I go to the bathroom?", count: 5},
-                { command: "I need help with my homework.", count: 3},
-                { command: "May I have some water?", count: 2}
-            ],
-        },
-        {
-            name: "Walter White",
-            icon: "/images/user_profile_icon/baby_chick_1.png",
-            lang: "zh",
-            stars: 4,
-            username: "walter_w",
-            usage: "medium",
-            command_history: [
-                { command: "Can I go to the bathroom?", count: 5},
-                { command: "I need help with my homework.", count: 3},
-                { command: "May I have some water?", count: 2}
-            ],
-        },
-        {
-            name: "Batman",
-            icon: "/images/user_profile_icon/bat_1.png",
-            lang: "ar",
-            stars: 2,
-            username: "batman",
-            usage: "low",
-            command_history: [
-                { command: "Can I go to the bathroom?", count: 5},
-                { command: "I need help with my homework.", count: 3},
-                { command: "May I have some water?", count: 2}
-            ],
-        },
-        {
-            name: "Skyler White",
-            icon: "/images/user_profile_icon/bird_1.png",
-            lang: "fr",
-            stars: 24,
-            username: "skyler_w",
-            usage: "high",
-            command_history: [
-                { command: "Can I go to the bathroom?", count: 5},
-                { command: "I need help with my homework.", count: 3},
-                { command: "May I have some water?", count: 2}
-            ],
-        },
-    ]
-
     const navigate = useNavigate();
-    const [newStudentUsername, setNewStudentUsername] = useState("");
 
+    // State vars
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [newStudentUsername, setNewStudentUsername] = useState("");
+    const [addingStudent, setAddingStudent] = useState(false);
+    const [classId, setClassId] = useState(null);
+    const [classCode, setClassCode] = useState("");
+    const [classes, setClasses] = useState([]);
+
+    // Navigation functions
     const returnToTeacher = () => navigate("/teacher");
     const goToProfile = () => navigate("/teacher/profile");
 
-    const addStudent = (newStudentUsername) => {
-        // Placeholder for add student functionality
-        alert(`Add student: ${newStudentUsername}`);
-    }
+    // Handle class selection change
+    const handleClassChange = (e) => {
+        const selectedClassId = parseInt(e.target.value);
+        const selectedClass = classes.find(c => c.class_id === selectedClassId);
+        if (selectedClass) {
+            setClassId(selectedClass.class_id);
+            setClassCode(selectedClass.class_code);
+        }
+    };
+
+    // Fetch teacher's classes
+    const fetchTeacherClasses = async () => {
+        try {
+            const response = await request('/api/teachers/teacher-profile-with-all-classes', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.success && response.classes && response.classes.length > 0) {
+                // Store all classes
+                setClasses(response.classes);
+                // Set the first class as default
+                const firstClass = response.classes[0];
+                setClassId(firstClass.class_id);
+                setClassCode(firstClass.class_code);
+            } else {
+                setError('No classes found. Please create a class first.');
+                setLoading(false);
+            }
+        } catch (err) {
+            setError(`Failed to load classes: ${err.message}`);
+            setLoading(false);
+        }
+    };
+
+    // Reform backend student data to match frontend format
+    const transformStudentData = (backendStudent) => {
+        return {
+            student_id: backendStudent.student_id,
+            name: backendStudent.student_name,
+            icon: backendStudent.student_icon,
+            icon_bg_color: backendStudent.student_icon_bg_color,
+            lang: backendStudent.language_code,
+            stars: backendStudent.star_number,
+            username: backendStudent.username,
+            command_history: backendStudent.requests_made.map(req => ({
+                command: req.translated_text,
+                count: req.times_used
+            }))
+        };
+    };
+
+    // Fetch students for the current class
+    const fetchStudents = async () => {
+        if (!classId) return;
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await request(`/api/teachers/all-students-info/${classId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.success && response.students) {
+                const transformedStudents = response.students.map(transformStudentData);
+                setStudents(transformedStudents);
+            } else {
+                setError(response.message || 'Failed to load students');
+            }
+        } catch (err) {
+            setError(`Error loading students: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Add a student to the class
+    const addStudent = async () => {
+        if (!newStudentUsername.trim()) {
+            setError('Please enter a username');
+            return;
+        }
+        if (!classId) {
+            setError('No class selected');
+            return;
+        }
+        try {
+            setAddingStudent(true);
+            setError(null);
+            const response = await request('/api/teachers/add-student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: newStudentUsername.trim(),
+                    class_id: classId
+                }),
+            });
+            if (response.success) {
+                // Clear input and refresh student list
+                setNewStudentUsername('');
+                await fetchStudents();
+            } else {
+                setError(response.message || 'Failed to add student');
+            }
+        } catch (err) {
+            setError(`Error adding student: ${err.message}`);
+        } finally {
+            setAddingStudent(false);
+        }
+    };
+
+    // Fetch classes on mount
+    useEffect(() => {
+        fetchTeacherClasses();
+    }, []);
+
+    // Fetch students when classId is available
+    useEffect(() => {
+        if (classId) {
+            fetchStudents();
+        }
+    }, [classId]);
 
     return (
         <div className={styles.page}>
@@ -88,23 +164,79 @@ export default function AllStudentPage() {
                 </div>
             </header>
             <div className="mx-20">
-                <div className="items-center p-5 flex flex-row justify-center bg-white">
-                    <h2 className="m-3 p-3 text-5xl font-light text-center">Student List For: </h2>
-                    <h2 className="w-min m-3 p-3 text-5xl font-light text-center bg-gray-200 rounded-xl">v4KL0e52y8</h2>
-                    <button
-                        className="ml-10 p-3 bg-blue-200 rounded-xl shadow-md hover:bg-blue-300 transition-all duration-200 cursor-pointer text-center text-2xl font-medium"
-                        onClick={() => addStudent(newStudentUsername)}>
-                        Add Student
-                    </button>
-                    <input
-                        type="text"
-                        value={newStudentUsername}
-                        onChange={(e) => setNewStudentUsername(e.target.value)}
-                        placeholder="Enter username"
-                        className="ml-3 p-3 border border-gray-300 rounded-lg"
-                    />
-                </div>
-                <StudentEntryList students={students}/>
+
+                {/* Error display */}
+                {error && (
+                    <div className="p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
+                {/* Loading state */}
+                {loading ? (
+                    <div className="flex justify-center items-center p-10">
+                        <div className="text-2xl">Loading students...</div>
+                    </div>
+                ) : (
+                    <>
+                        <div className="items-center p-5 flex flex-row justify-center bg-white gap-4">
+                            {/* Class selector */}
+                            {classes.length > 0 && (
+                                <div className="flex items-center gap-2">
+                                    <label className="text-2xl font-medium">Class:</label>
+                                    <select
+                                        value={classId || ''}
+                                        onChange={handleClassChange}
+                                        className="p-2 text-lg border-2 border-gray-300 rounded-lg bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none cursor-pointer"
+                                    >
+                                        {classes.map((cls) => (
+                                            <option key={cls.class_id} value={cls.class_id}>
+                                                {cls.class_code} - {cls.class_name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            <h2 className="m-3 p-3 text-5xl font-light text-center">Class: </h2>
+                            <h2 className="w-min m-3 p-3 text-5xl font-light text-center bg-gray-200 rounded-xl">
+                                {classCode || ' - '}
+                            </h2>
+                            <button
+                                className="ml-10 p-3 bg-blue-200 rounded-xl shadow-md hover:bg-blue-300 transition-all duration-200 cursor-pointer text-center text-2xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={addStudent}
+                                disabled={addingStudent || !newStudentUsername.trim()}>
+                                {addingStudent ? 'Adding...' : 'Add Student'}
+                            </button>
+                            <input
+                                type="text"
+                                value={newStudentUsername}
+                                onChange={(e) => setNewStudentUsername(e.target.value)}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' && newStudentUsername.trim() && !addingStudent) {
+                                        addStudent();
+                                    }
+                                }}
+                                placeholder="Enter username"
+                                className="ml-3 p-3 border border-gray-300 rounded-lg"
+                                disabled={addingStudent}
+                            />
+                        </div>
+
+                        {/* No students message */}
+                        {students.length === 0 && !loading && (
+                            <div className="text-center p-10 text-xl text-gray-500">
+                                No students in this class or no class exists yet.
+                            </div>
+                        )}
+
+                        {/* Student list */}
+                        {students.length > 0 && (
+                            <StudentEntryList students={students}/>
+                        )}
+
+                    </>
+                )}
             </div>
         </div>
     )
