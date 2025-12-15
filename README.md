@@ -55,11 +55,11 @@ Classroom Communication Aide is a web-based tool designed to improve communicati
         │   ├── TeacherPage
         │   │   ├── AddClassModal.jsx
         │   │   ├── ClassQueue.jsx
-        │   │   ├── MessageQueue.jsx
+        │   │   ├── RequestQueue.jsx
         │   │   ├── RequestRow.jsx
         │   │   ├── StudentEntry.jsx
         │   │   ├── StudentEntryList.jsx
-        │   │   ├── StudentMessage.jsx
+        │   │   ├── StudentRequest.jsx
         │   │   └── styles.module.css
         │   ├── Tooltip.jsx
         │   └── TranslatorBox.jsx
@@ -117,6 +117,7 @@ Classroom Communication Aide is a web-based tool designed to improve communicati
         │   ├── constants.js
         │   ├── convertTime.js
         │   ├── sampleRequests.js
+        │   ├── selectActiveClass.js
         │   ├── speechSynthesis.js
         │   ├── studentButtons.js
         │   ├── supabase.js
