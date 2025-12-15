@@ -1,22 +1,42 @@
 import React, { useState } from "react";
 import AddClassModal from "./AddClassModal";
+import { formatUtcToLocal } from "../../utils/convertTime";
+import request from "../../utils/auth";
 
-export default function ClassQueue() {
-    const [classes, setClasses] = useState([
-        { id: 1, name: "Math 101", startTime: "9:00 AM", endTime: "10:50 AM" },
-        { id: 2, name: "Science 201", startTime: "11:00 AM", endTime: "11:50 AM" },
-    ]);
+export default function ClassQueue({ classes, setClasses }) {
 
     const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleAddClass = (newClass) => {
-        setClasses([...classes, newClass]);
+        setClasses(prev => [...prev, newClass]);
         setShowModal(false);
     };
 
-    const handleDeleteClass = (id) => {
-        //TODO: are you sure pop up window?
-        setClasses(classes.filter((c) => c.id !== id));
+    const handleDeleteClass = async (id, class_code) => {
+        try {
+            const res = await request("/api/teachers/delete-class", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    class_id: id,
+                    class_code,
+                }),
+            });
+
+            if (!res.success) {
+                setError(res.message);
+                setLoading(false);
+                return;
+            }
+
+            setClasses(prev => prev.filter((c) => c.class_id !== id));
+        } catch (err) {
+            setError("Failed to delete class: ", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -24,14 +44,18 @@ export default function ClassQueue() {
             <h2><strong style={{ fontSize: "32px" }}>Current Classes:</strong></h2>
 
             <ul style={local.classBox}>
-                {classes.map((c, i) => (
-                    <li style={local.classEntry} key={i}>
-                        <div ><strong style={{ margin: "5px" }}>{c.name}</strong>  |  <text style={{ margin: "5px" }} >{c.startTime} - {c.endTime} </text></div>
+                {classes.map((c) => (
+                    <li style={local.classEntry} key={c.class_id}>
+                        <div >
+                            <strong style={{ margin: "5px" }}>{c.class_name}</strong>  |  
+                            <strong style={{ margin: "5px" }}>{c.class_code}</strong>  | 
+                            <span style={{ margin: "5px" }} >{formatUtcToLocal(c.class_start)} - {formatUtcToLocal(c.class_end)} </span>
+                            </div>
                         <button
-                            onClick={() => handleDeleteClass(c.id)}
+                            onClick={() => handleDeleteClass(c.class_id, c.class_code)}
                             style={local.deleteButton}
                         >
-                            Delete
+                            {loading ? "Deleting..." : "Delete"}
                         </button>
                     </li>
                 ))}
@@ -56,7 +80,7 @@ const local = {
     },
     classEntry: {
         borderRadius: "5px", backgroundColor: "#D3D3D3", padding: "10px",
-        marginTop: "10px", border: "2px solid #333333", borderRadius: "8px",
+        marginTop: "10px", border: "2px solid #333333",
         display: "flex", justifyContent: "space-between", fontSize: "24px"
     },
     addClassbutton: {

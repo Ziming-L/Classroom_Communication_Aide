@@ -35,24 +35,51 @@ wsServer.on('connection', socket => {
             return;
         }
 
-        if (data.type == "activity") {
-            broadcast(JSON.stringify({
-                type: "activity",
-                payload: data.payload
-            }));
-            return;
-        }
-        if (data.type == "student-message") {
-            broadcast(JSON.stringify({
-                type: "student-message",
-                payload: data.payload
+        const { type, payload } = data;
 
-            }))
+        if (type === "register") {
+            socket.role = payload.role;
+            socket.classId = payload.classId;
+            socket.classCode = payload.classCode;
+            console.log(`Registered ${socket.role} for class ${socket.classId} - ${socket.classCode}: ${new Date().toLocaleString()}`);
             return;
         }
-        if (data.type == "teacher-message") {
-            // Teacher's response message
-            // NOT IMPLEMENTED
+
+        if (type === "activity") {
+            broadcast(socket.classId, socket.classCode, {
+                type: "activity",
+                payload
+            });
+            return;
+        }
+        if (type === "student-message") {
+            broadcast(socket.classId, socket.classCode, {
+                type: "student-message",
+                payload
+
+            });
+            return;
+        }
+        if (type === "teacher-message") {
+            broadcast(socket.classId, socket.classCode, {
+                type: "teacher-message",
+                payload
+
+            });
+            return;
+        }
+        if (type === "refresh-requests") {
+            broadcast(socket.classId, socket.classCode, {
+                type: "refresh-requests",
+                payload
+            });
+            return;
+        }
+        if (type === "request-allowed-button") {
+            broadcast(socket.classId, socket.classCode, {
+                type: "request-allowed-button",
+                payload
+            });
             return;
         }
     });
@@ -63,10 +90,10 @@ wsServer.on('connection', socket => {
 });
 
 // sends message to all open clients
-function broadcast(message) {
+function broadcast(classId, classCode, message) {
     wsServer.clients.forEach(client => {
-        if (client.readyState === ws.OPEN) {
-            client.send(message)
+        if (client.readyState === ws.OPEN && client.classId === classId && client.classCode === classCode) {
+            client.send(JSON.stringify(message));
         }
     });
 }
@@ -78,7 +105,7 @@ app.use('/api/teachers', teacherRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/translate", translateRoutes);
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
     res.send('Classroom Communication Aide Backend is running');
 })
 

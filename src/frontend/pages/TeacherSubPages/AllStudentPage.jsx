@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import request from "../../utils/auth";
 import Profile from "../../components/Profile"
 import StudentEntryList from "../../components/TeacherPage/StudentEntryList";
 import StudentEntry from "../../components/TeacherPage/StudentEntry";
 import styles from "../../components/TeacherPage/styles.module.css"
+import GoBackButton from "../../components/GoBackButton";
 
 export default function AllStudentPage() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     // State vars
     const [students, setStudents] = useState([]);
@@ -19,8 +21,10 @@ export default function AllStudentPage() {
     const [classCode, setClassCode] = useState("");
     const [classes, setClasses] = useState([]);
 
+    const { teacher_icon, teacher_icon_bg_color } = location.state || {};
+    const teacherIcon = teacher_icon ? teacher_icon : '../images/user_profile_icon/default_user.png';
+    const teacherIconBg = teacher_icon_bg_color ? teacher_icon_bg_color : '#add8e6';
     // Navigation functions
-    const returnToTeacher = () => navigate("/teacher");
     const goToProfile = () => navigate("/teacher/profile");
 
     // Handle class selection change
@@ -153,13 +157,17 @@ export default function AllStudentPage() {
     return (
         <div className={styles.page}>
             <header className={styles.header}>
-                <button onClick={() => returnToTeacher()} className={styles.button}>
-                    Back to Main
-                </button>
+                <GoBackButton 
+                    fallback="/teacher"
+                    label="Back to Main"
+                />
                 <h1 className="text-2xl"> All Student View </h1>
                 <div className={styles.headerButtons}>
                     <button onClick={() => goToProfile()} className={styles.profileButton}>
-                        <Profile />
+                        <Profile 
+                            image={teacherIcon}
+                            color={teacherIconBg}
+                        />
                     </button>
                 </div>
             </header>

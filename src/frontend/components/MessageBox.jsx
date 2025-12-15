@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 
-export default function MessageBar( {placeholderText}) {
+export default function MessageBar( {placeholderText, onSend, disabled = false}) {
     const [text, setText] = useState("");
 
     const sendMessage = () => {
+        if (!text.trim()) {
+            return;
+        }
+        
+        onSend(text.trim());
         setText("");
     };
 
@@ -13,6 +18,7 @@ export default function MessageBar( {placeholderText}) {
                 type="text"
                 placeholder={placeholderText}
                 value={text}
+                disabled={disabled}
                 onChange={(e) => setText(e.target.value)}
                 className="flex-1 p-2.5 rounded-[10px] border border-gray-300"
             />

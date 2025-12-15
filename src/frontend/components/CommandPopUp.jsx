@@ -5,6 +5,7 @@ import request from "../utils/auth";
 export default function CommandPopUp({
     visible,
     onClose,
+    onSend,
     command,
     mode,
     textTranslations,
@@ -36,10 +37,14 @@ export default function CommandPopUp({
                 body: JSON.stringify({
                     command_id: command.id,
                     class_id: classId,
-            }),
-        });
-        alert("Sent request to teacher!");
-        onClose();
+                })
+            });
+
+            if (response.success) {
+                alert("Sent request to teacher!");
+                onSend();
+            }
+            onClose();
         } 
         catch (err) {
             console.error("Failed to create request:", err);

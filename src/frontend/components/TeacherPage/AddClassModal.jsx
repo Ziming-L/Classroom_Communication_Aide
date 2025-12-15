@@ -1,14 +1,48 @@
 import React, { useState } from "react";
+import request from "../../utils/auth";
+import { convertToUTCTime } from "../../utils/convertTime";
 
 export default function AddClassModal({ onClose, onSubmit }) {
     const [name, setName] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [classCode, setClassCode] = useState(null);
 
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!name.trim() || !startTime.trim() || !endTime.trim()) return;
-        onSubmit({ name, startTime, endTime });
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const res = await request("/api/teachers/create-class", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    class_name: name.trim(),
+                    class_start: convertToUTCTime(startTime),
+                    class_end: convertToUTCTime(endTime),
+                }),
+            });
+
+            if (!res.success) {
+                setError(res.message);
+                setLoading(false);
+                return;
+            }
+
+            const createdClass = res.class;
+            setClassCode(createdClass.class_code);
+
+            // update parent list
+            onSubmit(createdClass);
+        } catch (err) {
+            setError("Failed to create class: ", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -28,7 +62,7 @@ export default function AddClassModal({ onClose, onSubmit }) {
                 <label style={{ gap: "20px" }}>
                     <strong style={{ fontSize: "24px" }}>Start Time: </strong>
                     <input style={local.textBox}
-                        type="text"
+                        type="time"
                         value={startTime}
                         onChange={(e) => setStartTime(e.target.value)}
                     />
@@ -37,15 +71,38 @@ export default function AddClassModal({ onClose, onSubmit }) {
                 <label style={{ gap: "20px" }}>
                     <strong style={{ fontSize: "24px" }}>End Time: </strong>
                     <input style={local.textBox}
-                        type="text"
+                        type="time"
                         value={endTime}
                         onChange={(e) => setEndTime(e.target.value)}
                     />
                 </label>
 
+                {error && (
+                    <div className="p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
+                {classCode && (
+                    <div style={{ color: "green", fontSize: "18px" }}>
+                        ✅ Class Code: <strong>{classCode}</strong>
+                    </div>
+                )}
+
                 <div style={local.buttons}>
-                    <button style={local.cancelButton} onClick={onClose}>Cancel</button>
-                    <button style={local.addClassbutton} onClick={handleSubmit}>OK</button>
+                    <button 
+                        style={local.cancelButton} 
+                        onClick={onClose}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        style={local.addClassbutton} 
+                        onClick={handleSubmit}
+                        disabled={loading}
+                    >
+                        OK
+                    </button>
                 </div>
             </div>
         </div>

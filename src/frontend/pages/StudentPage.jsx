@@ -8,6 +8,7 @@ import CommandPopUp from "../components/CommandPopUp";
 import Tooltip from "../components/Tooltip.jsx";
 import request from "../utils/auth";
 import Profile from "../components/Profile";
+import { selectActiveClass } from "../utils/selectActiveClass.js";
 
 export default function StudentPage() {
 
@@ -31,7 +32,7 @@ export default function StudentPage() {
     const [classesInfo, setClassesInfo] = useState([]);
     const [commandsInfo, setCommandsInfo] = useState([]);
     const [currActivity, setActivity] = useState('Class is heading to the reading rug to read "Pete the Cat"!');
-    const [currentClass, setCurrentClass] = useState("Math");
+    const [currentClass, setCurrentClass] = useState(null);
     const [classCode, setClassCode] = useState("");
 
     const [buttons, setButtons] = useState(studentButtons);
@@ -49,32 +50,78 @@ export default function StudentPage() {
     const wsRef = useRef(null);
 
     useEffect(() => {
+        if (!currentClass?.class_id) {
+            return;
+        }
+
         wsRef.current = new WebSocket(wsURL);
+
+        // when recent join
+        wsRef.current.onopen = () => {
+            wsRef.current.send(JSON.stringify({
+                type: "register",
+                payload: {
+                    role: "student",
+                    classId: currentClass.class_id,
+                    classCode: currentClass.class_code
+                }
+            }))
+        };
+
         // when recieving message
         wsRef.current.onmessage = (event) => {
             const msg = JSON.parse(event.data);
             if (msg.type == "activity") {
-                setActivity("activity");
+                setActivity(msg.payload.activity);
             }
+            if (msg.type === "teacher-message") {
+                console.log("Teacher message: ", msg.payload);
+            }
+            if (msg.type === "request-allowed-button") {
+                alert(`Request approved by: ${msg.payload.teacher_name}\n\nRequest: ${msg.payload.request_name}`
+                );
+            }
+        };
 
+        wsRef.current.onclose = () => {
+            console.log("Student WS closed");
         };
 
         return () => wsRef.current.close();
-    }, []);
+    }, [currentClass]);
 
-    useEffect(() => {
-        wsRef.current = new WebSocket(wsURL);
-        // when recieving message
-        wsRef.current.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
-            if (msg.type == "activity") {
-                setActivity("activity");
+    const sendStudentMessage = (message) => {
+        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+            console.warn(`Student [${studentInfo.student_name}] not connected`);
+            return;
+        }
+
+        wsRef.current.send(JSON.stringify({
+            type: "student-message",
+            payload: {
+                student_id: studentInfo.student_id,
+                student_name: studentInfo.student_name,
+                message,
+                timestamp: Date.now()
             }
+        }));
+    };
 
-        };
+    const notifyTeacherToRefresh = () => {
+        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+            return;
+        }
 
-        return () => wsRef.current.close();
-    }, []);
+        wsRef.current.send(JSON.stringify({
+            type: "refresh-requests",
+            payload: {
+                class_id: currentClass.class_id,
+                student_id: studentInfo.student_id,
+                timestamp: Date.now()
+            }
+        }));
+    };
+
 
     const handleGoToTranslator = () => {
         navigate("/student/translator", {
@@ -94,6 +141,9 @@ export default function StudentPage() {
     };
 
     const handleButtonClick = (btn) => {
+        if (!currentClass) {
+            return;
+        }
         setSelectedCommand(btn);
         setcommandPopUpVisible(true);
     };
@@ -157,6 +207,10 @@ export default function StudentPage() {
             if (res.success) {
                 setStudentInfo(res.student || {});
                 setClassesInfo(res.classes || {});
+
+                const activeClass = selectActiveClass(res.classes);
+                setCurrentClass(activeClass);
+
                 setCommandsInfo(res.commands || {});
                 setTryMode(res.student?.try_yourself ? "star" : "normal")
                 const commands = res.commands || [];
@@ -243,6 +297,7 @@ export default function StudentPage() {
             {buttons.map((btn) => (
                 <button
                     key={btn.id}
+                    disabled={!currentClass}
                     style={{ backgroundColor: btn.color }}
                     className="cursor-pointer text-black rounded hover:opacity-80 flex flex-col items-center justify-center w-40 h-40 border"
                     onClick={() => handleButtonClick({
@@ -316,9 +371,33 @@ export default function StudentPage() {
 
                     {/* Current Class */}
                     <label >
-                        <select name="subject" default="default"
-                            className="px-[10px] py-[6px] rounded-[8px] border border-gray-300 bg-white cursor-pointer">
-                            <option value="Math">{classesInfo?.[0]?.class_code || "No Class"}</option>
+                        <select 
+                            name="subject" 
+                            value={currentClass?.class_id ?? ""}
+                            onChange={(e) => {
+                                const selected = classesInfo.find(cls => cls.class_id === Number(e.target.value));
+                                setCurrentClass(selected);
+                            }}
+                            className={`
+                                px-3 py-1 sm:px-2 sm:py-1.5 
+                                rounded-[8px] 
+                                border border-gray-300 
+                                cursor-pointer 
+                                text-black bg-white
+                            `}
+                        >
+                            <option 
+                                value="" 
+                                disabled
+                                className="text-black"
+                            >
+                                {classesInfo.length ? "Select class..." : "No classes"}
+                            </option>
+                            {classesInfo?.map((cls) => (
+                                <option key={cls.class_id} value={cls.class_id}>
+                                    {cls.class_name}
+                                </option>
+                            ))}
                         </select>
                     </label>
 
@@ -334,7 +413,13 @@ export default function StudentPage() {
                 </div>
             </header>
 
-            {classesInfo?.[0]?.class_code && ( // withold messaging, editing, and button command features until connected to a class
+            {!currentClass && (
+                <div className="p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center">
+                    Please select a class to start!
+                </div>
+            )}
+
+            {classesInfo.length !== 0 && ( // withold messaging, editing, and button command features until connected to a class
                 <div>
                     {/* Current Activity */}
                     <p className="text-xl mb-2">
@@ -363,7 +448,7 @@ export default function StudentPage() {
                 </div>
             )}
 
-            {!(classesInfo?.[0]?.class_code) && ( // message if student is not added to any classes
+            {!(classesInfo.length) && ( // message if student is not added to any classes
                 <div>
                     <p className="text-center text-lg text-gray-600 mt-6">
                         {STUDENT_PAGE_TEXT[userLang]?.noClass}
@@ -418,18 +503,26 @@ export default function StudentPage() {
                 </button>
             </div>
             <div ref={messageBtnRef} className="h-1 mb-1"></div>
-            {classesInfo?.[0]?.class_code && ( // only allow messages if student is added to a class
-                <MessageBox placeholderText={STUDENT_PAGE_TEXT[userLang].message} />
+            {classesInfo.length && ( // only allow messages if student is added to a class
+                <MessageBox 
+                    placeholderText={ currentClass ? 
+                        STUDENT_PAGE_TEXT[userLang].message : STUDENT_PAGE_TEXT[userLang].disabledMessage}
+                    onSend={sendStudentMessage} 
+                    disabled={!currentClass}
+                />
             )}
             <StarBox starCount={starCount} text={STUDENT_PAGE_TEXT[userLang].star} />
-            <CommandPopUp
-                visible={commandPopUpVisible}
-                onClose={() => setcommandPopUpVisible(false)}
-                command={selectedCommand}
-                mode={tryMode} // can choose either "normal" or "star" mode
-                textTranslations={COMMAND_POP_UP_TEXT[userLang]}
-                classId={classesInfo[0]?.class_id}
-            />
+            {currentClass && (
+                <CommandPopUp
+                    visible={commandPopUpVisible}
+                    onClose={() => setcommandPopUpVisible(false)}
+                    onSend={notifyTeacherToRefresh}
+                    command={selectedCommand}
+                    mode={tryMode} // can choose either "normal" or "star" mode
+                    textTranslations={COMMAND_POP_UP_TEXT[userLang]}
+                    classId={currentClass.class_id}
+                />
+            )}
 
             {showHelp && (
                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50">

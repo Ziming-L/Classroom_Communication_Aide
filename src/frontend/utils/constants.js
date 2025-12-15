@@ -123,6 +123,7 @@ export const STUDENT_PAGE_TEXT = {
     en: {
         edit: "edit",
         message: "send message to teacher...",
+        disabledMessage: "select a class to send messages",
         translator: "Translator",
         help: "Help",
         greeting: "Hello",
@@ -133,6 +134,7 @@ export const STUDENT_PAGE_TEXT = {
     es: {
         edit: "edita",
         message: "manda un mesaje a tu maestro...",
+        disabledMessage: "seleccione una clase para enviar mensajes",
         translator: "Traducir",
         help: "Ayuda",
         greeting: "Hola",

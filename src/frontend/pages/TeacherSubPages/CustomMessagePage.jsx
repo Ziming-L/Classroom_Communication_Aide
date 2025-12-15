@@ -36,29 +36,29 @@ export default function CustomMessagePage() {
     const [loading, setLoading] = useState(false);
     const [messageId, setMessageId] = useState(null);
 
-    // if (!request_id) {
-    //     console.error("No request_id passed to custom message page: You need to go back and try again");
-    //     return (
-    //         <div className="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200">
-    //             <div className="absolute top-4 left-4 z-10">
-    //                 <GoBackButton
-    //                     label="Go Back"
-    //                     fallback="/teacher"
-    //                 />
-    //             </div>
+    if (!request_id) {
+        console.error("No request_id passed to custom message page: You need to go back and try again");
+        return (
+            <div className="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200">
+                <div className="absolute top-4 left-4 z-10">
+                    <GoBackButton
+                        label="Go Back"
+                        fallback="/teacher"
+                    />
+                </div>
 
-    //             <div className="flex flex-col items-center justify-center h-screen">
-    //                 <p className="
-    //                     text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold 
-    //                     bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text 
-    //                     text-transparent mb-6 leading-tight px-4"
-    //                 >
-    //                     No request selected!
-    //                 </p>
-    //             </div>
-    //         </div>
-    //     )
-    // }
+                <div className="flex flex-col items-center justify-center h-screen">
+                    <p className="
+                        text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold 
+                        bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text 
+                        text-transparent mb-6 leading-tight px-4"
+                    >
+                        No request selected!
+                    </p>
+                </div>
+            </div>
+        )
+    }
 
     const handleCancel = () => {
         setContent("");
@@ -77,33 +77,33 @@ export default function CustomMessagePage() {
 
         setLoading(true);
         try {
-            // const sent_at = new Date().toISOString();
-            // const data = await request("/api/teachers/approve-request-message", {
-            //     method: "POST", 
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify({
-            //         request_id, 
-            //         content: trimmedContent, 
-            //         sent_at
-            //     }),
-            // });
+            const sent_at = new Date().toISOString();
+            const data = await request("/api/teachers/approve-request-message", {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    request_id, 
+                    content: trimmedContent, 
+                    sent_at
+                }),
+            });
 
-            // console.log("Backend response: ", data);
+            console.log("Backend response: ", data);
 
-            // if (data.success) {
-            //     setMessageId(data.message_id);
-            //     console.log("Stored message id in CustomMessagePage");
+            if (data.success) {
+                setMessageId(data.message_id);
+                console.log("Stored message id in CustomMessagePage");
 
-            //     // TODO:
-            //     // need to send the message to student
-            //     // can be handle here or pass the message id to the teacher
-            //     // might use messageId to notify the student
+                // TODO:
+                // need to send the message to student
+                // can be handle here or pass the message id to the teacher
+                // might use messageId to notify the student
 
-            // } else {
-            //     alert(data.message || "Error occurred");
-            // }
+            } else {
+                alert(data.message || "Error occurred");
+            }
 
         } catch (err) {
             console.error("Failed to send message:", err);
@@ -125,7 +125,11 @@ export default function CustomMessagePage() {
                     fallback="/teacher"
                 />
                 {/* Profile */}
-                <button onClick={() => navigate("/teacher/profile")}>
+                <button onClick={() => navigate("/teacher/profile", {
+                    state: {
+                        fromCustomMessage: true,
+                    }
+                })}>
                     <Profile 
                         image={teacherIcon}
                         color={teacherIconBg}

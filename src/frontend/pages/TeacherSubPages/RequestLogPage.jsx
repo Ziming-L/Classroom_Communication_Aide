@@ -32,12 +32,8 @@ export default function RequestLogPage() {
     // get the request from backend
     useEffect(() => {
         if (!class_id) {
-            console.error("Missing class_id");
-            console.log("NOW: use example requests history because missing 'class id'");
-            setRequests(sampleRequests);
             return;
         }
-
         async function getRequests() {
             try {
                 setLoading(true);
@@ -114,6 +110,30 @@ export default function RequestLogPage() {
         setDateFilter("");
         setTimeFilter("");
         setResponseFilter("any");
+    }
+
+    if (!class_id) {
+        console.error("No request_id passed to custom message page: You need to go back and try again");
+        return (
+            <div className="bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200">
+                <div className="absolute top-4 left-4 z-10">
+                    <GoBackButton
+                        label="Go Back"
+                        fallback="/teacher"
+                    />
+                </div>
+
+                <div className="flex flex-col items-center justify-center h-screen">
+                    <p className="
+                        text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold 
+                        bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text 
+                        text-transparent mb-6 leading-tight px-4"
+                    >
+                        No class id provided
+                    </p>
+                </div>
+            </div>
+        )
     }
 
     const inputStyle = `

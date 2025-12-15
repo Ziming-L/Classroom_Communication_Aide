@@ -1,12 +1,15 @@
 import React, { forwardRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const GoBackButton = forwardRef(
     ({ fallback = "/student", label, position ="px-3 py-1.5 sm:px-5 sm:py-2"}, ref) => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleClick = () => {
-        if (window.history.state && window.history.state.idx > 0) {
+        if (location.state?.fromCustomMessage) {
+            navigate(fallback);
+        } else if (window.history.state && window.history.state.idx > 0) {
             navigate(-1);
         } else {
             navigate(fallback);
